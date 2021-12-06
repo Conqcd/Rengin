@@ -1,6 +1,16 @@
-#include <rengine>
+#include <rengine.hpp>
 
-int main()
+class SandBox :public Rengin::Application
 {
-    
+public:
+    SandBox(){}
+
+    ~SandBox(){}
+
+};
+
+
+Rengin::Application* Rengin::CreateApplication()
+{
+    return new SandBox();
 }

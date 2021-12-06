@@ -1,6 +1,6 @@
 #include "application.hpp"
 
-namespace Rengine
+namespace Rengin
 {
 
 void Application::Run()

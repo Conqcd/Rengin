@@ -1,10 +1,10 @@
 #pragma once
-
+#include "core.hpp"
 
 namespace Rengin
 {
-    
-class Application
+
+class RE_API Application
 {
 public:
     Application()
@@ -19,4 +19,5 @@ public:
     void Run();
 };
 
+Application* CreateApplication();
 }
