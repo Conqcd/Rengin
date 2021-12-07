@@ -10,3 +10,5 @@
 #define RE_API
 #error no support for other platforms
 #endif
+
+#define BIT(x) (1<<x)

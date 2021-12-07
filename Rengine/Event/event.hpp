@@ -1,0 +1,54 @@
+#include "../core.hpp"
+#include <string>
+#include <functional>
+
+
+namespace Rengin
+{
+enum class EventType
+{
+    None = 0,
+    WindowClose,WindowResize,WindowFocus,WindowLoseFocus,WindowMove,
+    AppTick,AppUpdate,AppRender,
+    KeyPress,KeyRelease,
+    MouseButtonPress,MouseButtonRelease,MouseMoved,MouseScrolled
+};
+
+enum EventCategory
+{
+    None = 0,
+    EventCategoryApplication    = LEFT(0),
+    EventCategoryInput          = LEFT(1),
+    EventCategoryKeyboard       = LEFT(2),
+    EventCategoryMouse          = LEFT(3),
+    EventCategoryMouseButton    = LEFT(4)
+};
+
+#define EVENT_CLASS_TYPE(type)  static EventType getStaticType() {return EventType::##type} \
+                                virtual EventType getEventType() const override {return getStaticType();}   \
+                                virtual const char* getName() const override { return #type;}
+
+#define EVENT_CLASS_CATAGORY(category) virtual int getCategoryFlags() const override {return category;}
+
+class RE_API Event
+{
+    friend class EventDispatcher;
+public:
+    virtual EventType getEventType() const = 0;
+    virtual const char* getName() const = 0;
+    virtual int getCategoryFlags() const = 0;
+    virtual std::string ToString() const { return getName();}
+
+    inline bool isSameCategory(EventCategory cate)
+    {
+        return getCategoryFlags() & cate;
+    }
+protected:
+    bool m_handle = false;
+};
+
+class EventDispatcher
+{
+
+};
+}
