@@ -1,23 +1,16 @@
 #include "core.hpp"
-
+#include "spdlog.h"
 namespace Rengin
 {
-class log
+class RE_API Log
 {
 private:
     /* data */
 public:
-    log(/* args */);
-    ~log();
+    Log(/* args */){}
+    ~Log(){}
+
+    static 
 };
-
-log::log(/* args */)
-{
-}
-
-log::~log()
-{
-}
-
 
 }

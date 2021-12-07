@@ -8,4 +8,5 @@ include_directories(../Rengine)
 add_executable(Rengin main.cpp)
 target_link_libraries(Rengin
     PRIVATE 
-    rengine)
+    rengine
+    spdlog)
