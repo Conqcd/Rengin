@@ -2,22 +2,13 @@
 
 namespace Rengin
 {
-class log
+class Log
 {
 private:
     /* data */
 public:
-    log(/* args */);
-    ~log();
+    Log(/* args */){}
+    ~Log(){}
 };
-
-log::log(/* args */)
-{
-}
-
-log::~log()
-{
-}
-
 
 }
