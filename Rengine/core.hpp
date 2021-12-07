@@ -7,5 +7,6 @@
     #define RE_API __declspec(dllimport)
     #endif
 #else
+#define RE_API
 #error no support for other platforms
 #endif
