@@ -10,4 +10,5 @@ target_link_libraries(Rengin
     PRIVATE 
     rengine
     spdlog
+    opengl32
     glfw)

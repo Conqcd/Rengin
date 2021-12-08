@@ -13,6 +13,7 @@ file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
 
 add_library(rengine SHARED ${RENGINE_SRC})
 target_link_libraries(rengine
-    PRIVATE 
+    PRIVATE
     spdlog
+    opengl32
     glfw)
