@@ -2,6 +2,7 @@
 #include <memory>
 #include "core.hpp"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 namespace Rengin
 {
 class RE_API Log

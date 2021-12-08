@@ -12,7 +12,7 @@ public:
     std::string ToString() const override
     {
         std::stringstream ss;
-        ss<<"WindowResizeEvent Width:"<< m_Width << "Height" <<m_Height;
+        ss<<"WindowResizeEvent Width:"<< m_Width << " ,Height" <<m_Height;
         return ss.str();
     }
     inline unsigned int getHeight() const { return m_Height; }
@@ -45,7 +45,7 @@ class RE_API AppUpdateEvent :public Event
 {
 private:
 public:
-    AppUpdateEvent(){}
+    AppUpdateEvent(){} 
     EVENT_CLASS_TYPE(AppUpdate)
     EVENT_CLASS_CATAGORY(EventCategoryApplication)
 };

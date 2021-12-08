@@ -14,5 +14,5 @@ elseif(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
     add_definitions(-DRE_RELEASE)
 endif()
 
-add_subdirectory(Rengine)
+add_subdirectory(rengine-src)
 add_subdirectory(SandBox)

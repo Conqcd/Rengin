@@ -2,7 +2,7 @@ if (WIN32)
 add_definitions(-DRE_WINDOWS)
 endif()
 
-include_directories(../Rengine)
+include_directories(../rengine-src)
 add_executable(Rengin main.cpp)
 target_link_libraries(Rengin
     PRIVATE 
