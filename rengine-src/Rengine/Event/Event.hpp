@@ -1,7 +1,6 @@
+#pragma once
+#include "../../repch.hpp"
 #include "../core.hpp"
-#include <string>
-#include <functional>
-#include <sstream>
 
 namespace Rengin
 {

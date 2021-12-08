@@ -1,5 +1,6 @@
+#pragma once
+#include "../../repch.hpp"
 #include"Event.hpp"
-#include <sstream>
 
 namespace Rengin
 {

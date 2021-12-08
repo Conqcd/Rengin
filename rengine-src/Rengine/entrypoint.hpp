@@ -1,4 +1,5 @@
-
+#pragma once
+#include "../repch.hpp"
 #ifdef RE_WINDOWS
 
 extern Rengin::Application* Rengin::CreateApplication(); 
