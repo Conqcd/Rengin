@@ -2,6 +2,7 @@
 #include "../repch.hpp"
 #include "core.hpp"
 #include "Window.hpp"
+#include "Event/ApplicationEvent.hpp"
 
 namespace Rengin
 {
@@ -19,6 +20,9 @@ public:
     void Run();
 
     void OnEvent(Event& e);
+
+private:
+    bool OnWindowClose(WindowCloseEvent& ev);
 };
 
 Application* CreateApplication();

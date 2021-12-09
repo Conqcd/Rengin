@@ -1,5 +1,6 @@
 #include "../repch.hpp"
 #include "application.hpp"
+#include "Event/Event.hpp"
 #include "Event/ApplicationEvent.hpp"
 #include "log.hpp"
 #include "GLFW/glfw3.h"
@@ -14,8 +15,7 @@ Application::Application()
 {
     m_window = std::unique_ptr<Window>(Window::WindowCreate());
     
-    m_window->setEventCallBack(std::bind(&Application::OnEvent , this , std::placeholders::_1));
-    // m_window->setEventCallBack(BIND_APP_EVENT_1(OnEvent));
+    m_window->setEventCallBack(BIND_APP_EVENT_1(OnEvent));
 }
 
 Application::~Application()
@@ -23,9 +23,18 @@ Application::~Application()
 
 }
 
+bool Application::OnWindowClose(WindowCloseEvent& ev)
+{
+    m_running = false;
+    return true;    
+}
+
 void Application::OnEvent(Event& e)
 {
-    RE_CORE_INFO("{0}",e);
+    EventDispatcher dispatcher(e);
+    
+    dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose , this, std::placeholders::_1));
+    RE_CORE_TRACE("{0}",e);
 }
 
 void Application::Run()

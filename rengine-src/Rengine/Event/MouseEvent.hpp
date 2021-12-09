@@ -4,7 +4,7 @@
 
 namespace Rengin
 {
-class RE_API MouseMovedEvent :public KeyEvent
+class RE_API MouseMovedEvent :public Event
 {
 private:
     float m_x,m_y;
@@ -24,7 +24,7 @@ public:
     EVENT_CLASS_CATAGORY(EventCategoryInput|EventCategoryMouse)
 };
 
-class RE_API MouseScrolledEvent :public KeyEvent
+class RE_API MouseScrolledEvent :public Event
 {
 private:
     float m_Xoffset,m_Yoffset;
@@ -44,7 +44,7 @@ public:
     EVENT_CLASS_CATAGORY(EventCategoryInput|EventCategoryMouse)
 };
 
-class RE_API MouseButtonEvent :public KeyEvent
+class RE_API MouseButtonEvent :public Event
 {
 private:
 public:

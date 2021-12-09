@@ -27,7 +27,7 @@ public:
 
     //Windows Attributes
 
-    virtual void setEventCallBack(EventCallBackFunc& fn) = 0;
+    virtual void setEventCallBack(const EventCallBackFunc& fn) = 0;
     virtual void setVSync(bool enable) = 0;
     virtual bool isVSync() const = 0;
 

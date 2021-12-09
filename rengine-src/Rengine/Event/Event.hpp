@@ -54,12 +54,12 @@ public:
     explicit EventDispatcher(Event& event):m_Event(event){}
 
     template<typename T>
-    bool Dispatch(EventFunc<T> fn)
+    bool Dispatch(const EventFunc<T>& fn)
     {
-        if(m_Event.getEventType()==T::getStaticType())
+        if(m_Event.getEventType() == T::getStaticType())
         {
             // m_Event.m_handle = fn(*(T*)&m_Event);
-            m_Event.m_handle = fn(static_cast<T>(m_Event));
+            m_Event.m_handle = fn(reinterpret_cast<T&>(m_Event));
         }
         return false;
     }

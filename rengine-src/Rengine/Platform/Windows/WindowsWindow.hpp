@@ -29,7 +29,7 @@ public:
     inline unsigned int getHeight()const override { return m_data.m_height;}
     inline unsigned int getWidth()const override { return m_data.m_width;}
 
-    void setEventCallBack(EventCallBackFunc& fn) override;
+    void setEventCallBack(const EventCallBackFunc& fn) override;
     void setVSync(bool enable) override;
     bool isVSync()const override;
 private:

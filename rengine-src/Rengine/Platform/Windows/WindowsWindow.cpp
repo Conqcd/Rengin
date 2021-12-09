@@ -36,7 +36,7 @@ void WindowsWindow::OnUpdate()
     glfwSwapBuffers(m_win);
 }
 
-void WindowsWindow::setEventCallBack(EventCallBackFunc& fn)
+void WindowsWindow::setEventCallBack(const EventCallBackFunc& fn)
 {
     m_data.m_callback = fn;
 }
