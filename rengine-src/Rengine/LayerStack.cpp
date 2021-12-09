@@ -19,7 +19,7 @@ void LayerStack::PushLayer(Layer* layer)
 }
 
 void LayerStack::PushOverLayer(Layer* layer)
-{=
+{
     m_layit = m_layers.emplace_back(layer);
 }
 

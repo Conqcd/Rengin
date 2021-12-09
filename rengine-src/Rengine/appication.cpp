@@ -32,7 +32,7 @@ bool Application::OnWindowClose(WindowCloseEvent& ev)
 void Application::OnEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
-    
+
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose , this, std::placeholders::_1));
     RE_CORE_TRACE("{0}",e);
 }
@@ -50,5 +50,13 @@ void Application::Run()
         m_window->OnUpdate();
     }
 }
+void Application::PushLayer(Layer* layer)
+{
+    m_layer_stack.PushLayer(layer);
+}
 
+void Application::PushOverLayer(Layer* layer)
+{
+    m_layer_stack.PushLayer(layer);
+}
 }
