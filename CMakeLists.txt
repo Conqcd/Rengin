@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
-
+cmake_minimum_required(VERSION 3.15)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:DLL>")
 
 set(CMAKE_CXX_STANDARD 17)
 project(Rengin)
@@ -14,5 +15,6 @@ elseif(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
     add_definitions(-DRE_RELEASE)
 endif()
 
-add_subdirectory(Rengine)
+add_subdirectory(Glad)
+add_subdirectory(rengine-src)
 add_subdirectory(SandBox)

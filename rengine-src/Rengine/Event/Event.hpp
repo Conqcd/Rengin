@@ -1,7 +1,6 @@
+#pragma once
+#include "../../repch.hpp"
 #include "../core.hpp"
-#include <string>
-#include <functional>
-
 
 namespace Rengin
 {
@@ -24,7 +23,7 @@ enum EventCategory
     EventCategoryMouseButton    = LEFT(4)
 };
 
-#define EVENT_CLASS_TYPE(type)  static EventType getStaticType() {return EventType::##type} \
+#define EVENT_CLASS_TYPE(type)  static EventType getStaticType() {return EventType::##type;} \
                                 virtual EventType getEventType() const override {return getStaticType();}   \
                                 virtual const char* getName() const override { return #type;}
 
@@ -43,12 +42,34 @@ public:
     {
         return getCategoryFlags() & cate;
     }
+    inline bool getHandle()const{return m_handle;}
 protected:
     bool m_handle = false;
 };
 
 class EventDispatcher
 {
+    template<typename T>
+    using EventFunc = std::function<bool(T&)>;
+public:
+    explicit EventDispatcher(Event& event):m_Event(event){}
 
+    template<typename T>
+    bool Dispatch(const EventFunc<T>& fn)
+    {
+        if(m_Event.getEventType() == T::getStaticType())
+        {
+            // m_Event.m_handle = fn(*(T*)&m_Event);
+            m_Event.m_handle = fn(reinterpret_cast<T&>(m_Event));
+        }
+        return false;
+    }
+private:
+    Event& m_Event;
 };
+
+inline std::ostream& operator<<(std::ostream& os,const Event& ev)
+{
+    return os << ev.ToString();
+}
 }
