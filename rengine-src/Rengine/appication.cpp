@@ -57,6 +57,6 @@ void Application::PushLayer(Layer* layer)
 
 void Application::PushOverLayer(Layer* layer)
 {
-    m_layer_stack.PushLayer(layer);
+    m_layer_stack.PushOverLayer(layer);
 }
 }
