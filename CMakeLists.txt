@@ -16,5 +16,6 @@ elseif(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
 endif()
 
 add_subdirectory(Glad)
+add_subdirectory(Imgui)
 add_subdirectory(rengine-src)
 add_subdirectory(SandBox)
