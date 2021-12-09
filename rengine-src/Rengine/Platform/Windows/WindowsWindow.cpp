@@ -6,6 +6,9 @@
 #include "../../Event/KeyEvent.hpp"
 #include "../../Event/MouseEvent.hpp"
 
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
 namespace Rengin
 {
 
@@ -75,6 +78,8 @@ void WindowsWindow::Init(const WindowProps& props)
 
     m_win = glfwCreateWindow(static_cast<int>(m_data.m_width),static_cast<int>(m_data.m_height),m_data.m_title.c_str(),nullptr,nullptr);
     glfwMakeContextCurrent(m_win);
+    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    RE_CORE_ASSERT(status,"failed to intialize Glad");
     glfwSetWindowUserPointer(m_win,&m_data);
     setVSync(true);
 

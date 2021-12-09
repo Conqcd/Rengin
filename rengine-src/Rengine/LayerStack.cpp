@@ -20,12 +20,12 @@ void LayerStack::PushLayer(Layer* layer)
 
 void LayerStack::PushOverLayer(Layer* layer)
 {
-    m_layit = m_layers.emplace_back(layer);
+    m_layers.emplace_back(layer);
 }
 
 void LayerStack::PopLayer(Layer* layer)
 {
-    auto it = std::find(m_layers.being(),m_layers.end(),layer);
+    auto it = std::find(m_layers.begin(),m_layers.end(),layer);
     if(it != m_layers.end())
     {
         m_layers.erase(it);
@@ -35,7 +35,7 @@ void LayerStack::PopLayer(Layer* layer)
 
 void LayerStack::PopOverLayer(Layer* layer)
 {
-    auto it = std::find(m_layers.being(),m_layers.end(),layer);
+    auto it = std::find(m_layers.begin(),m_layers.end(),layer);
     if(it != m_layers.end())
     {
         m_layers.erase(it);

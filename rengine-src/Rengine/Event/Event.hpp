@@ -42,6 +42,7 @@ public:
     {
         return getCategoryFlags() & cate;
     }
+    inline bool getHandle()const{return m_handle;}
 protected:
     bool m_handle = false;
 };

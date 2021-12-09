@@ -10,7 +10,7 @@ class RE_API Layer
 protected:
     std::string m_name;
 public:
-    Layer(const string& name = "Layer");
+    Layer(const std::string& name = "Layer");
     virtual ~Layer();
 
     virtual void OnAttach(){}

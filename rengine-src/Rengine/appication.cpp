@@ -3,6 +3,8 @@
 #include "Event/Event.hpp"
 #include "Event/ApplicationEvent.hpp"
 #include "log.hpp"
+
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <GL/gl.h>
 
@@ -16,6 +18,10 @@ Application::Application()
     m_window = std::unique_ptr<Window>(Window::WindowCreate());
     
     m_window->setEventCallBack(BIND_APP_EVENT_1(OnEvent));
+
+    unsigned int id;
+
+    glGenVertexArrays(1,&id);
 }
 
 Application::~Application()
@@ -34,7 +40,16 @@ void Application::OnEvent(Event& e)
     EventDispatcher dispatcher(e);
 
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose , this, std::placeholders::_1));
-    RE_CORE_TRACE("{0}",e);
+    // RE_CORE_TRACE("{0}",e);
+
+    for(auto it = m_layer_stack.end() ; it != m_layer_stack.begin();)
+    {
+        (*(--it))->OnEvent(e);
+        if(e.getHandle())
+        {
+            break;
+        }
+    }
 }
 
 void Application::Run()
@@ -47,6 +62,12 @@ void Application::Run()
     {
         glClearColor(1,0,1,1);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        
+        for(auto* layer : m_layer_stack)
+        {
+            layer->OnUpdate();
+        }
         m_window->OnUpdate();
     }
 }
