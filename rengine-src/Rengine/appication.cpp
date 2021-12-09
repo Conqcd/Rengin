@@ -13,8 +13,14 @@ namespace Rengin
 
 #define BIND_APP_EVENT_1(x) std::bind(&Application::x , this , std::placeholders::_1)
 
+Application* Application::m_instance = nullptr;
+
 Application::Application()
 {
+    RE_CORE_ASSERT(!m_instance,"Application already exists!");
+
+    m_instance = this;
+
     m_window = std::unique_ptr<Window>(Window::WindowCreate());
     
     m_window->setEventCallBack(BIND_APP_EVENT_1(OnEvent));
@@ -74,10 +80,12 @@ void Application::Run()
 void Application::PushLayer(Layer* layer)
 {
     m_layer_stack.PushLayer(layer);
+    layer->OnAttach();
 }
 
 void Application::PushOverLayer(Layer* layer)
 {
     m_layer_stack.PushOverLayer(layer);
+    layer->OnAttach();
 }
 }

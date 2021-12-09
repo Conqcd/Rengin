@@ -20,6 +20,7 @@ public:
     SandBox(){
 
         PushLayer(new ExampleLayer());
+        PushLayer(new Rengin::ImGuiLayer());
     }
 
     ~SandBox(){}

@@ -1,16 +1,16 @@
 #pragma once
-#include "../../../repch.hpp"
-#include "Rengine/core.hpp"
-#include "Rengine/Layer.hpp"
-#include "Rengine/Event/Event.hpp"
+#include "../../repch.hpp"
+#include "../core.hpp"
+#include "../Layer.hpp"
+#include "../Event/Event.hpp"
 
 namespace Rengin
 {
 
-class ImGuiLayer :public Layer
+class RE_API ImGuiLayer :public Layer
 {
 private:
-    /* data */
+    float m_time = 0.0f;
 public:
     ImGuiLayer(/* args */);
     ~ImGuiLayer();

@@ -25,8 +25,12 @@ public:
 
     void PushLayer(Layer* layer);
     void PushOverLayer(Layer* layer);
+
+    inline static Application& getApplication() {return *m_instance;}
+    inline Window& getWindow() {return *m_window;}
 private:
     bool OnWindowClose(WindowCloseEvent& ev);
+    static Application* m_instance;
 };
 
 Application* CreateApplication();
