@@ -129,7 +129,12 @@ void WindowsWindow::Init(const WindowProps& props)
             break;
         }
     });
-
+    glfwSetCharCallback(m_win,[](GLFWwindow* window, unsigned int codepoint)
+    {
+        auto& data = *static_cast<WinData*>(glfwGetWindowUserPointer(window));
+        KeyTypeEvent ev(codepoint);
+        data.m_callback(ev);
+    });
     glfwSetMouseButtonCallback(m_win,[](GLFWwindow* window, int button, int action, int mods)
     {
         auto& data = *static_cast<WinData*>(glfwGetWindowUserPointer(window));

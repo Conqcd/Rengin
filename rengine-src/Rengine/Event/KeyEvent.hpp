@@ -52,4 +52,22 @@ public:
 
     EVENT_CLASS_TYPE(KeyRelease)
 };
+
+
+class RE_API KeyTypeEvent :public KeyEvent
+{
+private:
+public:
+    KeyTypeEvent(int keyvalue):KeyEvent(keyvalue){}
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss<<"KeyTypeEvent "<< m_KeyValue ;
+
+        return ss.str();
+    }
+
+    EVENT_CLASS_TYPE(KeyType)
+};
 }

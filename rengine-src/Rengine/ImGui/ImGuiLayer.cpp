@@ -2,8 +2,10 @@
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_opengl3_loader.h"
-#include <GLFW/glfw3.h>
 #include "../application.hpp"
+
+// #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Rengin
 {
@@ -80,7 +82,82 @@ void ImGuiLayer::OnUpdate()
 
 void ImGuiLayer::OnEvent(Event& ev)
 {
+    EventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<MouseButtonPressEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseButtonPressEvent));
+    dispatcher.Dispatch<MouseButtonReleaseEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseButtonReleaseEvent));
+    dispatcher.Dispatch<MouseMovedEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseMovedEvent));
+    dispatcher.Dispatch<MouseScrolledEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseScrolledEvent));
+    dispatcher.Dispatch<KeyReleaseEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyReleaseEvent));
+    dispatcher.Dispatch<KeyTypeEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyTypeEvent));
+    dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyPressEvent));
+    dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnWindowResizeEvent));
+}
 
+bool ImGuiLayer::OnMouseButtonPressEvent(MouseButtonPressEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[ev.getButton()] = true;
+    return false;
+}
+
+bool ImGuiLayer::OnMouseButtonReleaseEvent(MouseButtonReleaseEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[ev.getButton()] = false;
+    return false;
+}
+
+bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(ev.getX(),ev.getY());
+    return false;
+}
+
+bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseWheelH += ev.getYoffset();
+    io.MouseWheel += ev.getXoffset();
+    return false;
+}
+
+bool ImGuiLayer::OnKeyTypeEvent(KeyTypeEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    int key = ev.getKeyValue();
+
+    if(key > 0 && key < 0x10000)
+        io.AddInputCharacter(static_cast<unsigned int>(key));
+    return false;
+}
+
+bool ImGuiLayer::OnKeyReleaseEvent(KeyReleaseEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[ev.getKeyValue()] = true;
+
+    io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL | GLFW_KEY_RIGHT_CONTROL];
+    io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT | GLFW_KEY_RIGHT_ALT];
+    io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER | GLFW_KEY_RIGHT_SUPER];
+    io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT | GLFW_KEY_RIGHT_SHIFT];
+    return false;
+}
+
+bool ImGuiLayer::OnKeyPressEvent(KeyPressEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[ev.getKeyValue()] = false;
+    return false;
+}
+
+bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& ev)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.DisplaySize = ImVec2(ev.getWidth(),ev.getHeight());
+    io.DisplayFramebufferScale = ImVec2(1.f,1.f);
+    glViewport(0,0,ev.getWidth(),ev.getHeight());
+    return false;
 }
 
 } // namespace Rengin

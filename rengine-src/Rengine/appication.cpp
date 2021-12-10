@@ -11,7 +11,7 @@
 namespace Rengin
 {
 
-#define BIND_APP_EVENT_1(x) std::bind(&Application::x , this , std::placeholders::_1)
+// #define BIND_APP_EVENT_1(x) std::bind(&Application::x , this , std::placeholders::_1)
 
 Application* Application::m_instance = nullptr;
 
@@ -23,7 +23,7 @@ Application::Application()
 
     m_window = std::unique_ptr<Window>(Window::WindowCreate());
     
-    m_window->setEventCallBack(BIND_APP_EVENT_1(OnEvent));
+    m_window->setEventCallBack(RE_BIND_FUNC_EVENT_1(Application::OnEvent));
 
     unsigned int id;
 
