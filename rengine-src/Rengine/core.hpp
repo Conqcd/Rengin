@@ -11,6 +11,9 @@
 #error no support for other platforms
 #endif
 
+#ifdef RE_DEBUG
+    #define RE_ENABLE_ASSERT
+#endif 
 
 #ifdef RE_ENABLE_ASSERT
     #define RE_CORE_ASSERT(x,...) { if(!x){ RE_CORE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
