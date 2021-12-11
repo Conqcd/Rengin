@@ -11,4 +11,5 @@ target_link_libraries(Rengin
     rengine
     spdlog
     opengl32
-    glfw)
+    glfw
+    glm)

@@ -1,6 +1,7 @@
 include(${PROJECT_SOURCE_DIR}/third_party/fmt.cmake)
 include(${PROJECT_SOURCE_DIR}/third_party/spdlog.cmake)
 include(${PROJECT_SOURCE_DIR}/third_party/glfw.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/glm.cmake)
 
 if (WIN32)
 add_definitions(-DRE_WINDOWS)
@@ -20,4 +21,5 @@ target_link_libraries(rengine
     opengl32
     glfw
     glad
-    imgui)
+    imgui
+    glm)
