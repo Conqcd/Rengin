@@ -32,6 +32,8 @@ public:
     void setEventCallBack(const EventCallBackFunc& fn) override;
     void setVSync(bool enable) override;
     bool isVSync()const override;
+    
+    inline virtual void* getNativeWindow()const override{return m_win;}
 private:
     virtual void Init(const WindowProps& props);
     virtual void Shutdown();

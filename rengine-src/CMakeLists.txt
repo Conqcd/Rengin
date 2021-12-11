@@ -10,6 +10,7 @@ add_definitions(-DRE_BUILD_DLL)
 
 
 file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
+
 include_directories(../Glad/include)
 include_directories(../Imgui)
 add_library(rengine SHARED ${RENGINE_SRC})
