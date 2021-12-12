@@ -9,7 +9,7 @@ class RE_API LayerStack
 {
 private:
     std::vector<Layer*> m_layers;
-    std::vector<Layer*>::iterator m_layit;
+    unsigned int m_lay_id = 0;
 public:
     LayerStack(/* args */);
     ~LayerStack();

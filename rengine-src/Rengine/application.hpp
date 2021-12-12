@@ -4,6 +4,7 @@
 #include "Window.hpp"
 #include "Event/ApplicationEvent.hpp"
 #include "LayerStack.hpp"
+#include "ImGui/ImGuiLayer.hpp"
 
 namespace Rengin
 {
@@ -12,6 +13,7 @@ class RE_API Application
 {
 private:
     std::unique_ptr<Window> m_window;
+    ImGuiLayer* m_imgui_layer;
     bool m_running = true;
     LayerStack m_layer_stack;
 public:

@@ -28,9 +28,9 @@ Application::Application()
     
     m_window->setEventCallBack(RE_BIND_FUNC_EVENT_1(Application::OnEvent));
 
-    unsigned int id;
+    m_imgui_layer = new ImGuiLayer();
 
-    glGenVertexArrays(1,&id);
+    PushOverLayer(m_imgui_layer);
 }
 
 Application::~Application()
@@ -77,6 +77,14 @@ void Application::Run()
         {
             layer->OnUpdate();
         }
+
+        m_imgui_layer->Begin();
+        for(auto* layer : m_layer_stack)
+        {
+            layer->OnImGuiRender();
+        }
+        m_imgui_layer->End();
+
         auto [x,y] = Input::getMousePosition();
 
         RE_CORE_TRACE("{0} {1}",x,y);

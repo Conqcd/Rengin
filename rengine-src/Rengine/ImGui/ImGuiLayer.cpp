@@ -1,7 +1,17 @@
+/*
+ * @Author: your name
+ * @Date: 2021-12-09 21:56:03
+ * @LastEditTime: 2021-12-12 23:11:49
+ * @LastEditors: Please set LastEditors
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \engine\rengine-src\Rengine\ImGui\ImGuiLayer.cpp
+ */
 #include "ImGuiLayer.hpp"
 #include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_opengl3_loader.h"
+
 #include "../application.hpp"
 
 // #include <glad/glad.h>
@@ -20,144 +30,75 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
+    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
     ImGui::StyleColorsDark();
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-    io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+    ImGuiStyle& style = ImGui::GetStyle();
 
-    //temp
-    io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-    io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-    io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-    io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-    io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-    io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
-    io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
-    io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
-    io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
-    io.KeyMap[ImGuiKey_Insert] = GLFW_KEY_INSERT;
-    io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
-    io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-    io.KeyMap[ImGuiKey_Space] = GLFW_KEY_SPACE;
-    io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-    io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
-    io.KeyMap[ImGuiKey_KeyPadEnter] = GLFW_KEY_KP_ENTER;
-    io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-    io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-    io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-    io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-    io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-    io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+    if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
+    auto& app = Application::getApplication();
+    auto* window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
+
+    ImGui_ImplGlfw_InitForOpenGL(window,true);
     ImGui_ImplOpenGL3_Init("#version 410");
 }
 
 void ImGuiLayer::OnDetach()
 {
-
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
 
-void ImGuiLayer::OnUpdate()
+
+void ImGuiLayer::Begin()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void ImGuiLayer::End()
 {
     ImGuiIO& io = ImGui::GetIO();
 
-    auto & app =Application::getApplication();
+    auto& app = Application::getApplication();
+
     io.DisplaySize = ImVec2(app.getWindow().getWidth(),app.getWindow().getHeight());
 
-    float time = static_cast<float>(glfwGetTime());
-    io.DeltaTime = m_time > 0.0f ? (time - m_time) : (1.0f / 60.0f);
-    m_time = time;
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui::NewFrame();
-    
-    static bool show = true;
-    ImGui::ShowDemoWindow(&show);
-
     ImGui::Render();
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+
+        ImGui::UpdatePlatformWindows();
+
+        ImGui::RenderPlatformWindowsDefault();
+
+        glfwMakeContextCurrent(backup_current_context);
+    }
 }
 
-void ImGuiLayer::OnEvent(Event& ev)
+
+void ImGuiLayer::OnImGuiRender()
 {
-    EventDispatcher dispatcher(ev);
-    dispatcher.Dispatch<MouseButtonPressEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseButtonPressEvent));
-    dispatcher.Dispatch<MouseButtonReleaseEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseButtonReleaseEvent));
-    dispatcher.Dispatch<MouseMovedEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseMovedEvent));
-    dispatcher.Dispatch<MouseScrolledEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnMouseScrolledEvent));
-    dispatcher.Dispatch<KeyReleaseEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyReleaseEvent));
-    dispatcher.Dispatch<KeyTypeEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyTypeEvent));
-    dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnKeyPressEvent));
-    dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(ImGuiLayer::OnWindowResizeEvent));
-}
-
-bool ImGuiLayer::OnMouseButtonPressEvent(MouseButtonPressEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[ev.getButton()] = true;
-    return false;
-}
-
-bool ImGuiLayer::OnMouseButtonReleaseEvent(MouseButtonReleaseEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[ev.getButton()] = false;
-    return false;
-}
-
-bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.MousePos = ImVec2(ev.getX(),ev.getY());
-    return false;
-}
-
-bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseWheelH += ev.getYoffset();
-    io.MouseWheel += ev.getXoffset();
-    return false;
-}
-
-bool ImGuiLayer::OnKeyTypeEvent(KeyTypeEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    int key = ev.getKeyValue();
-
-    if(key > 0 && key < 0x10000)
-        io.AddInputCharacter(static_cast<unsigned int>(key));
-    return false;
-}
-
-bool ImGuiLayer::OnKeyReleaseEvent(KeyReleaseEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[ev.getKeyValue()] = true;
-
-    io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL | GLFW_KEY_RIGHT_CONTROL];
-    io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT | GLFW_KEY_RIGHT_ALT];
-    io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER | GLFW_KEY_RIGHT_SUPER];
-    io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT | GLFW_KEY_RIGHT_SHIFT];
-    return false;
-}
-
-bool ImGuiLayer::OnKeyPressEvent(KeyPressEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[ev.getKeyValue()] = false;
-    return false;
-}
-
-bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& ev)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(ev.getWidth(),ev.getHeight());
-    io.DisplayFramebufferScale = ImVec2(1.f,1.f);
-    glViewport(0,0,ev.getWidth(),ev.getHeight());
-    return false;
+    static bool show = true;
+    ImGui::ShowDemoWindow(&show);   
 }
 
 } // namespace Rengin

@@ -10,9 +10,6 @@
 namespace Rengin
 {
 
-    // WindowClose,,WindowFocus,WindowLoseFocus,WindowMove,
-    // AppTick,AppUpdate,AppRender
-
 class RE_API ImGuiLayer :public Layer
 {
 private:
@@ -21,11 +18,14 @@ public:
     ImGuiLayer(/* args */);
     ~ImGuiLayer();
 
-    void OnAttach();
-    void OnDetach();
-    
-    void OnUpdate();
-    void OnEvent(Event& ev);
+    virtual void OnAttach() override;
+    virtual void OnDetach() override;
+
+    virtual void OnImGuiRender() override;
+
+    void Begin();
+    void End();
+
 };
 
 } // namespace Rengin
