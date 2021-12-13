@@ -6,6 +6,7 @@
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <imgui.h>
 
 glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 {
@@ -19,7 +20,7 @@ glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 class ExampleLayer : public Rengin::Layer
 {
 public:
-    ExampleLayer():Layer("hihi"){
+    ExampleLayer():Layer("Example"){
         auto cam = camera(0.1f,{0.3f,0.2f});
     }
     void OnUpdate(){
@@ -30,6 +31,13 @@ public:
         }
     }
     
+    virtual void OnImGuiRender() override
+    {
+        ImGui::Begin("Test");
+        ImGui::Text("Hello World");
+        ImGui::End();
+    }
+
     void OnEvent(Rengin::Event& ev){
         
         RE_TRACE("Event {0}",ev);
