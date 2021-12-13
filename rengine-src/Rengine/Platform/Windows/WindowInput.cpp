@@ -1,8 +1,8 @@
-#include "../../../repch.hpp"
+#include "repch.hpp"
 #include "WindowInput.hpp"
 
 #include <GLFW/glfw3.h>
-#include "../../application.hpp"
+#include "Rengine/application.hpp"
 
 namespace Rengin
 {

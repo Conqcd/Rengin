@@ -1,3 +1,4 @@
+#include "repch.hpp"
 #include "log.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 

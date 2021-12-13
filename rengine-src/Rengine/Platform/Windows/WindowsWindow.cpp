@@ -1,13 +1,13 @@
-#include "../../../repch.hpp"
+#include "repch.hpp"
 #include "WindowsWindow.hpp"
-#include "../../log.hpp"
-#include "../../Event/ApplicationEvent.hpp"
-#include "../../Event/Event.hpp"
-#include "../../Event/KeyEvent.hpp"
-#include "../../Event/MouseEvent.hpp"
+#include "Rengine/log.hpp"
+#include "Rengine/Event/ApplicationEvent.hpp"
+#include "Rengine/Event/Event.hpp"
+#include "Rengine/Event/KeyEvent.hpp"
+#include "Rengine/Event/MouseEvent.hpp"
+#include "Rengine/Platform/OpenGL/OpenGLContext.hpp"
 
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 namespace Rengin
 {
@@ -36,7 +36,7 @@ WindowsWindow::~WindowsWindow()
 void WindowsWindow::OnUpdate()
 {
     glfwPollEvents();
-    glfwSwapBuffers(m_win);
+    m_context->SwapBuffer();
 }
 
 void WindowsWindow::setEventCallBack(const EventCallBackFunc& fn)
@@ -77,9 +77,11 @@ void WindowsWindow::Init(const WindowProps& props)
     }
 
     m_win = glfwCreateWindow(static_cast<int>(m_data.m_width),static_cast<int>(m_data.m_height),m_data.m_title.c_str(),nullptr,nullptr);
-    glfwMakeContextCurrent(m_win);
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    RE_CORE_ASSERT(status,"failed to intialize Glad");
+
+    
+    m_context = new OpenGLContext(m_win);
+    m_context->Init();
+    
     glfwSetWindowUserPointer(m_win,&m_data);
     setVSync(true);
 

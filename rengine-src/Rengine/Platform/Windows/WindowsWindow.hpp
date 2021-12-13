@@ -1,7 +1,7 @@
 #pragma once
-#include "../../../repch.hpp"
-#include "../../core.hpp"
-#include "../../Window.hpp"
+#include "Rengine/core.hpp"
+#include "Rengine/Window.hpp"
+#include "Rengine/Renderer/GraphicsContext.hpp"
 
 struct GLFWwindow;
 namespace Rengin
@@ -10,6 +10,7 @@ class WindowsWindow :public Window
 {
 private:
     GLFWwindow* m_win;
+    GraphicsContext* m_context;
 
     struct WinData
     {

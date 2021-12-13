@@ -1,4 +1,4 @@
-#include "../repch.hpp"
+#include "repch.hpp"
 #include "application.hpp"
 #include "Event/Event.hpp"
 #include "Event/ApplicationEvent.hpp"

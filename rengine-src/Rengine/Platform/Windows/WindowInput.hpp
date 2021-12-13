@@ -1,6 +1,6 @@
 #pragma once
-#include "../../Input.hpp"
-#include "../../core.hpp"
+#include "Rengine/Input.hpp"
+#include "Rengine/core.hpp"
 
 namespace Rengin
 {

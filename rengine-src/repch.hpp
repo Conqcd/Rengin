@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Rengine/log.hpp"
+
 #ifdef RE_WINDOWS
     #include <Windows.h>
 #endif

@@ -1,5 +1,4 @@
 #pragma once
-#include "../repch.hpp"
 #include "core.hpp"
 #include "Layer.hpp"
 

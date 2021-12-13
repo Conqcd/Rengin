@@ -14,6 +14,7 @@ file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
 
 include_directories(../Glad/include)
 include_directories(../Imgui)
+include_directories(../rengine-src)
 add_library(rengine SHARED ${RENGINE_SRC})
 target_link_libraries(rengine
     PRIVATE

@@ -1,11 +1,10 @@
 #pragma once
-#include "../../repch.hpp"
-#include "../core.hpp"
-#include "../Layer.hpp"
-#include "../Event/Event.hpp"
-#include "../Event/KeyEvent.hpp"
-#include "../Event/MouseEvent.hpp"
-#include "../Event/ApplicationEvent.hpp"
+#include "Rengine/core.hpp"
+#include "Rengine/Layer.hpp"
+#include "Rengine/Event/Event.hpp"
+#include "Rengine/Event/KeyEvent.hpp"
+#include "Rengine/Event/MouseEvent.hpp"
+#include "Rengine/Event/ApplicationEvent.hpp"
 
 namespace Rengin
 {

@@ -1,5 +1,4 @@
 #pragma once
-#include "../repch.hpp"
 #ifdef RE_WINDOWS
     #ifdef RE_BUILD_DLL
     #define RE_API __declspec(dllexport)

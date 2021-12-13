@@ -1,6 +1,5 @@
 #pragma once
-#include "../../repch.hpp"
-#include "../core.hpp"
+#include "Rengine/core.hpp"
 
 namespace Rengin
 {
