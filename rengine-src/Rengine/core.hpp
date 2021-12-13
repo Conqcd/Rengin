@@ -1,13 +1,17 @@
 #pragma once
 #ifdef RE_WINDOWS
-    #ifdef RE_BUILD_DLL
-    #define RE_API __declspec(dllexport)
+    #ifdef RE_DYNAMICS_LINKS
+        #ifdef RE_BUILD_DLL
+        #define RE_API __declspec(dllexport)
+        #else
+        #define RE_API __declspec(dllimport)
+        #endif
     #else
-    #define RE_API __declspec(dllimport)
+        #define RE_API
     #endif
 #else
-#define RE_API
-#error no support for other platforms
+    #define RE_API
+    #error no support for other platforms
 #endif
 
 #ifdef RE_DEBUG
