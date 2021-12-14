@@ -32,6 +32,8 @@ Application::Application()
 
     PushOverLayer(m_imgui_layer);
     
+    VertexBuffer buffer = VertextBuffer::Create();   
+
     std::string vertexSrc = R"(
         #version 330
 
