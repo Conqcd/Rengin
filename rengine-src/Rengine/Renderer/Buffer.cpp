@@ -10,7 +10,6 @@
 
 namespace Rengin
 {
-// RendererAPI Renderer::m_render_api = RendererAPI::OpenGL;
 
 VertexBuffer* VertexBuffer::Create(float *vertices,uint32_t size)
 {

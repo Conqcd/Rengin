@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Rengine/core.hpp"
 namespace Rengin
 {
 
@@ -10,7 +10,7 @@ enum class RendererAPI
     Direct3D = 2
 };
 
-class Renderer
+class RE_API Renderer
 {
 private:
     static RendererAPI m_render_api;
