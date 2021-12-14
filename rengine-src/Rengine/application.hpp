@@ -5,6 +5,7 @@
 #include "LayerStack.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/Buffer.hpp"
 
 namespace Rengin
 {
@@ -14,6 +15,8 @@ class RE_API Application
 private:
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Shader> m_shader;
+    std::unique_ptr<VertexBuffer> m_verbuf;
+    std::unique_ptr<IndexBuffer> m_indbuf;
     ImGuiLayer* m_imgui_layer;
     bool m_running = true;
     LayerStack m_layer_stack;

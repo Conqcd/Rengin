@@ -8,13 +8,13 @@
 #include "GLFW/glfw3.h"
 #include <GL/gl.h>
 
+#include "Renderer/Buffer.hpp"
+
 #include "Input.hpp"
+
 
 namespace Rengin
 {
-
-
-// #define BIND_APP_EVENT_1(x) std::bind(&Application::x , this , std::placeholders::_1)
 
 Application* Application::m_instance = nullptr;
 
@@ -32,7 +32,21 @@ Application::Application()
 
     PushOverLayer(m_imgui_layer);
     
-    VertexBuffer buffer = VertextBuffer::Create();   
+    float vertices[9]={
+        -0.5f,-0.5f,0.0f,
+        0.5f,-0.5f,0.0f,
+        0.0f,0.5f,0.0f
+    };
+    unsigned int indices[3]={
+        0,1,2
+    };
+
+    m_verbuf.reset(VertexBuffer::Create(vertices,sizeof(vertices)));
+    m_verbuf->Bind();
+
+    m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices)));
+    m_indbuf->Bind();
+
 
     std::string vertexSrc = R"(
         #version 330
