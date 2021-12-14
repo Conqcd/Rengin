@@ -10,7 +10,9 @@ add_definitions(-DRE_ENABLE_ASSERT)
 add_definitions(-DRE_BUILD_DLL)
 
 
-file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
+file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp) #Renderer.cpp)
+
+# message(${RENGINE_SRC})
 
 include_directories(../Glad/include)
 include_directories(../Imgui)
