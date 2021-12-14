@@ -31,6 +31,17 @@ Application::Application()
     m_imgui_layer = new ImGuiLayer();
 
     PushOverLayer(m_imgui_layer);
+    
+    std::string vertexSrc = R"(
+        #version 330
+
+        void main()
+        {
+
+        }
+    )";
+
+    // m_shader.reset(new Shader())
 }
 
 Application::~Application()
@@ -72,6 +83,7 @@ void Application::Run()
         glClearColor(0.1f,0.1f,0.1f,1);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // m_shader->Bind();
 
         for(auto* layer : m_layer_stack)
         {
