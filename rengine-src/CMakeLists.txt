@@ -10,7 +10,7 @@ add_definitions(-DRE_ENABLE_ASSERT)
 add_definitions(-DRE_BUILD_DLL)
 
 
-file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp) #Renderer.cpp)
+file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)#VertexArray.cpp)
 
 # message(${RENGINE_SRC})
 

@@ -4,9 +4,9 @@
 
 namespace Rengin
 {
-    
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//VertexBuffer ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//VertexBuffer ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices,uint32_t size)
@@ -16,7 +16,7 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices,uint32_t size)
     glBufferData(GL_ARRAY_BUFFER,size,vertices,GL_STATIC_DRAW);
 }
 
-OpenGLVertexBuffer::~OpenGLVertexBuffer() 
+OpenGLVertexBuffer::~OpenGLVertexBuffer()
 {
     glDeleteBuffers(1,&m_render_id);
 }
@@ -30,7 +30,6 @@ void OpenGLVertexBuffer::Unbind()const
 {
     glBindBuffer(GL_ARRAY_BUFFER,0);
 }
-
 
 void OpenGLVertexBuffer::SetLayout(const BufferLayout& layout)
 {
@@ -55,7 +54,7 @@ OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t *indices,uint32_t count)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,count * sizeof(uint32_t),indices,GL_STATIC_DRAW);
 }
 
-OpenGLIndexBuffer::~OpenGLIndexBuffer() 
+OpenGLIndexBuffer::~OpenGLIndexBuffer()
 {
     glDeleteBuffers(1,&m_render_id);
 }

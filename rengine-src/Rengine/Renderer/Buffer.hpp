@@ -84,6 +84,7 @@ public:
     }
     ~BufferLayout(){}
     inline uint32_t getStride()const {return m_stride;}
+    inline const std::vector<BufferElement>& getElements()const {return m_elements;}
     std::vector<BufferElement>::iterator begin(){return m_elements.begin();}
     std::vector<BufferElement>::iterator end(){return m_elements.end();}
     std::vector<BufferElement>::const_iterator begin()const{return m_elements.begin();}
@@ -105,9 +106,6 @@ public:
 
     static VertexBuffer* Create(float *vertices,uint32_t size);
 };
-
-
-
 
 class RE_API IndexBuffer
 {

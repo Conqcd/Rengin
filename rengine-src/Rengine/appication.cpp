@@ -18,26 +18,6 @@ namespace Rengin
 
 Application* Application::m_instance = nullptr;
 
-static GLenum ShadeDataType2OpenGLType(ShadeDataType type)
-{
-    switch (type)
-    {
-        case ShadeDataType::Float: return GL_FLOAT;
-        case ShadeDataType::Float2: return GL_FLOAT;
-        case ShadeDataType::Float3: return GL_FLOAT;
-        case ShadeDataType::Float4: return GL_FLOAT;
-        case ShadeDataType::Mat3: return GL_FLOAT;
-        case ShadeDataType::Mat4: return GL_FLOAT;
-        case ShadeDataType::Int: return GL_INT;
-        case ShadeDataType::Int2: return GL_INT;
-        case ShadeDataType::Int3: return GL_INT;
-        case ShadeDataType::Int4: return GL_INT;
-        case ShadeDataType::Bool: return GL_BOOL;
-    }
-    RE_CORE_ASSERT(false,"Unknown Shader Type");
-    return 0;
-}
-
 Application::Application()
 {
     RE_CORE_ASSERT(!m_instance,"Application already exists!");
@@ -51,6 +31,8 @@ Application::Application()
     m_imgui_layer = new ImGuiLayer();
 
     PushOverLayer(m_imgui_layer);
+    
+    m_verarr.reset(VertexArray::Create());
     
     float vertices[9]={
         -0.5f,-0.5f,0.0f,
@@ -66,21 +48,37 @@ Application::Application()
     BufferLayout layout = {{ShadeDataType::Float3 , "a_position"}};
     m_verbuf->SetLayout(layout);
 
+    m_verarr->AddVertexBuffer(m_verbuf);
+
     m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices)/sizeof(uint32_t)));
     // m_indbuf->Bind();
 
-
+    m_verarr->SetIndexBuffer(m_indbuf);
+    m_SquareVA.reset(VertexArray::Create());
     std::string vertexSrc = R"(
         #version 330
 
-        layout(location = 0) vec3 a_position;
+        layout(location = 0) in vec3 a_position;
+
+        out vec3 v_position;
         void main()
         {
+            v_position = a_position;
             gl_Position = vec4(a_position,1.0);
         }
     )";
+    std::string fragmentSrc = R"(
+        #version 330
+        
+        in vec3 v_position;
+        out vec4 color;
 
-    // m_shader.reset(new Shader())
+        void main()
+        {
+            color = vec4(v_position,1.0);
+        }
+    )";
+    m_shader.reset(new Shader(vertexSrc,fragmentSrc));
 }
 
 Application::~Application()
@@ -113,8 +111,8 @@ void Application::OnEvent(Event& e)
 
 void Application::Run()
 {
-    WindowResizeEvent e(1200,900);
-    RE_CORE_TRACE(e);
+    // WindowResizeEvent e(1200,900);
+    // RE_CORE_TRACE(e);
 
 
     while(m_running)
@@ -122,7 +120,17 @@ void Application::Run()
         glClearColor(0.1f,0.1f,0.1f,1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // m_shader->Bind();
+        RenderCommand::SetClearColor();
+
+        Renderer::BeginScene();
+
+        m_shader->Bind();
+        m_verarr->Bind();
+
+        Renderer::Submit(m_verarr);
+
+        Renderer::EndScene();
+        glDrawElements(GL_TRIANGLES,m_indbuf->GetCount(),GL_UNSIGNED_INT,nullptr);
 
         for(auto* layer : m_layer_stack)
         {
