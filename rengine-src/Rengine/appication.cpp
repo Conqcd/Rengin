@@ -18,6 +18,26 @@ namespace Rengin
 
 Application* Application::m_instance = nullptr;
 
+static GLenum ShadeDataType2OpenGLType(ShadeDataType type)
+{
+    switch (type)
+    {
+        case ShadeDataType::Float: return GL_FLOAT;
+        case ShadeDataType::Float2: return GL_FLOAT;
+        case ShadeDataType::Float3: return GL_FLOAT;
+        case ShadeDataType::Float4: return GL_FLOAT;
+        case ShadeDataType::Mat3: return GL_FLOAT;
+        case ShadeDataType::Mat4: return GL_FLOAT;
+        case ShadeDataType::Int: return GL_INT;
+        case ShadeDataType::Int2: return GL_INT;
+        case ShadeDataType::Int3: return GL_INT;
+        case ShadeDataType::Int4: return GL_INT;
+        case ShadeDataType::Bool: return GL_BOOL;
+    }
+    RE_CORE_ASSERT(false,"Unknown Shader Type");
+    return 0;
+}
+
 Application::Application()
 {
     RE_CORE_ASSERT(!m_instance,"Application already exists!");
@@ -42,18 +62,21 @@ Application::Application()
     };
 
     m_verbuf.reset(VertexBuffer::Create(vertices,sizeof(vertices)));
-    m_verbuf->Bind();
+    // m_verbuf->Bind();
+    BufferLayout layout = {{ShadeDataType::Float3 , "a_position"}};
+    m_verbuf->SetLayout(layout);
 
-    m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices)));
-    m_indbuf->Bind();
+    m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices)/sizeof(uint32_t)));
+    // m_indbuf->Bind();
 
 
     std::string vertexSrc = R"(
         #version 330
 
+        layout(location = 0) vec3 a_position;
         void main()
         {
-
+            gl_Position = vec4(a_position,1.0);
         }
     )";
 
