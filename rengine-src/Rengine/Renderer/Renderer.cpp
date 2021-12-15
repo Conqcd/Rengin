@@ -3,5 +3,21 @@
 
 namespace Rengin
 {
-RendererAPI Renderer::m_render_api = RendererAPI::OpenGL;
+    
+void Renderer::BeginScene()
+{
+
+}
+
+void Renderer::EndScene()
+{
+
+}
+
+void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
+{
+    vertexArray->Bind();
+    RenderCommand::DrawIndex(vertexArray);
+}
+
 } // namespace Rengin

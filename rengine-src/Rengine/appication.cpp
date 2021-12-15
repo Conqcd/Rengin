@@ -3,6 +3,8 @@
 #include "Event/Event.hpp"
 #include "Event/ApplicationEvent.hpp"
 #include "log.hpp"
+#include "Renderer/RenderCommand.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -50,7 +52,7 @@ Application::Application()
 
     m_verarr->AddVertexBuffer(m_verbuf);
 
-    m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices)/sizeof(uint32_t)));
+    m_indbuf.reset(IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t)));
     // m_indbuf->Bind();
 
     m_verarr->SetIndexBuffer(m_indbuf);
@@ -117,20 +119,16 @@ void Application::Run()
 
     while(m_running)
     {
-        glClearColor(0.1f,0.1f,0.1f,1);
-        glClear(GL_COLOR_BUFFER_BIT);
 
-        RenderCommand::SetClearColor();
+        RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+        RenderCommand::Clear();
 
         Renderer::BeginScene();
 
         m_shader->Bind();
-        m_verarr->Bind();
-
         Renderer::Submit(m_verarr);
 
         Renderer::EndScene();
-        glDrawElements(GL_TRIANGLES,m_indbuf->GetCount(),GL_UNSIGNED_INT,nullptr);
 
         for(auto* layer : m_layer_stack)
         {
