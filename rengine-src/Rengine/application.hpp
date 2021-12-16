@@ -7,6 +7,7 @@
 #include "Renderer/Shader.hpp"
 #include "Renderer/Buffer.hpp"
 #include "Renderer/VertexArray.hpp"
+#include "Renderer/OrthoGraphicsCamera.hpp"
 
 namespace Rengin
 {
@@ -20,6 +21,8 @@ private:
     std::shared_ptr<IndexBuffer> m_indbuf;
     std::shared_ptr<VertexArray> m_verarr;
     std::shared_ptr<VertexArray> m_SquareVA;
+
+    OrthoGraphicsCamera m_camera;
     ImGuiLayer* m_imgui_layer;
     bool m_running = true;
     LayerStack m_layer_stack;

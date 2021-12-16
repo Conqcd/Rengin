@@ -11,7 +11,7 @@
 #include <GL/gl.h>
 
 #include "Renderer/Buffer.hpp"
-
+#include "Renderer/OrthoGraphicsCamera.hpp"
 #include "Input.hpp"
 
 
@@ -21,6 +21,7 @@ namespace Rengin
 Application* Application::m_instance = nullptr;
 
 Application::Application()
+        :m_camera(-1.0f,1.0f,-1.0f,1.0f)
 {
     RE_CORE_ASSERT(!m_instance,"Application already exists!");
 
@@ -62,11 +63,13 @@ Application::Application()
 
         layout(location = 0) in vec3 a_position;
 
+        uniform mat4 u_ViewProjection;
+
         out vec3 v_position;
         void main()
         {
             v_position = a_position;
-            gl_Position = vec4(a_position,1.0);
+            gl_Position = u_ViewProjection * vec4(a_position,1.0);
         }
     )";
     std::string fragmentSrc = R"(
@@ -126,6 +129,7 @@ void Application::Run()
         Renderer::BeginScene();
 
         m_shader->Bind();
+        m_shader->UpLoadUniformMat4("u_ViewProjection",m_camera.GetViewProjectionMatrix());
         Renderer::Submit(m_verarr);
 
         Renderer::EndScene();

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
 namespace Rengin
 {
 class Shader
@@ -12,6 +13,8 @@ public:
 
     void Bind() const;
     void UnBind() const;
+
+    void UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix);
 };
 
     

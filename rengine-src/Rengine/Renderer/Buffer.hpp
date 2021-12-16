@@ -121,6 +121,4 @@ public:
     static IndexBuffer* Create(uint32_t *indices,uint32_t size);
 };
     
-
-    
 } // namespace Rengin
