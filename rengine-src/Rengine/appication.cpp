@@ -121,6 +121,7 @@ void Application::Run()
         glClear(GL_COLOR_BUFFER_BIT);
 
         RenderCommand::SetClearColor();
+        RenderCommand::Clear();
 
         Renderer::BeginScene();
 
