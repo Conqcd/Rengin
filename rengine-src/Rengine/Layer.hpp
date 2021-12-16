@@ -1,6 +1,7 @@
 #pragma once
 #include "core.hpp"
 #include "Rengine/Event/Event.hpp"
+#include "Core/TimeStep.hpp"
 
 namespace Rengin
 {
@@ -14,7 +15,7 @@ public:
 
     virtual void OnAttach(){}
     virtual void OnDetach(){}
-    virtual void OnUpdate(){}
+    virtual void OnUpdate(TimeStep timestep){}
     
     virtual void OnImGuiRender() {}
     virtual void OnEvent(Event& ev){}

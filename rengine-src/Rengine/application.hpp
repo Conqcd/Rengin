@@ -8,6 +8,7 @@
 #include "Renderer/Buffer.hpp"
 #include "Renderer/VertexArray.hpp"
 #include "Renderer/OrthoGraphicsCamera.hpp"
+#include "Core/TimeStep.hpp"
 
 namespace Rengin
 {
@@ -16,7 +17,7 @@ class RE_API Application
 {
 private:
     std::unique_ptr<Window> m_window;
-
+    float m_last_frame_time = 0.0f;
     ImGuiLayer* m_imgui_layer;
     bool m_running = true;
     LayerStack m_layer_stack;

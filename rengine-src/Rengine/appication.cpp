@@ -73,9 +73,12 @@ void Application::Run()
 
     while(m_running)
     {
+        float time = static_cast<float>(glfwGetTime());
+        TimeStep timestep = time - m_last_frame_time;
+        m_last_frame_time = time;
         for(auto* layer : m_layer_stack)
         {
-            layer->OnUpdate();
+            layer->OnUpdate(timestep);
         }
 
         m_imgui_layer->Begin();

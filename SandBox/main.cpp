@@ -10,12 +10,12 @@ public:
     {
         m_verarr.reset(Rengin::VertexArray::Create());
     
-        float vertices[9]={
+        float vertices[9] = {
             -0.5f,-0.5f,0.0f,
             0.5f,-0.5f,0.0f,
             0.0f,0.5f,0.0f
         };
-        unsigned int indices[3]={
+        unsigned int indices[3] = {
             0,1,2
         };
 
@@ -37,12 +37,13 @@ public:
             layout(location = 0) in vec3 a_position;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             out vec3 v_position;
             void main()
             {
                 v_position = a_position;
-                gl_Position = u_ViewProjection * vec4(a_position,1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_position,1.0);
             }
         )";
         std::string fragmentSrc = R"(
@@ -59,7 +60,9 @@ public:
         m_shader.reset(new Rengin::Shader(vertexSrc,fragmentSrc));
     }
 
-    void OnUpdate(){
+    void OnUpdate(Rengin::TimeStep timestep) override
+    {
+        RE_INFO("Delta Time is {0}s ({1}ms)",timestep.getSeconds(),timestep.getMilliSeconds());
         // RE_INFO("Updating");
         // if(Rengin::Input::isKeyPressed(RE_KEY_TAB))
         // {

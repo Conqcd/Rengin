@@ -7,8 +7,9 @@
 #include "Rengine/Input.hpp"
 #include "Rengine/MouseButtonCodes.hpp"
 #include "Rengine/KeyCodes.hpp"
-// entry point
-#include "Rengine/entrypoint.hpp"
+
+
+#include "Rengine/Core/TimeStep.hpp"
 
 //event
 #include "Rengine/Event/Event.hpp"
@@ -21,3 +22,6 @@
 #include "Rengine/Renderer/Renderer.hpp"
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+
+// entry point
+#include "Rengine/entrypoint.hpp"
