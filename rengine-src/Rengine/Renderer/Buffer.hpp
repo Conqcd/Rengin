@@ -69,6 +69,7 @@ private:
     void CalculateOffsetAndStride()
     {
         uint32_t offset = 0;
+        m_stride = 0;
         for(auto& element : m_elements)
         {
              element.Offset = offset;
@@ -119,7 +120,5 @@ public:
     virtual uint32_t GetCount() const = 0;
     static IndexBuffer* Create(uint32_t *indices,uint32_t size);
 };
-    
-
     
 } // namespace Rengin

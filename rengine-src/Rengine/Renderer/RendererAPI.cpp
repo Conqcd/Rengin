@@ -3,5 +3,5 @@
 
 namespace Rengin
 {
-RenderAPI::API RenderAPI::s_api = RenderAPI::API::OpenGL;
+RendererAPI::API RendererAPI::s_api = RendererAPI::API::OpenGL;
 } // namespace Rengin

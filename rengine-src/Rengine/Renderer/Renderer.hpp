@@ -1,16 +1,27 @@
 #pragma once
 #include "Rengine/core.hpp"
 #include "RendererAPI.hpp"
+#include "RenderCommand.hpp"
+#include "VertexArray.hpp"
+#include "OrthoGraphicsCamera.hpp"
+#include "Shader.hpp"
+
 namespace Rengin
 {
 
-
 class RE_API Renderer
 {
-private:
-    static RendererAPI::API m_render_api;
 public:
-    inline static RendererAPI::API getRenderer(){return m_render_api;}
+    static void BeginScene(OrthoGraphicsCamera& camera);
+    static void EndScene();
+    static void Submit(const std::shared_ptr<Shader>& shader,const std::shared_ptr<VertexArray>& vertexArray);
+    inline static RendererAPI::API getRenderer(){return RendererAPI::getAPI();}
+private:
+    struct SceneData
+    {
+        glm::mat4 ViewProjectionMat;
+    };
+    static SceneData* m_scene_data;
 };
 
 } // namespace Rengin

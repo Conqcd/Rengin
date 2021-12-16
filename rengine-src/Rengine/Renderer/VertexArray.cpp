@@ -14,7 +14,7 @@ VertexArray* VertexArray::Create()
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
         break;
-    case RendererAPI::OpenGL :
+    case RendererAPI::API::OpenGL :
         return new OpenGLVertexArray();
         break;
     case RendererAPI::API::Direct3D :

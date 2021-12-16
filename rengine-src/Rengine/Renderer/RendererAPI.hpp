@@ -7,8 +7,6 @@ namespace Rengin
 {
 class RE_API RendererAPI
 {
-private:
-    static API s_api;
 public:
     enum class API
     {
@@ -16,12 +14,15 @@ public:
         OpenGL = 1,
         Direct3D = 2
     };
+private:
+    static API s_api;
+
 public:
     virtual void SetClearColor(const glm::vec4& color) = 0;
     virtual void Clear() = 0;
-    virtual void DrawIndexed(std::shared_ptr<VertexArray>& vertexArray) = 0;
+    virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) = 0;
 
-    inline static API getAPI()const {return s_api;}
+    inline static API getAPI(){return s_api;}
 };
 
 
