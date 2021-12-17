@@ -57,7 +57,7 @@ public:
                 color = vec4(v_position,1.0);
             }
         )";
-        m_shader.reset(new Rengin::Shader(vertexSrc,fragmentSrc));
+        m_shader.reset(Rengin::Shader::Create(vertexSrc,fragmentSrc));
     }
 
     void OnUpdate(Rengin::TimeStep timestep) override
@@ -73,6 +73,8 @@ public:
 
         Rengin::Renderer::BeginScene(m_camera);
 
+        // Rengin::MaterialRef material = new Rengin::Material(m_shader);
+
         Rengin::Renderer::Submit(m_shader,m_verarr);
 
         Rengin::Renderer::EndScene();
@@ -80,7 +82,7 @@ public:
     
     virtual void OnImGuiRender() override
     {
-        ImGui::Begin("Test");
+        ImGui::Begin("Settings");
         ImGui::Text("Hello World");
         ImGui::End();
     }

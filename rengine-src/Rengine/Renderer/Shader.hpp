@@ -1,21 +1,17 @@
 #pragma once
+#include "Rengine/core.hpp"
 #include <string>
-#include <glm/glm.hpp>
 namespace Rengin
 {
-class Shader
+class RE_API Shader
 {
-private:
-    uint32_t m_render_id;
 public:
-    Shader(const std::string& vertexSrc,const std::string& fragmentSrc);
-    ~Shader();
+    virtual ~Shader() = default;
 
-    void Bind() const;
-    void UnBind() const;
+    virtual void Bind() const = 0;
+    virtual void UnBind() const = 0;
 
-    void UpLoadUniformFloat4(const std::string& name, const glm::vec4& value);
-    void UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix);
+    static Shader* Create(const std::string& vertexSrc,const std::string& fragmentSrc);
 };
 
     
