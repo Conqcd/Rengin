@@ -92,7 +92,7 @@ public:
         RE_TRACE("Event {0}",ev);
     }
 private:
-    std::shared_ptr<Rengin::Shader> m_shader;
+    std::unique_ptr<Rengin::Shader> m_shader;
     std::shared_ptr<Rengin::VertexBuffer> m_verbuf;
     std::shared_ptr<Rengin::IndexBuffer> m_indbuf;
     std::shared_ptr<Rengin::VertexArray> m_verarr;
