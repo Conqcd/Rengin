@@ -6,6 +6,7 @@ add_definitions(-DRE_ENABLE_ASSERT)
 
 include_directories(../rengine-src)
 include_directories(../Imgui)
+include_directories(../Stb)
 add_executable(Rengin main.cpp)
 target_link_libraries(Rengin
     PRIVATE 

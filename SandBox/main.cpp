@@ -92,10 +92,11 @@ public:
         RE_TRACE("Event {0}",ev);
     }
 private:
-    std::shared_ptr<Rengin::Shader> m_shader;
-    std::shared_ptr<Rengin::VertexBuffer> m_verbuf;
-    std::shared_ptr<Rengin::IndexBuffer> m_indbuf;
-    std::shared_ptr<Rengin::VertexArray> m_verarr;
+    Rengin::Ref<Rengin::Shader> m_shader;
+    Rengin::Ref<Rengin::VertexBuffer> m_verbuf;
+    Rengin::Ref<Rengin::IndexBuffer> m_indbuf;
+    Rengin::Ref<Rengin::VertexArray> m_verarr;
+    Rengin::Ref<Rengin::Texture> m_texture;
 
     Rengin::OrthoGraphicsCamera m_camera;
 };

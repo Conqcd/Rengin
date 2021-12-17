@@ -30,3 +30,12 @@
 #define LEFT(x) (1<<x)
 
 #define RE_BIND_FUNC_EVENT_1(fn) std::bind(&fn , this , std::placeholders::_1)
+
+namespace Rengin
+{
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+    
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+} // namespace Rengin

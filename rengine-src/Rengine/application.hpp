@@ -16,7 +16,7 @@ namespace Rengin
 class RE_API Application
 {
 private:
-    std::unique_ptr<Window> m_window;
+    Scope<Window> m_window;
     float m_last_frame_time = 0.0f;
     ImGuiLayer* m_imgui_layer;
     bool m_running = true;

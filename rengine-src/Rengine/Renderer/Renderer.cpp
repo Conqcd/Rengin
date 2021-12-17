@@ -8,6 +8,12 @@ namespace Rengin
 
 Renderer::SceneData* Renderer::m_scene_data = new Renderer::SceneData();
 
+
+void Renderer::Init()
+{
+    RenderCommand::Init();
+}
+
 void Renderer::BeginScene(OrthoGraphicsCamera& camera)
 {
     m_scene_data->ViewProjectionMat = camera.GetViewProjectionMatrix();
@@ -18,7 +24,7 @@ void Renderer::EndScene()
 
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader>& shader,const std::shared_ptr<VertexArray>& vertexArray,const glm::mat4& transform)
+void Renderer::Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertexArray,const glm::mat4& transform)
 {
     shader->Bind();
     std::dynamic_pointer_cast<OpenGLShader>(shader)->UpLoadUniformMat4("u_ViewProjection",m_scene_data->ViewProjectionMat);

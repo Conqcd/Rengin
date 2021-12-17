@@ -6,8 +6,8 @@ namespace Rengin
 {
 
     
-std::shared_ptr<spdlog::logger> Log::sp_core_logger;
-std::shared_ptr<spdlog::logger> Log::sp_client_logger;
+Ref<spdlog::logger> Log::sp_core_logger;
+Ref<spdlog::logger> Log::sp_client_logger;
 
 void Log::Init()
 {
