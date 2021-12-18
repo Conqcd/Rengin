@@ -17,6 +17,7 @@ file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)#VertexArray.cpp)
 include_directories(../Glad/include)
 include_directories(../Imgui)
 include_directories(../rengine-src)
+include_directories(../stb)
 # add_library(rengine SHARED ${RENGINE_SRC})
 add_library(rengine STATIC ${RENGINE_SRC})
 target_link_libraries(rengine

@@ -15,13 +15,14 @@
 #include "Rengine/Event/Event.hpp"
 
 #include "Rengine/ImGui/ImGuiLayer.hpp"
-//camera
+//Render
 #include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Buffer.hpp"
 #include "Rengine/Renderer/Renderer.hpp"
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+#include "Rengine/Renderer/Texture.hpp"
 
 // entry point
 #include "Rengine/entrypoint.hpp"

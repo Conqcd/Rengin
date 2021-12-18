@@ -26,15 +26,14 @@ Application::Application()
 
     m_instance = this;
 
-    m_window = std::unique_ptr<Window>(Window::WindowCreate());
+    m_window = Scope<Window>(Window::WindowCreate());
     
     m_window->setEventCallBack(RE_BIND_FUNC_EVENT_1(Application::OnEvent));
 
-    m_imgui_layer = new ImGuiLayer();
+    Renderer::Init();
 
+    m_imgui_layer = new ImGuiLayer();
     PushOverLayer(m_imgui_layer);
-    
-    
 }
 
 Application::~Application()

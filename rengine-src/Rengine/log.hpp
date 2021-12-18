@@ -7,15 +7,15 @@ namespace Rengin
 class RE_API Log
 {
 private:
-    static std::shared_ptr<spdlog::logger> sp_core_logger;
-    static std::shared_ptr<spdlog::logger> sp_client_logger;
+    static Ref<spdlog::logger> sp_core_logger;
+    static Ref<spdlog::logger> sp_client_logger;
 public:
     Log(/* args */){}
     ~Log(){}
 
     static void Init();
-    inline static std::shared_ptr<spdlog::logger>& GetClientLogger() {return sp_client_logger;}
-    inline static std::shared_ptr<spdlog::logger>& GetCoreLogger(){return sp_core_logger;}
+    inline static Ref<spdlog::logger>& GetClientLogger() {return sp_client_logger;}
+    inline static Ref<spdlog::logger>& GetCoreLogger(){return sp_core_logger;}
 };
 
 }
