@@ -68,7 +68,7 @@ Ref<Shader> ShaderLibrary::Load(const std::string& filepath,const std::string& n
     return shader;
 }
 
-Ref<Shader> ShaderLibrary::Get(const std::string& name) const
+Ref<Shader> ShaderLibrary::Get(const std::string& name)
 {
     RE_CORE_ASSERT(Exists(name),"Shaders not found!");
     return m_shaders[name];

@@ -92,6 +92,7 @@ public:
         RE_TRACE("Event {0}",ev);
     }
 private:
+    Rengin::ShaderLibrary m_shader_lib;
     Rengin::Ref<Rengin::Shader> m_shader;
     Rengin::Ref<Rengin::VertexBuffer> m_verbuf;
     Rengin::Ref<Rengin::IndexBuffer> m_indbuf;
