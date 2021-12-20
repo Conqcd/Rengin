@@ -47,11 +47,25 @@ bool Application::OnWindowClose(WindowCloseEvent& ev)
     return true;    
 }
 
+bool Application::OnWindowResize(WindowResizeEvent& ev)
+{
+    if(ev.getHeight() == 0 || ev.getWidth() == 0)
+    {
+        m_minimized = true;
+        return false;
+    }
+    m_minimized = false;
+    Renderer::OnWindowResized(ev.getWidth(),ev.getHeight());
+    return false;
+}
+
 void Application::OnEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
 
-    dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose , this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowCloseEvent>(RE_BIND_FUNC_EVENT_1(Application::OnWindowClose));
+    dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(Application::OnWindowResize));
+    
     // RE_CORE_TRACE("{0}",e);
 
     for(auto it = m_layer_stack.end() ; it != m_layer_stack.begin();)
@@ -75,10 +89,14 @@ void Application::Run()
         float time = static_cast<float>(glfwGetTime());
         TimeStep timestep = time - m_last_frame_time;
         m_last_frame_time = time;
-        for(auto* layer : m_layer_stack)
+        if(!m_minimized)
         {
-            layer->OnUpdate(timestep);
+            for(auto* layer : m_layer_stack)
+            {
+                layer->OnUpdate(timestep);
+            }
         }
+        
 
         m_imgui_layer->Begin();
         for(auto* layer : m_layer_stack)

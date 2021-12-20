@@ -19,6 +19,7 @@ private:
     Scope<Window> m_window;
     float m_last_frame_time = 0.0f;
     ImGuiLayer* m_imgui_layer;
+    bool m_minimized = false;
     bool m_running = true;
     LayerStack m_layer_stack;
 public:
@@ -37,6 +38,7 @@ public:
     inline Window& getWindow() {return *m_window;}
 private:
     bool OnWindowClose(WindowCloseEvent& ev);
+    bool OnWindowResize(WindowResizeEvent& ev);
     static Application* m_instance;
 };
 

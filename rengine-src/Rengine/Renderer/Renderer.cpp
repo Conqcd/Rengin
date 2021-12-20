@@ -14,6 +14,11 @@ void Renderer::Init()
     RenderCommand::Init();
 }
 
+void Renderer::OnWindowResized(uint32_t width ,uint32_t height)
+{
+    RenderCommand::SetViewPort(0,0,width,height);
+}
+
 void Renderer::BeginScene(OrthoGraphicsCamera& camera)
 {
     m_scene_data->ViewProjectionMat = camera.GetViewProjectionMatrix();

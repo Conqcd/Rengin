@@ -93,6 +93,8 @@ void WindowsWindow::Init(const WindowProps& props)
         data.m_height = height;
 
         WindowResizeEvent ev(width,height);
+
+        RE_CORE_WARN("change window size {0} {1}",width,height);
         data.m_callback(ev);
     });
 

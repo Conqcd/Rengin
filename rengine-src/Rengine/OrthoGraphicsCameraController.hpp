@@ -18,6 +18,9 @@ public:
     inline OrthoGraphicsCamera& getCamera() {return m_camera;}
     void OnUpdate(TimeStep ts);
     void OnEvent(Event& ev );
+
+    void setZoomLevel(float level);
+    inline float getZoomLevel() const {return m_zoomLevel;};
 private:
     bool OnMouseScrolled(MouseScrolledEvent& ev);
     bool OnWindowResized(WindowResizeEvent& ev);

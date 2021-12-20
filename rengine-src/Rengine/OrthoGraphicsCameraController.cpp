@@ -42,9 +42,16 @@ void OrthoGraphicsCameraController::OnEvent(Event& ev)
     dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnWindowResized));
 }
 
+void OrthoGraphicsCameraController::setZoomLevel(float level)
+{
+    m_zoomLevel = level;
+}
+
 bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
 {
-    m_zoomLevel -= ev.getYoffset();
+    m_zoomLevel -= ev.getYoffset() * 0.25f;
+    m_zoomLevel = std::max(m_zoomLevel,0.25f);
+
     m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
     return false;
 }

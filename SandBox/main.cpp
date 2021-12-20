@@ -67,8 +67,15 @@ public:
 
     void OnEvent(Rengin::Event& ev){
         
-        RE_TRACE("Event {0}",ev);
         m_camera_controller.OnEvent(ev);
+
+        // if(ev.getEventType() == Rengin::EventType::WindowResize)
+        // {
+        //     auto& re = (WindowResizeEvent&) e;
+
+        //     float zoom = static_cast<float>( re.getWidth()) / 1280.0f;
+        //     m_camera_controller.setZoom
+        // }
     }
 private:
     Rengin::ShaderLibrary m_shader_lib;
