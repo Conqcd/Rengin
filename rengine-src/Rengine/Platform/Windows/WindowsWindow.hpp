@@ -1,6 +1,6 @@
 #pragma once
-#include "Rengine/core.hpp"
-#include "Rengine/Window.hpp"
+#include "Rengine/Core/core.hpp"
+#include "Rengine/Core/Window.hpp"
 #include "Rengine/Renderer/GraphicsContext.hpp"
 
 struct GLFWwindow;

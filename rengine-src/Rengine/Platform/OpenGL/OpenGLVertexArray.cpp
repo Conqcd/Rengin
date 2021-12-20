@@ -1,7 +1,7 @@
 #include "repch.hpp"
 #include "OpenGLVertexArray.hpp"
 #include "Rengine/Renderer/Renderer.hpp"
-#include "Rengine/core.hpp"
+#include "Rengine/Core/core.hpp"
 #include <glad/glad.h>
 
 namespace Rengin

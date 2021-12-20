@@ -1,5 +1,5 @@
 #pragma once
-#include "Rengine/core.hpp"
+#include "Rengine/Core/core.hpp"
 #include <glm/glm.hpp>
 #include "VertexArray.hpp"
 

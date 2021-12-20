@@ -1,8 +1,8 @@
 #include "repch.hpp"
 #include "OrthoGraphicsCameraController.hpp"
-#include "KeyCodes.hpp"
-#include "Event/Event.hpp"
-#include "Input.hpp"
+#include "Rengine/Core/KeyCodes.hpp"
+#include "Rengine/Event/Event.hpp"
+#include "Rengine/Core/Input.hpp"
 
 namespace Rengin
 {

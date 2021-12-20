@@ -2,7 +2,7 @@
 #include "WindowInput.hpp"
 
 #include <GLFW/glfw3.h>
-#include "Rengine/application.hpp"
+#include "Rengine/Core/application.hpp"
 
 namespace Rengin
 {

@@ -1,6 +1,6 @@
 #pragma once
-#include "Rengine/core.hpp"
-#include "Rengine/Layer.hpp"
+#include "Rengine/Core/core.hpp"
+#include "Rengine/Core/Layer.hpp"
 #include "Rengine/Event/Event.hpp"
 #include "Rengine/Event/KeyEvent.hpp"
 #include "Rengine/Event/MouseEvent.hpp"

@@ -1,14 +1,12 @@
 #pragma once
 #include "repch.hpp"
-#include "Rengine/application.hpp"
-#include "Rengine/log.hpp"
-#include "Rengine/Layer.hpp"
+#include "Rengine/Core/application.hpp"
+#include "Rengine/Core/log.hpp"
+#include "Rengine/Core/Layer.hpp"
 
-#include "Rengine/Input.hpp"
-#include "Rengine/MouseButtonCodes.hpp"
-#include "Rengine/KeyCodes.hpp"
-
-
+#include "Rengine/Core/Input.hpp"
+#include "Rengine/Core/MouseButtonCodes.hpp"
+#include "Rengine/Core/KeyCodes.hpp"
 #include "Rengine/Core/TimeStep.hpp"
 
 //event
@@ -17,7 +15,7 @@
 #include "Rengine/ImGui/ImGuiLayer.hpp"
 //Render
 #include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
-#include "Rengine/OrthoGraphicsCameraController.hpp"
+#include "Rengine/Renderer/OrthoGraphicsCameraController.hpp"
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Buffer.hpp"
 #include "Rengine/Renderer/Renderer.hpp"
@@ -26,4 +24,4 @@
 #include "Rengine/Renderer/Texture.hpp"
 
 // entry point
-#include "Rengine/entrypoint.hpp"
+#include "Rengine/Core/entrypoint.hpp"

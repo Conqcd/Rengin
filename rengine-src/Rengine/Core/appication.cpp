@@ -1,17 +1,17 @@
 #include "repch.hpp"
 #include "application.hpp"
-#include "Event/Event.hpp"
-#include "Event/ApplicationEvent.hpp"
+#include "Rengine/Event/Event.hpp"
+#include "Rengine/Event/ApplicationEvent.hpp"
 #include "log.hpp"
-#include "Renderer/RenderCommand.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Rengine/Renderer/RenderCommand.hpp"
+#include "Rengine/Renderer/Renderer.hpp"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include <GL/gl.h>
 
-#include "Renderer/Buffer.hpp"
-#include "Renderer/OrthoGraphicsCamera.hpp"
+#include "Rengine/Renderer/Buffer.hpp"
+#include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
 #include "Input.hpp"
 
 
