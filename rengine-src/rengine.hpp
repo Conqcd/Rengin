@@ -23,5 +23,3 @@
 #include "Rengine/Renderer/RenderCommand.hpp"
 #include "Rengine/Renderer/Texture.hpp"
 
-// entry point
-#include "Rengine/Core/entrypoint.hpp"
