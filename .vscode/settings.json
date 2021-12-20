@@ -71,6 +71,7 @@
         "xutility": "cpp",
         "iostream": "cpp",
         "unordered_set": "cpp",
-        "glad.h": "c"
+        "glad.h": "c",
+        "fstream": "cpp"
     }
 }

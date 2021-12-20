@@ -8,7 +8,7 @@
 namespace Rengin
 {
 
-Ref<Shader> Shader::Create(const std::string& name,const std::string& vertexSrc,const std::string& fragmentSrc)
+Ref<Shader> Shader::Create(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath)
 {
     switch (Renderer::getRenderer())
     {
@@ -16,7 +16,7 @@ Ref<Shader> Shader::Create(const std::string& name,const std::string& vertexSrc,
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
     case RendererAPI::API::OpenGL :
-        return std::make_shared<OpenGLShader>(name,vertexSrc,fragmentSrc);
+        return std::make_shared<OpenGLShader>(name,vertexPath,fragmentPath);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         break;
@@ -24,7 +24,7 @@ Ref<Shader> Shader::Create(const std::string& name,const std::string& vertexSrc,
     RE_CORE_ASSERT(false,"Unknown RendererAPI!");
     return nullptr;
 }
-Ref<Shader> Shader::Create(const std::string& filename)
+Ref<Shader> Shader::Create(const std::string& vertexPath,const std::string& fragmentPath)
 {
     switch (Renderer::getRenderer())
     {
@@ -32,7 +32,7 @@ Ref<Shader> Shader::Create(const std::string& filename)
         RE_CORE_ASSERT(false,"not support for No Render API");
         break;
     case RendererAPI::API::OpenGL :
-        return std::make_shared<OpenGLShader>(filename);
+        return std::make_shared<OpenGLShader>(vertexPath,fragmentPath);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         break;
@@ -54,16 +54,16 @@ void ShaderLibrary::Add(const std::string& name,const Ref<Shader>& shader)
     m_shaders[name] = shader;
 }
 
-Ref<Shader> ShaderLibrary::Load(const std::string& filepath)
+Ref<Shader> ShaderLibrary::Load(const std::string& vertexPath,const std::string& fragmentPath)
 {
-    auto shader = Shader::Create(filepath);
+    auto shader = Shader::Create(vertexPath,fragmentPath);
     Add(shader);
     return shader;
 }
 
-Ref<Shader> ShaderLibrary::Load(const std::string& filepath,const std::string& name)
+Ref<Shader> ShaderLibrary::Load(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath)
 {
-    auto shader = Shader::Create(filepath);
+    auto shader = Shader::Create(name,vertexPath,fragmentPath);
     Add(name,shader);
     return shader;
 }

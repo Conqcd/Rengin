@@ -57,7 +57,8 @@ public:
                 color = vec4(v_position,1.0);
             }
         )";
-        m_shader = Rengin::Shader::Create("litle",vertexSrc,fragmentSrc);
+        m_shader = Rengin::Shader::Create("litle","assets/shaders/vertex.glsl","assets/shaders/fragment.glsl");
+        // m_shader = Rengin::Shader::Create("litle",vertexSrc,fragmentSrc);
     }
 
     void OnUpdate(Rengin::TimeStep timestep) override

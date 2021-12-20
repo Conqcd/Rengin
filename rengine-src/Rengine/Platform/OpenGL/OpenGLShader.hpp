@@ -13,8 +13,8 @@ private:
     uint32_t m_render_id;
     std::string m_name;
 public: 
-    OpenGLShader(const std::string& name,const std::string& vertexSrc,const std::string& fragmentSrc);
-    explicit OpenGLShader(const std::string& filepath);
+    OpenGLShader(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath);
+    OpenGLShader(const std::string& vertexPath,const std::string& fragmentPath);
     virtual ~OpenGLShader();
 
     virtual void Bind() const override;
