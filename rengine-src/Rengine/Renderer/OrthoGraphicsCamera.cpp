@@ -17,6 +17,12 @@ void OrthoGraphicsCamera::SetRotation(const float& rotation)
     ReCalculateView();
 }
 
+void OrthoGraphicsCamera::SetProjection(float left,float right,float bottom,float top)
+{
+    m_projection_matrix = glm::ortho(left,right,bottom,top,-1.0f,1.0f);
+    m_view_projection_matrix = m_projection_matrix * m_view_matrix;
+}
+
 OrthoGraphicsCamera::OrthoGraphicsCamera(float left,float right,float bottom,float top)
     : m_projection_matrix(glm::ortho(left,right,bottom,top,-1.0f,1.0f))
 {

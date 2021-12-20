@@ -17,6 +17,7 @@
 #include "Rengine/ImGui/ImGuiLayer.hpp"
 //Render
 #include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
+#include "Rengine/OrthoGraphicsCameraController.hpp"
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Buffer.hpp"
 #include "Rengine/Renderer/Renderer.hpp"

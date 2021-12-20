@@ -22,6 +22,7 @@ public:
     //Set
     void SetPosition(const glm::vec3& position);
     void SetRotation(const float& rotation);
+    void SetProjection(float left,float right,float bottom,float top);
     
     //Get
     const glm::vec3& GetPosition()const;
@@ -33,5 +34,5 @@ public:
 };
 
 
-    
+
 } // namespace Rengin

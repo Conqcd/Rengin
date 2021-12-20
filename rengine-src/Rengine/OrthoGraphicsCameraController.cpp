@@ -1,0 +1,59 @@
+#include "repch.hpp"
+#include "OrthoGraphicsCameraController.hpp"
+#include "KeyCodes.hpp"
+#include "Event/Event.hpp"
+#include "Input.hpp"
+
+namespace Rengin
+{
+    
+OrthoGraphicsCameraController::OrthoGraphicsCameraController(float aspectRatio,bool rotation)
+    :m_aspectRatio(aspectRatio),m_is_Rotation(rotation),m_camera(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel)
+{
+}
+
+void OrthoGraphicsCameraController::OnUpdate(TimeStep ts)
+{
+    if(Input::isKeyPressed(RE_KEY_A))
+        m_position.x += m_moveSpeed * ts;
+    else if(Input::isKeyPressed(RE_KEY_D))
+        m_position.x -= m_moveSpeed * ts;
+
+    if(Input::isKeyPressed(RE_KEY_W))
+        m_position.y -= m_moveSpeed * ts;
+    else if(Input::isKeyPressed(RE_KEY_S))
+        m_position.y += m_moveSpeed * ts;
+
+    m_camera.SetPosition(m_position);
+    if(m_is_Rotation)
+    {
+        if(Input::isKeyPressed(RE_KEY_Q))
+            m_rotation += m_rotateSpeed * ts;
+        else if(Input::isKeyPressed(RE_KEY_E))
+            m_rotation -= m_rotateSpeed * ts;
+        m_camera.SetRotation(m_rotation);
+    }
+}
+
+void OrthoGraphicsCameraController::OnEvent(Event& ev)
+{
+    EventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<MouseScrolledEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnMouseScrolled));
+    dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnWindowResized));
+}
+
+bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
+{
+    m_zoomLevel -= ev.getYoffset();
+    m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
+    return false;
+}
+
+bool OrthoGraphicsCameraController::OnWindowResized(WindowResizeEvent& ev)
+{
+    m_aspectRatio = static_cast<float>(ev.getWidth())/static_cast<float>(ev.getHeight());
+    m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
+    return false;
+}
+
+} // namespace Rengin

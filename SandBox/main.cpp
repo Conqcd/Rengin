@@ -6,7 +6,7 @@ class ExampleLayer : public Rengin::Layer
 {
 public:
     ExampleLayer()
-    :Layer("Example"),m_camera(-1.0f,1.0f,-1.0f,1.0f)
+    :Layer("Example"),m_camera_controller(1280.f/720.f,true)
     {
         m_verarr.reset(Rengin::VertexArray::Create());
     
@@ -31,34 +31,7 @@ public:
 
         m_verarr->SetIndexBuffer(m_indbuf);
 
-        std::string vertexSrc = R"(
-            #version 330
-
-            layout(location = 0) in vec3 a_position;
-
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Transform;
-
-            out vec3 v_position;
-            void main()
-            {
-                v_position = a_position;
-                gl_Position = u_ViewProjection * u_Transform * vec4(a_position,1.0);
-            }
-        )";
-        std::string fragmentSrc = R"(
-            #version 330
-            
-            in vec3 v_position;
-            out vec4 color;
-
-            void main()
-            {
-                color = vec4(v_position,1.0);
-            }
-        )";
         m_shader = Rengin::Shader::Create("litle","assets/shaders/vertex.glsl","assets/shaders/fragment.glsl");
-        // m_shader = Rengin::Shader::Create("litle",vertexSrc,fragmentSrc);
     }
 
     void OnUpdate(Rengin::TimeStep timestep) override
@@ -69,10 +42,14 @@ public:
         // {
         //     RE_TRACE("Tab is Pressed!");
         // }
+
+        
+        m_camera_controller.OnUpdate(timestep);
+
         Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
         Rengin::RenderCommand::Clear();
 
-        Rengin::Renderer::BeginScene(m_camera);
+        Rengin::Renderer::BeginScene(m_camera_controller.getCamera());
 
         // Rengin::MaterialRef material = new Rengin::Material(m_shader);
 
@@ -91,6 +68,7 @@ public:
     void OnEvent(Rengin::Event& ev){
         
         RE_TRACE("Event {0}",ev);
+        m_camera_controller.OnEvent(ev);
     }
 private:
     Rengin::ShaderLibrary m_shader_lib;
@@ -100,7 +78,7 @@ private:
     Rengin::Ref<Rengin::VertexArray> m_verarr;
     Rengin::Ref<Rengin::Texture> m_texture;
 
-    Rengin::OrthoGraphicsCamera m_camera;
+    Rengin::OrthoGraphicsCameraController m_camera_controller;
 };
 
 class SandBox :public Rengin::Application
