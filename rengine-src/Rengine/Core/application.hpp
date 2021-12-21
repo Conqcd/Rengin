@@ -1,14 +1,14 @@
 #pragma once
 #include "core.hpp"
 #include "Window.hpp"
-#include "Event/ApplicationEvent.hpp"
+#include "Rengine/Event/ApplicationEvent.hpp"
 #include "LayerStack.hpp"
-#include "ImGui/ImGuiLayer.hpp"
-#include "Renderer/Shader.hpp"
-#include "Renderer/Buffer.hpp"
-#include "Renderer/VertexArray.hpp"
-#include "Renderer/OrthoGraphicsCamera.hpp"
-#include "Core/TimeStep.hpp"
+#include "Rengine/ImGui/ImGuiLayer.hpp"
+#include "Rengine/Renderer/Shader.hpp"
+#include "Rengine/Renderer/Buffer.hpp"
+#include "Rengine/Renderer/VertexArray.hpp"
+#include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
+#include "TimeStep.hpp"
 
 namespace Rengin
 {

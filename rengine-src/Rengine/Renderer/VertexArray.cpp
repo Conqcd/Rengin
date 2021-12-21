@@ -6,7 +6,7 @@
 namespace Rengin
 {
 
-VertexArray* VertexArray::Create()
+Ref<VertexArray> VertexArray::Create()
 {
     switch (Renderer::getRenderer())
     {
@@ -15,7 +15,7 @@ VertexArray* VertexArray::Create()
         return nullptr;
         break;
     case RendererAPI::API::OpenGL :
-        return new OpenGLVertexArray();
+        return std::make_shared<OpenGLVertexArray>();
         break;
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");

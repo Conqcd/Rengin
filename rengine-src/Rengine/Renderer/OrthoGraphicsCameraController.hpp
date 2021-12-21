@@ -1,9 +1,9 @@
 #pragma once
-#include "core.hpp"
-#include "Renderer/OrthoGraphicsCamera.hpp"
-#include "Core/TimeStep.hpp"
-#include "Event/ApplicationEvent.hpp"
-#include "Event/MouseEvent.hpp"
+#include "Rengine/Core/core.hpp"
+#include "OrthoGraphicsCamera.hpp"
+#include "Rengine/Core/TimeStep.hpp"
+#include "Rengine/Event/ApplicationEvent.hpp"
+#include "Rengine/Event/MouseEvent.hpp"
 #include <glm/glm.hpp>
 
 namespace Rengin

@@ -1,6 +1,6 @@
 #include "repch.hpp"
 #include "OpenGLContext.hpp"
-#include "Rengine/core.hpp"
+#include "Rengine/Core/core.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

@@ -1,4 +1,7 @@
 #include <rengine.hpp>
+// entry point
+#include "Rengine/Core/entrypoint.hpp"
+#include "SandBox2D.hpp"
 
 #include <imgui.h>
 
@@ -8,7 +11,7 @@ public:
     ExampleLayer()
     :Layer("Example"),m_camera_controller(1280.f/720.f,true)
     {
-        m_verarr.reset(Rengin::VertexArray::Create());
+        m_verarr = Rengin::VertexArray::Create();
     
         float vertices[9] = {
             -0.5f,-0.5f,0.0f,
@@ -93,8 +96,8 @@ class SandBox :public Rengin::Application
 public:
     SandBox() :Rengin::Application()
     {
-
         PushLayer(new ExampleLayer());
+        PushLayer(new SandBox2D());
     }
 
     ~SandBox(){}
