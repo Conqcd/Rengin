@@ -11,7 +11,7 @@
 namespace Rengin
 {
 
-VertexBuffer* VertexBuffer::Create(float *vertices,uint32_t size)
+Ref<VertexBuffer> VertexBuffer::Create(float *vertices,uint32_t size)
 {
     switch (Renderer::getRenderer())
     {
@@ -20,7 +20,7 @@ VertexBuffer* VertexBuffer::Create(float *vertices,uint32_t size)
         return nullptr;
         break;
     case RendererAPI::API::OpenGL :
-        return new OpenGLVertexBuffer(vertices,size);
+        return std::make_shared<OpenGLVertexBuffer>(vertices,size);
         break;
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
@@ -31,7 +31,7 @@ VertexBuffer* VertexBuffer::Create(float *vertices,uint32_t size)
     return nullptr;
 }
 
-IndexBuffer* IndexBuffer::Create(uint32_t *indices,uint32_t size)
+Ref<IndexBuffer> IndexBuffer::Create(uint32_t *indices,uint32_t size)
 {    
     switch (Renderer::getRenderer())
     {
@@ -40,7 +40,7 @@ IndexBuffer* IndexBuffer::Create(uint32_t *indices,uint32_t size)
         return nullptr;
         break;
     case RendererAPI::API::OpenGL :
-        return new OpenGLIndexBuffer(indices,size);
+        return std::make_shared<OpenGLIndexBuffer>(indices,size);
         break;
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");

@@ -2,6 +2,7 @@
 #include "Renderer.hpp"
 #include "Rengine/Platform/OpenGL/OpenGLShader.hpp"
 #include <glm/glm.hpp>
+#include "Renderer2D.hpp"
 
 namespace Rengin
 {
@@ -12,6 +13,7 @@ Renderer::SceneData* Renderer::m_scene_data = new Renderer::SceneData();
 void Renderer::Init()
 {
     RenderCommand::Init();
+    Renderer2D::Init();
 }
 
 void Renderer::OnWindowResized(uint32_t width ,uint32_t height)

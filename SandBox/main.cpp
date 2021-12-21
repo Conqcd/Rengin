@@ -1,8 +1,5 @@
 #include <rengine.hpp>
-// entry point
-#include "Rengine/Core/entrypoint.hpp"
-#include "SandBox2D.hpp"
-
+#include <Rengine/Core/entrypoint.hpp>
 #include <imgui.h>
 
 class ExampleLayer : public Rengin::Layer
@@ -12,7 +9,7 @@ public:
     :Layer("Example"),m_camera_controller(1280.f/720.f,true)
     {
         m_verarr = Rengin::VertexArray::Create();
-    
+
         float vertices[9] = {
             -0.5f,-0.5f,0.0f,
             0.5f,-0.5f,0.0f,
@@ -22,14 +19,15 @@ public:
             0,1,2
         };
 
-        m_verbuf.reset(Rengin::VertexBuffer::Create(vertices,sizeof(vertices)));
+        m_verbuf = Rengin::VertexBuffer::Create(vertices,sizeof(vertices));
         // m_verbuf->Bind();
+
         Rengin::BufferLayout layout = {{Rengin::ShadeDataType::Float3 , "a_position"}};
         m_verbuf->SetLayout(layout);
 
         m_verarr->AddVertexBuffer(m_verbuf);
 
-        m_indbuf.reset(Rengin::IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t)));
+        m_indbuf = Rengin::IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
         // m_indbuf->Bind();
 
         m_verarr->SetIndexBuffer(m_indbuf);
@@ -41,12 +39,11 @@ public:
     {
         RE_INFO("Delta Time is {0}s ({1}ms)",timestep.getSeconds(),timestep.getMilliSeconds());
         // RE_INFO("Updating");
-        // if(Rengin::Input::isKeyPressed(RE_KEY_TAB))
+        // if(Rengin::Input::isKeyPressed(RE_KEY_TAB))5tr
         // {
         //     RE_TRACE("Tab is Pressed!");
         // }
 
-        
         m_camera_controller.OnUpdate(timestep);
 
         Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
@@ -96,8 +93,8 @@ class SandBox :public Rengin::Application
 public:
     SandBox() :Rengin::Application()
     {
+
         PushLayer(new ExampleLayer());
-        PushLayer(new SandBox2D());
     }
 
     ~SandBox(){}

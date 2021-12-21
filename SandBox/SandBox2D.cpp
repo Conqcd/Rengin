@@ -3,16 +3,29 @@
 SandBox2D::SandBox2D(/* args */)
         :Layer("SandBox2D"),m_camera_controller(1280.f/720.f,true)
 {
+
 }
 
 SandBox2D::~SandBox2D()
 {
-}
 
+}
 
 void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
 {
     m_camera_controller.OnUpdate(timestep);
+
+    Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+    Rengin::RenderCommand::Clear();
+
+    Rengin::Renderer2D::BeginScene(m_camera_controller.getCamera());
+
+    // Rengin::MaterialRef material = new Rengin::Material(m_shader);
+
+    Rengin::Renderer2D::DrawQuad({0.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
+    // Rengin::Renderer::Submit(m_shader,m_verarr);
+
+    Rengin::Renderer2D::EndScene();
 }
 
 void SandBox2D::OnImGuiRender()
@@ -24,30 +37,6 @@ void SandBox2D::OnImGuiRender()
 
 void SandBox2D::OnAttach()
 {
-    m_verarr = Rengin::VertexArray::Create();
-    
-    float vertices[9] = {
-        -0.5f,-0.5f,0.0f,
-        0.5f,-0.5f,0.0f,
-        0.0f,0.5f,0.0f
-    };
-    unsigned int indices[3] = {
-        0,1,2
-    };
-
-    m_verbuf.reset(Rengin::VertexBuffer::Create(vertices,sizeof(vertices)));
-    // m_verbuf->Bind();
-    Rengin::BufferLayout layout = {{Rengin::ShadeDataType::Float3 , "a_position"}};
-    m_verbuf->SetLayout(layout);
-
-    m_verarr->AddVertexBuffer(m_verbuf);
-
-    m_indbuf.reset(Rengin::IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t)));
-    // m_indbuf->Bind();
-
-    m_verarr->SetIndexBuffer(m_indbuf);
-
-    m_shader = Rengin::Shader::Create("litle","assets/shaders/vertex.glsl","assets/shaders/fragment.glsl");
 }
 
 void SandBox2D::OnDetach()
