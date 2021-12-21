@@ -3,7 +3,8 @@
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Shader.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
-#include "Rengine/Platform/OpenGL/OpenGLShader.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+// #include "Rengine/Platform/OpenGL/OpenGLShader.hpp"
 
 namespace Rengin
 {
@@ -27,7 +28,7 @@ void Renderer2D::Init()
     float SquareVertices[3 * 4] = {
         -0.5f,-0.5f,0.0f,
         0.5f,-0.5f,0.0f,
-        0.0f,0.5f,0.0f,
+        0.5f,0.5f,0.0f,
         -0.5f,0.5f,0.0f
     };
     unsigned int indices[6] = {
@@ -63,8 +64,7 @@ void Renderer2D::OnWindowResized(uint32_t width ,uint32_t height)
 void Renderer2D::BeginScene(OrthoGraphicsCamera& camera)
 {
     s_data->m_shader->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(s_data->m_shader)->UpLoadUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
-    std::dynamic_pointer_cast<OpenGLShader>(s_data->m_shader)->UpLoadUniformMat4("u_Transform",glm::mat4(1.0));
+    s_data->m_shader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
 }
 
 void Renderer2D::EndScene()
@@ -80,7 +80,9 @@ void Renderer2D::Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertex
 void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
 {
     s_data->m_shader->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(s_data->m_shader)->UpLoadUniformFloat4("u_Color",m_SquareColor);
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0),{position.x,position.y,1.0}) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
+    s_data->m_shader->SetUniformMat4("u_Transform",transforms);
+    s_data->m_shader->SetUniformFloat4("u_Color",m_SquareColor);
     s_data->vertexArray->Bind();
     RenderCommand::DrawIndex(s_data->vertexArray);
 }
@@ -88,7 +90,9 @@ void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const 
 void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
 {
     s_data->m_shader->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(s_data->m_shader)->UpLoadUniformFloat4("u_Color",m_SquareColor);
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
+    s_data->m_shader->SetUniformMat4("u_Transform",transforms);
+    s_data->m_shader->SetUniformFloat4("u_Color",m_SquareColor);
     s_data->vertexArray->Bind();
     RenderCommand::DrawIndex(s_data->vertexArray);
 }

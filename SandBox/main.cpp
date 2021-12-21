@@ -1,5 +1,6 @@
 #include <rengine.hpp>
 #include <Rengine/Core/entrypoint.hpp>
+#include "SandBox2D.hpp"
 #include <imgui.h>
 
 class ExampleLayer : public Rengin::Layer
@@ -95,6 +96,7 @@ public:
     {
 
         PushLayer(new ExampleLayer());
+        PushLayer(new SandBox2D());
     }
 
     ~SandBox(){}

@@ -23,6 +23,10 @@ public:
 
     void UpLoadUniformInt(const std::string& name, int value);
 
+    virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) override;
+    virtual void SetUniformFloat3(const std::string& name,const glm::vec3& vec) override;
+    virtual void SetUniformFloat4(const std::string& name,const glm::vec4& vec) override;
+
     void UpLoadUniformFloat(const std::string& name, float value);
     void UpLoadUniformFloat2(const std::string& name, const glm::vec2& value);
     void UpLoadUniformFloat3(const std::string& name, const glm::vec3& value);

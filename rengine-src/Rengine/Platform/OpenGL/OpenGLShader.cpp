@@ -59,6 +59,21 @@ const std::string& OpenGLShader::getName() const
 	return m_name;
 }
 
+void OpenGLShader::SetUniformMat4(const std::string& name,const glm::mat4& mat)
+{
+	UpLoadUniformMat4(name,mat);
+}
+
+void OpenGLShader::SetUniformFloat3(const std::string& name,const glm::vec3& vec)
+{
+	UpLoadUniformFloat3(name,vec);
+}
+
+void OpenGLShader::SetUniformFloat4(const std::string& name,const glm::vec4& vec)
+{
+	UpLoadUniformFloat4(name,vec);
+}
+
 void OpenGLShader::UpLoadUniformMat3(const std::string& name, const glm::mat3& matrix)
 {
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());

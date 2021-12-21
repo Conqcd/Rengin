@@ -22,7 +22,7 @@ void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
 
     // Rengin::MaterialRef material = new Rengin::Material(m_shader);
 
-    Rengin::Renderer2D::DrawQuad({0.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
+    Rengin::Renderer2D::DrawQuad({1.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
     // Rengin::Renderer::Submit(m_shader,m_verarr);
 
     Rengin::Renderer2D::EndScene();

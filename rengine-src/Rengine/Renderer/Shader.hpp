@@ -2,6 +2,7 @@
 #include "Rengine/Core/core.hpp"
 #include <string>
 #include <unordered_map>
+#include <glm/glm.hpp>
 namespace Rengin
 {
 class RE_API Shader
@@ -12,6 +13,10 @@ public:
     virtual void Bind() const = 0;
     virtual void UnBind() const = 0;
     virtual const std::string& getName() const = 0;
+
+    virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) = 0;
+    virtual void SetUniformFloat3(const std::string& name,const glm::vec3& mat) = 0;
+    virtual void SetUniformFloat4(const std::string& name,const glm::vec4& mat) = 0;
 
     static Ref<Shader> Create(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath);
     static Ref<Shader> Create(const std::string& vertexPath,const std::string& fragmentPath);
