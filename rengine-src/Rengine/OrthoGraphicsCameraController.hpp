@@ -17,7 +17,7 @@ public:
     inline const OrthoGraphicsCamera& getCamera()const {return m_camera;}
     inline OrthoGraphicsCamera& getCamera() {return m_camera;}
     void OnUpdate(TimeStep ts);
-    void OnEvent(Event& ev );
+    void OnEvent(Event& ev);
 
     void setZoomLevel(float level);
     inline float getZoomLevel() const {return m_zoomLevel;}
