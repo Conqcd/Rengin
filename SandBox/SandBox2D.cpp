@@ -37,7 +37,7 @@ void SandBox2D::OnImGuiRender()
 
 void SandBox2D::OnAttach()
 {
-    m_texture = Rengin::Texture2D::Create("D:/secret/109951166175641343.jpg");
+    m_texture = Rengin::Texture2D::Create("E:\\CAD&&CG\\Rengin\\SandBox\\assets\\textures\\France.jpg");
 }
 
 void SandBox2D::OnDetach()

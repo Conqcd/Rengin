@@ -16,7 +16,7 @@ struct Renderer2DStorage
     Ref<Shader> m_Texshader;
     // Ref<VertexBuffer> m_verbuf;
     // Ref<IndexBuffer> m_indbuf;
-    // Ref<Texture> m_texture;
+    Ref<Texture2D> m_WhiteTexture;
 };
 
 static Renderer2DStorage* s_data;
@@ -52,7 +52,11 @@ void Renderer2D::Init()
 
     s_data->vertexArray->SetIndexBuffer(m_indbuf);
 
-    s_data->m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/FlatColorVertex.glsl","../../../SandBox/assets/shaders/FlatColorFragment.glsl");
+    s_data->m_WhiteTexture = Texture2D::Create(1,1);
+    uint32_t whiteColor = 0xffffffff;
+    s_data->m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
+
+    // s_data->m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/FlatColorVertex.glsl","../../../SandBox/assets/shaders/FlatColorFragment.glsl");
     s_data->m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
     s_data->m_Texshader->Bind();
     s_data->m_Texshader->SetUniformInt("u_texture",0);
@@ -70,9 +74,6 @@ void Renderer2D::OnWindowResized(uint32_t width ,uint32_t height)
 
 void Renderer2D::BeginScene(OrthoGraphicsCamera& camera)
 {
-    s_data->m_shader->Bind();
-    s_data->m_shader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
-
     s_data->m_Texshader->Bind();
     s_data->m_Texshader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
 }
@@ -89,38 +90,31 @@ void Renderer2D::Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertex
 
 void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
 {
-    s_data->m_shader->Bind();
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0),{position.x,position.y,1.0}) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    s_data->m_shader->SetUniformMat4("u_Transform",transforms);
-    s_data->m_shader->SetUniformFloat4("u_Color",m_SquareColor);
-    s_data->vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data->vertexArray);
+    DrawQuad({position.x,position.y,0.0},size,m_SquareColor);
 }
 
 void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
 {
-    s_data->m_shader->Bind();
+    s_data->m_Texshader->Bind();
     glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    s_data->m_shader->SetUniformMat4("u_Transform",transforms);
-    s_data->m_shader->SetUniformFloat4("u_Color",m_SquareColor);
+    s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
+    s_data->m_Texshader->SetUniformFloat4("u_color",m_SquareColor);
+    
+    s_data->m_WhiteTexture->Bind();
     s_data->vertexArray->Bind();
     RenderCommand::DrawIndex(s_data->vertexArray);
 }
 
 void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const Ref<Texture>& texture)
 {
-    s_data->m_Texshader->Bind();
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0),{position.x,position.y,1.0}) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
-
-    texture->Bind();
-    s_data->vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data->vertexArray);
+    DrawQuad({position.x,position.y,0.0},size,texture);
 }
 
 void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const Ref<Texture>& texture)
 {
     s_data->m_Texshader->Bind();
+    
+    s_data->m_Texshader->SetUniformFloat4("u_color",{1.0,1.0,1.0,1.0});
     glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
     s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
 
