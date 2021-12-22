@@ -14,6 +14,7 @@
 #include <unordered_set>
 
 #include "Rengine/Core/log.hpp"
+#include "Rengine/Debug/Instrumentor.hpp"
 
 #ifdef RE_WINDOWS
     #include <Windows.h>

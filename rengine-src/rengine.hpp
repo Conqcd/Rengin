@@ -9,6 +9,9 @@
 #include "Rengine/Core/KeyCodes.hpp"
 #include "Rengine/Core/TimeStep.hpp"
 
+//Debug
+#include "Rengine/Debug/Instrumentor.hpp"
+
 //event
 #include "Rengine/Event/Event.hpp"
 
@@ -23,4 +26,3 @@
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
 #include "Rengine/Renderer/Texture.hpp"
-
