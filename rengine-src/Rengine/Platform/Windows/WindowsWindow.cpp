@@ -84,9 +84,12 @@ void WindowsWindow::Init(const WindowProps& props)
         hasInitGLFWWindows = true;
     }
 
-    m_win = glfwCreateWindow(static_cast<int>(m_data.m_width),static_cast<int>(m_data.m_height),m_data.m_title.c_str(),nullptr,nullptr);
+    {
+        RE_PROFILE_SCOPE("glfwCreateWindow");
+        m_win = glfwCreateWindow(static_cast<int>(m_data.m_width),static_cast<int>(m_data.m_height),m_data.m_title.c_str(),nullptr,nullptr);
 
-    s_GLFWWindowCount++;
+        s_GLFWWindowCount++;
+    }
     
     m_context = new OpenGLContext(m_win);
     m_context->Init();

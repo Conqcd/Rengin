@@ -1,5 +1,6 @@
 #include "repch.hpp"
 #include "OpenGLShader.hpp"
+#include "Rengine/Debug/Instrumentor.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -9,6 +10,7 @@ namespace Rengin
 OpenGLShader::OpenGLShader(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath)
 	: m_name(name)
 {
+    RE_PROFILE_FUNCTION();
 	auto vertexSrc = ReadFile(vertexPath);
 	auto fragmentSrc = ReadFile(fragmentPath);
 
@@ -22,6 +24,7 @@ OpenGLShader::OpenGLShader(const std::string& name,const std::string& vertexPath
 
 OpenGLShader::OpenGLShader(const std::string& vertexPath,const std::string& fragmentPath)
 {
+    RE_PROFILE_FUNCTION();
 	auto vertexSrc = ReadFile(vertexPath);
 	auto fragmentSrc = ReadFile(fragmentPath);
 
@@ -41,88 +44,104 @@ OpenGLShader::OpenGLShader(const std::string& vertexPath,const std::string& frag
 
 OpenGLShader::~OpenGLShader()
 {
+    RE_PROFILE_FUNCTION();
 	glDeleteProgram(m_render_id);
 }
 
 void OpenGLShader::Bind() const
 {
+    RE_PROFILE_FUNCTION();
 	glUseProgram(m_render_id);
 }
 
 void OpenGLShader::UnBind() const
 {
+    RE_PROFILE_FUNCTION();
 	glUseProgram(0);
 }
 
 const std::string& OpenGLShader::getName() const
 {
+    RE_PROFILE_FUNCTION();
 	return m_name;
 }
 
 void OpenGLShader::SetUniformInt(const std::string& name,int value)
 {
+    RE_PROFILE_FUNCTION();
 	UpLoadUniformInt(name,value);
 }
 
 void OpenGLShader::SetUniformMat4(const std::string& name,const glm::mat4& mat)
 {
+    RE_PROFILE_FUNCTION();
 	UpLoadUniformMat4(name,mat);
 }
 
 void OpenGLShader::SetUniformFloat3(const std::string& name,const glm::vec3& vec)
 {
+    RE_PROFILE_FUNCTION();
 	UpLoadUniformFloat3(name,vec);
 }
 
 void OpenGLShader::SetUniformFloat4(const std::string& name,const glm::vec4& vec)
 {
+    RE_PROFILE_FUNCTION();
 	UpLoadUniformFloat4(name,vec);
 }
 
 void OpenGLShader::UpLoadUniformMat3(const std::string& name, const glm::mat3& matrix)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniformMatrix3fv(location,1,GL_FALSE,glm::value_ptr(matrix));
 }
 
 void OpenGLShader::UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniformMatrix4fv(location,1,GL_FALSE,glm::value_ptr(matrix));
 }
 
 void OpenGLShader::UpLoadUniformInt(const std::string& name, int value)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform1i(location,value);
 }
 
 void OpenGLShader::UpLoadUniformFloat(const std::string& name, float value)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform1f(location,value);
 }
 
 void OpenGLShader::UpLoadUniformFloat2(const std::string& name, const glm::vec2& value)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform2f(location,value.x,value.y);
 }
 
 void OpenGLShader::UpLoadUniformFloat3(const std::string& name, const glm::vec3& value)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform3f(location,value.x,value.y,value.z);
 }
 
 void OpenGLShader::UpLoadUniformFloat4(const std::string& name, const glm::vec4& value)
 {
+    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform4f(location,value.x,value.y,value.z,value.w);
 }
 
 void OpenGLShader::Compile(const std::unordered_map<GLenum,std::string>& shaderSrc)
 {
+    RE_PROFILE_FUNCTION();
 	m_render_id = glCreateProgram();
 
 	RE_CORE_ASSERT((shaderSrc.size() <= 2) , "Only support 2 shader for now");
@@ -211,6 +230,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum,std::string>& shaderS
 
 const std::string OpenGLShader::ReadFile(const std::string& src)
 {
+    RE_PROFILE_FUNCTION();
 	std::string result;
 	std::ifstream in(src,std::ios::in,std::ios::binary);
 	if(!in.is_open())

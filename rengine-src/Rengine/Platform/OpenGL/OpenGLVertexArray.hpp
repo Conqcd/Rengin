@@ -11,8 +11,8 @@ private:
     uint32_t m_render_id;
 public:
     OpenGLVertexArray();
-    virtual ~OpenGLVertexArray() {}
-
+    virtual ~OpenGLVertexArray();
+    
     virtual void Bind()const override;
     virtual void Unbind()const override;
 

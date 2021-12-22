@@ -17,8 +17,6 @@ public:
     static void OnWindowResized(uint32_t width ,uint32_t height);
     static void BeginScene(OrthoGraphicsCamera& camera);
     static void EndScene();
-    static void Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertexArray,const glm::mat4& transform = glm::mat4(1.0f));
-    // inline static RendererAPI::API getRenderer(){return RendererAPI::getAPI();}
 
     //Primitives
     static void DrawQuad(const glm::vec2& position,const glm::vec2& size,const glm::vec4& color);

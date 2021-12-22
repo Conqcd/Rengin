@@ -14,6 +14,8 @@ OrthoGraphicsCameraController::OrthoGraphicsCameraController(float aspectRatio,b
 
 void OrthoGraphicsCameraController::OnUpdate(TimeStep ts)
 {
+    RE_PROFILE_FUNCTION();
+    
     if(Input::isKeyPressed(RE_KEY_A))
         m_position.x += m_moveSpeed * ts;
     else if(Input::isKeyPressed(RE_KEY_D))
@@ -37,6 +39,8 @@ void OrthoGraphicsCameraController::OnUpdate(TimeStep ts)
 
 void OrthoGraphicsCameraController::OnEvent(Event& ev)
 {
+    RE_PROFILE_FUNCTION();
+    
     EventDispatcher dispatcher(ev);
     dispatcher.Dispatch<MouseScrolledEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnMouseScrolled));
     dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnWindowResized));
@@ -49,6 +53,8 @@ void OrthoGraphicsCameraController::setZoomLevel(float level)
 
 bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
 {
+    RE_PROFILE_FUNCTION();
+    
     m_zoomLevel -= ev.getYoffset() * 0.25f;
     m_zoomLevel = std::max(m_zoomLevel,0.25f);
 
@@ -58,6 +64,8 @@ bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
 
 bool OrthoGraphicsCameraController::OnWindowResized(WindowResizeEvent& ev)
 {
+    RE_PROFILE_FUNCTION();
+    
     m_aspectRatio = static_cast<float>(ev.getWidth())/static_cast<float>(ev.getHeight());
     m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
     return false;

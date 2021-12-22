@@ -35,7 +35,7 @@ OpenGLVertexArray::OpenGLVertexArray()
 OpenGLVertexArray::~OpenGLVertexArray()
 {
     RE_PROFILE_FUNCTION();
-    glDeleteVertexArray(1,&m_render_id);
+    glDeleteVertexArrays(1,&m_render_id);
 }
 
 void OpenGLVertexArray::Bind()const

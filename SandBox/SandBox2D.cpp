@@ -13,10 +13,8 @@ SandBox2D::~SandBox2D()
 void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
 {
     RE_PROFILE_FUNCTION();
-    {
-        m_camera_controller.OnUpdate(timestep);
-        RE_PROFILE_SCOPE("SandBox2D::Control");
-    }
+
+    m_camera_controller.OnUpdate(timestep);
 
     {
         Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
@@ -48,11 +46,14 @@ void SandBox2D::OnImGuiRender()
 
 void SandBox2D::OnAttach()
 {
-    m_texture = Rengin::Texture2D::Create("E:\\CAD&&CG\\Rengin\\SandBox\\assets\\textures\\France.jpg");
+    RE_PROFILE_FUNCTION();
+
+    m_texture = Rengin::Texture2D::Create("D:\\secret\\109951166175641343.jpg");
 }
 
 void SandBox2D::OnDetach()
 {
+    RE_PROFILE_FUNCTION();
 
 }
 

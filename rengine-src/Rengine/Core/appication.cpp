@@ -38,7 +38,7 @@ Application::Application()
 
 Application::~Application()
 {
-
+    RE_PROFILE_FUNCTION();
 }
 
 bool Application::OnWindowClose(WindowCloseEvent& ev)
@@ -49,6 +49,8 @@ bool Application::OnWindowClose(WindowCloseEvent& ev)
 
 bool Application::OnWindowResize(WindowResizeEvent& ev)
 {
+    RE_PROFILE_FUNCTION();
+    
     if(ev.getHeight() == 0 || ev.getWidth() == 0)
     {
         m_minimized = true;
@@ -61,6 +63,8 @@ bool Application::OnWindowResize(WindowResizeEvent& ev)
 
 void Application::OnEvent(Event& e)
 {
+    RE_PROFILE_FUNCTION();
+    
     EventDispatcher dispatcher(e);
 
     dispatcher.Dispatch<WindowCloseEvent>(RE_BIND_FUNC_EVENT_1(Application::OnWindowClose));
@@ -83,14 +87,21 @@ void Application::Run()
     // WindowResizeEvent e(1200,900);
     // RE_CORE_TRACE(e);
 
+    RE_PROFILE_FUNCTION();
+    
 
     while(m_running)
     {
+        RE_PROFILE_SCOPE("RunLoop");
+
         float time = static_cast<float>(glfwGetTime());
         TimeStep timestep = time - m_last_frame_time;
         m_last_frame_time = time;
         if(!m_minimized)
         {
+            
+            RE_PROFILE_SCOPE("LayerStack OnUpdate");
+    
             for(auto* layer : m_layer_stack)
             {
                 layer->OnUpdate(timestep);
@@ -99,9 +110,12 @@ void Application::Run()
         
 
         m_imgui_layer->Begin();
-        for(auto* layer : m_layer_stack)
         {
-            layer->OnImGuiRender();
+            RE_PROFILE_SCOPE("LayerStack OnImGuiRender");
+            for(auto* layer : m_layer_stack)
+            {
+                layer->OnImGuiRender();
+            }
         }
         m_imgui_layer->End();
 
@@ -114,12 +128,16 @@ void Application::Run()
 
 void Application::PushLayer(Layer* layer)
 {
+    RE_PROFILE_FUNCTION();
+    
     m_layer_stack.PushLayer(layer);
     layer->OnAttach();
 }
 
 void Application::PushOverLayer(Layer* layer)
 {
+    RE_PROFILE_FUNCTION();
+
     m_layer_stack.PushOverLayer(layer);
     layer->OnAttach();
 }

@@ -23,6 +23,8 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
+    RE_PROFILE_FUNCTION();
+    
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
@@ -50,6 +52,8 @@ void ImGuiLayer::OnAttach()
 
 void ImGuiLayer::OnDetach()
 {
+    RE_PROFILE_FUNCTION();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -58,6 +62,8 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::Begin()
 {
+    RE_PROFILE_FUNCTION();
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -65,6 +71,8 @@ void ImGuiLayer::Begin()
 
 void ImGuiLayer::End()
 {
+    RE_PROFILE_FUNCTION();
+
     ImGuiIO& io = ImGui::GetIO();
 
     auto& app = Application::getApplication();
@@ -90,6 +98,8 @@ void ImGuiLayer::End()
 
 void ImGuiLayer::OnImGuiRender()
 {
+    RE_PROFILE_FUNCTION();
+
     static bool show = true;
     ImGui::ShowDemoWindow(&show);   
 }

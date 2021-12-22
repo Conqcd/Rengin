@@ -65,6 +65,7 @@ void Renderer2D::Init()
 
 void Renderer2D::Shutdown()
 {
+    RE_PROFILE_FUNCTION();
     delete s_data;
 }
 
@@ -75,17 +76,15 @@ void Renderer2D::OnWindowResized(uint32_t width ,uint32_t height)
 
 void Renderer2D::BeginScene(OrthoGraphicsCamera& camera)
 {
+    RE_PROFILE_FUNCTION();
+
     s_data->m_Texshader->Bind();
     s_data->m_Texshader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
 }
 
 void Renderer2D::EndScene()
 {
-
-}
-
-void Renderer2D::Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertexArray,const glm::mat4& transform)
-{
+    RE_PROFILE_FUNCTION();
 
 }
 
@@ -96,6 +95,7 @@ void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const 
 
 void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
 {
+    RE_PROFILE_FUNCTION();
     s_data->m_Texshader->Bind();
     glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
     s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
@@ -113,6 +113,7 @@ void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const 
 
 void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const Ref<Texture>& texture)
 {
+    RE_PROFILE_FUNCTION();
     s_data->m_Texshader->Bind();
     
     s_data->m_Texshader->SetUniformFloat4("u_color",{1.0,1.0,1.0,1.0});
