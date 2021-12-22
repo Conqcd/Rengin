@@ -21,12 +21,13 @@ public:
     virtual void UnBind() const override;
     virtual const std::string& getName() const override;
 
-    void UpLoadUniformInt(const std::string& name, int value);
-
+    
+    virtual void SetUniformInt(const std::string& name,int value)override;
     virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) override;
     virtual void SetUniformFloat3(const std::string& name,const glm::vec3& vec) override;
     virtual void SetUniformFloat4(const std::string& name,const glm::vec4& vec) override;
 
+    void UpLoadUniformInt(const std::string& name, int value);
     void UpLoadUniformFloat(const std::string& name, float value);
     void UpLoadUniformFloat2(const std::string& name, const glm::vec2& value);
     void UpLoadUniformFloat3(const std::string& name, const glm::vec3& value);

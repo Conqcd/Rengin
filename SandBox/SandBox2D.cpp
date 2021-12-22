@@ -3,7 +3,6 @@
 SandBox2D::SandBox2D(/* args */)
         :Layer("SandBox2D"),m_camera_controller(1280.f/720.f,true)
 {
-
 }
 
 SandBox2D::~SandBox2D()
@@ -23,6 +22,7 @@ void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
     // Rengin::MaterialRef material = new Rengin::Material(m_shader);
 
     Rengin::Renderer2D::DrawQuad({1.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
+    Rengin::Renderer2D::DrawQuad({-1.0f,0.0f},{1.0f,1.0f},m_texture);
     // Rengin::Renderer::Submit(m_shader,m_verarr);
 
     Rengin::Renderer2D::EndScene();
@@ -37,6 +37,7 @@ void SandBox2D::OnImGuiRender()
 
 void SandBox2D::OnAttach()
 {
+    m_texture = Rengin::Texture2D::Create("D:/secret/109951166175641343.jpg");
 }
 
 void SandBox2D::OnDetach()

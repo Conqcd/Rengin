@@ -59,6 +59,11 @@ const std::string& OpenGLShader::getName() const
 	return m_name;
 }
 
+void OpenGLShader::SetUniformInt(const std::string& name,int value)
+{
+	UpLoadUniformInt(name,value);
+}
+
 void OpenGLShader::SetUniformMat4(const std::string& name,const glm::mat4& mat)
 {
 	UpLoadUniformMat4(name,mat);

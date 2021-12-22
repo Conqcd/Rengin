@@ -33,7 +33,7 @@ public:
 
         m_verarr->SetIndexBuffer(m_indbuf);
 
-        m_shader = Rengin::Shader::Create("litle","assets/shaders/vertex.glsl","assets/shaders/fragment.glsl");
+        m_shader = Rengin::Shader::Create("litle","../../../SandBox/assets/shaders/vertex.glsl","../../../SandBox/assets/shaders/fragment.glsl");
     }
 
     void OnUpdate(Rengin::TimeStep timestep) override
