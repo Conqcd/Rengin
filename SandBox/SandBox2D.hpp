@@ -12,6 +12,15 @@ private:
     Rengin::Ref<Rengin::VertexArray> m_verarr;
     Rengin::Ref<Rengin::Texture2D> m_texture;
     Rengin::OrthoGraphicsCameraController m_camera_controller;
+
+    struct ProfileResult
+    {
+        const char* m_name;
+        float time;
+    };
+    
+    std::vector<ProfileResult> m_ProfileResults;
+
 public:
     SandBox2D(/* args */);
     ~SandBox2D();
