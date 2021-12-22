@@ -23,6 +23,7 @@ static Renderer2DStorage* s_data;
 
 void Renderer2D::Init()
 {
+    RE_PROFILE_FUNCTION();
     s_data = new Renderer2DStorage();
     s_data->vertexArray = VertexArray::Create();
 

@@ -15,7 +15,7 @@ Ref<VertexArray> VertexArray::Create()
         return nullptr;
         break;
     case RendererAPI::API::OpenGL :
-        return std::make_shared<OpenGLVertexArray>();
+        return CreateRef<OpenGLVertexArray>();
         break;
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");

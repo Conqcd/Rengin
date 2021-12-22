@@ -13,28 +13,34 @@ namespace Rengin
 {
 
 static bool hasInitGLFWWindows = false;
+
+static uint8_t s_GLFWWindowCount = 0;
+
 static void GLFWErrorCallback(int error_code, const char* description)
 {
     RE_CORE_ERROR("GLFW Error {0} : {1}",error_code,description);
 }
 
-Window* Window::WindowCreate(const WindowProps& props)
+Scope<Window> Window::WindowCreate(const WindowProps& props)
 {
-    return new WindowsWindow(props);
+    return CreateScope<WindowsWindow>(props);
 }
 
 WindowsWindow::WindowsWindow(const WindowProps& props)
 {
+    RE_PROFILE_FUNCTION();
     Init(props);
 }
 
 WindowsWindow::~WindowsWindow()
 {
+    RE_PROFILE_FUNCTION();
     Shutdown();
 }
 
 void WindowsWindow::OnUpdate()
 {
+    RE_PROFILE_FUNCTION();
     glfwPollEvents();
     m_context->SwapBuffer();
 }
@@ -46,6 +52,7 @@ void WindowsWindow::setEventCallBack(const EventCallBackFunc& fn)
 
 void WindowsWindow::setVSync(bool enable)
 {
+    RE_PROFILE_FUNCTION();
     if(enable)
         glfwSwapInterval(1);
     else 
@@ -60,13 +67,14 @@ bool WindowsWindow::isVSync()const
 
 void WindowsWindow::Init(const WindowProps& props)
 {
+    RE_PROFILE_FUNCTION();
     m_data.m_width = props.width;
     m_data.m_height = props.height;
     m_data.m_title = props.title;
 
     RE_CORE_INFO("Creating Window {0} {1} {2}",m_data.m_title,m_data.m_width,m_data.m_height);
 
-    if(!hasInitGLFWWindows)
+    if(s_GLFWWindowCount == 0)
     {
         int ok = glfwInit();
 
@@ -78,6 +86,7 @@ void WindowsWindow::Init(const WindowProps& props)
 
     m_win = glfwCreateWindow(static_cast<int>(m_data.m_width),static_cast<int>(m_data.m_height),m_data.m_title.c_str(),nullptr,nullptr);
 
+    s_GLFWWindowCount++;
     
     m_context = new OpenGLContext(m_win);
     m_context->Init();
@@ -178,6 +187,13 @@ void WindowsWindow::Init(const WindowProps& props)
 
 void WindowsWindow::Shutdown()
 {
+    RE_PROFILE_FUNCTION();
     glfwDestroyWindow(m_win);
+    
+    s_GLFWWindowCount--;
+    if(s_GLFWWindowCount == 0)
+    {
+        glfwTerminate();
+    }
 }
 }

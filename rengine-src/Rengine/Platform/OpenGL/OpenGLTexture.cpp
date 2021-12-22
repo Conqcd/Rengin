@@ -9,6 +9,7 @@ namespace Rengin
 OpenGLTexture2D::OpenGLTexture2D(uint32_t width,uint32_t height)
         :m_width(width), m_height(height)
 {
+    RE_PROFILE_FUNCTION();
 
     GLenum interFormat = GL_RGBA8 , dataFormat = GL_RGBA;
 
@@ -30,9 +31,14 @@ OpenGLTexture2D::OpenGLTexture2D(uint32_t width,uint32_t height)
 OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
     : m_path(path)
 {
+    RE_PROFILE_FUNCTION();
     int width,height,channels;
     stbi_set_flip_vertically_on_load(1);
-    stbi_uc *data =stbi_load(path.c_str(),&width,&height,&channels,0);
+    stbi_uc *data = nullptr; 
+    {
+        RE_PROFILE_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
+        data =stbi_load(path.c_str(),&width,&height,&channels,0);
+    }
     RE_CORE_ASSERT(data,"fail to load image!");
     m_width = static_cast<uint32_t>(width);
     m_height = static_cast<uint32_t>(height);
@@ -72,11 +78,13 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 
 OpenGLTexture2D::~OpenGLTexture2D()
 {
+    RE_PROFILE_FUNCTION();
     glDeleteTextures(1,&m_render_id);
 }
 
 void OpenGLTexture2D::setData(void* data,uint32_t size)
 {
+    RE_PROFILE_FUNCTION();
     uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: 0); 
     RE_CORE_ASSERT((size == m_height * m_width * bpp),"Can not match the size!");
     glTextureSubImage2D(m_render_id,0,0,0,m_width,m_height,m_dataFormat,GL_UNSIGNED_BYTE,data);
@@ -84,11 +92,13 @@ void OpenGLTexture2D::setData(void* data,uint32_t size)
 
 void OpenGLTexture2D::Bind(uint32_t slot) const
 {
+    RE_PROFILE_FUNCTION();
     glBindTextureUnit(slot,m_render_id);
 }
 
 void OpenGLTexture2D::Unbind() const
 {
+    RE_PROFILE_FUNCTION();
     glBindTextureUnit(0,0);
 }
 } // namespace Rengin

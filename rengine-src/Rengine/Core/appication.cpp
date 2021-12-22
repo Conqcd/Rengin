@@ -22,11 +22,11 @@ Application* Application::m_instance = nullptr;
 
 Application::Application()
 {
+    RE_PROFILE_FUNCTION();
     RE_CORE_ASSERT(!m_instance,"Application already exists!");
-
     m_instance = this;
 
-    m_window = Scope<Window>(Window::WindowCreate());
+    m_window = Window::WindowCreate();
     
     m_window->setEventCallBack(RE_BIND_FUNC_EVENT_1(Application::OnEvent));
 

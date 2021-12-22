@@ -32,7 +32,7 @@ public:
 
     virtual void* getNativeWindow()const = 0;
 
-    static Window* WindowCreate(const WindowProps& props = WindowProps());
+    static Scope<Window> WindowCreate(const WindowProps& props = WindowProps());
 };
 
 

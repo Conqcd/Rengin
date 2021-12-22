@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "OpenGLContext.hpp"
 #include "Rengine/Core/core.hpp"
+#include "Rengine/Debug/Instrumentor.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -18,6 +19,7 @@ OpenGLContext::~OpenGLContext()
 
 void OpenGLContext::Init()
 {
+    RE_PROFILE_FUNCTION();
     glfwMakeContextCurrent(m_win);
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     RE_CORE_ASSERT(status,"failed to intialize Glad");
@@ -30,6 +32,7 @@ void OpenGLContext::Init()
 
 void OpenGLContext::SwapBuffer()
 {
+    RE_PROFILE_FUNCTION();
     glfwSwapBuffers(m_win);
 }
 

@@ -28,21 +28,31 @@ static GLenum ShadeDataType2OpenGLType(ShadeDataType type)
 
 OpenGLVertexArray::OpenGLVertexArray()
 {
+    RE_PROFILE_FUNCTION();
     glCreateVertexArrays(1,&m_render_id);
+}
+
+OpenGLVertexArray::~OpenGLVertexArray()
+{
+    RE_PROFILE_FUNCTION();
+    glDeleteVertexArray(1,&m_render_id);
 }
 
 void OpenGLVertexArray::Bind()const
 {
+    RE_PROFILE_FUNCTION();
     glBindVertexArray(m_render_id);
 }
 
 void OpenGLVertexArray::Unbind()const
 {
+    RE_PROFILE_FUNCTION();
     glBindVertexArray(0);
 }
 
 void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexbuffer)
 {
+    RE_PROFILE_FUNCTION();
     glBindVertexArray(m_render_id);
     vertexbuffer->Bind();
     RE_CORE_ASSERT(vertexbuffer->getLayout().getElements().size(),"Vertex Buffer has no layout!");
@@ -66,6 +76,7 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexbuffer)
 
 void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexbuffer)
 {
+    RE_PROFILE_FUNCTION();
     glBindVertexArray(m_render_id);
     indexbuffer->Bind();
     m_indexbuffers = indexbuffer;
