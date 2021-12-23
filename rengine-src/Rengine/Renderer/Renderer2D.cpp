@@ -134,7 +134,7 @@ void Renderer2D::EndScene()
 
 void Renderer2D::Flush()
 {
-    RenderCommand::DrawIndex(s_data.QuadVertexArray,s_data.IndicesCount);
+    RenderCommand::DrawIndex(s_data.vertexArray,s_data.IndicesCount);
 }
 
 void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const glm::vec4& m_SquareColor)
@@ -190,6 +190,33 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
 {
     RE_PROFILE_FUNCTION();
 
+    constexpr glm::vec4 Color = {1.0f,1.0f,1.0f,1.0f};
+
+    s_data.QuadVertexBufferBase->m_position = position;
+    s_data.QuadVertexBufferBase->m_color = Color;
+    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,0.0f};
+    s_data.QuadVertexBufferPtr++;
+
+    
+    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y,position.z};
+    s_data.QuadVertexBufferBase->m_color = Color;
+    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,0.0f};
+    s_data.QuadVertexBufferPtr++;
+    
+    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferBase->m_color = Color;
+    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,1.0f};
+    s_data.QuadVertexBufferPtr++;
+    
+    s_data.QuadVertexBufferBase->m_position = {position.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferBase->m_color = Color;
+    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,1.0f};
+    s_data.QuadVertexBufferPtr++;
+
+
+    s_data.IndicesCount += 6;
+
+#if OLD_PATH
     s_data.m_Texshader->Bind();
     
     s_data.m_Texshader->SetUniformFloat4("u_color",tintColor);
@@ -201,6 +228,7 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
     texture->Bind();
     s_data.vertexArray->Bind();
     RenderCommand::DrawIndex(s_data.vertexArray);
+#endif
 }
 
 void Renderer2D::DrawRotatedQuad(const glm::vec2& position,const glm::vec2& size,float rotation,const glm::vec4& color)

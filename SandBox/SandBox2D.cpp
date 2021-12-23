@@ -38,7 +38,7 @@ void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
 }
 
 void SandBox2D::OnImGuiRender()
-{        
+{
     RE_PROFILE_FUNCTION();
     ImGui::Begin("Settings");
 
