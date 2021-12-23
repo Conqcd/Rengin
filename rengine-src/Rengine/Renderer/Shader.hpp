@@ -16,6 +16,7 @@ public:
 
     virtual void SetUniformInt(const std::string& name,int value) = 0;
     virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) = 0;
+    virtual void SetUniformFloat(const std::string& name,float value) = 0;
     virtual void SetUniformFloat3(const std::string& name,const glm::vec3& mat) = 0;
     virtual void SetUniformFloat4(const std::string& name,const glm::vec4& mat) = 0;
 

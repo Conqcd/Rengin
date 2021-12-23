@@ -78,6 +78,12 @@ void OpenGLShader::SetUniformMat4(const std::string& name,const glm::mat4& mat)
 	UpLoadUniformMat4(name,mat);
 }
 
+void OpenGLShader::SetUniformFloat(const std::string& name,float value)
+{
+    RE_PROFILE_FUNCTION();
+	UpLoadUniformFloat(name,value);
+}
+
 void OpenGLShader::SetUniformFloat3(const std::string& name,const glm::vec3& vec)
 {
     RE_PROFILE_FUNCTION();

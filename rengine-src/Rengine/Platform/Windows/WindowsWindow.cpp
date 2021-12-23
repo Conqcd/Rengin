@@ -76,6 +76,7 @@ void WindowsWindow::Init(const WindowProps& props)
 
     if(s_GLFWWindowCount == 0)
     {
+        RE_PROFILE_SCOPE("glfwInit");
         int ok = glfwInit();
 
         RE_CORE_ASSERT(ok,"Can`t intialize glfw!");

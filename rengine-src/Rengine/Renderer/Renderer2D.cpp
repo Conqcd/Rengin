@@ -100,23 +100,27 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
     glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
     s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
     s_data->m_Texshader->SetUniformFloat4("u_color",m_SquareColor);
+    s_data->m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
     
     s_data->m_WhiteTexture->Bind();
     s_data->vertexArray->Bind();
     RenderCommand::DrawIndex(s_data->vertexArray);
 }
 
-void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const Ref<Texture>& texture)
+void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
 {
-    DrawQuad({position.x,position.y,0.0},size,texture);
+    DrawQuad({position.x,position.y,0.0},size,texture,tile_factor,tintColor);
 }
 
-void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const Ref<Texture>& texture)
+void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
 {
     RE_PROFILE_FUNCTION();
+
     s_data->m_Texshader->Bind();
     
-    s_data->m_Texshader->SetUniformFloat4("u_color",{1.0,1.0,1.0,1.0});
+    s_data->m_Texshader->SetUniformFloat4("u_color",tintColor);
+    
+    s_data->m_Texshader->SetUniformFloat("u_TilingFactor",tile_factor);
     glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
     s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
 
@@ -125,5 +129,49 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
     RenderCommand::DrawIndex(s_data->vertexArray);
 }
 
+void Renderer2D::DrawRotatedQuad(const glm::vec2& position,const glm::vec2& size,float rotation,const glm::vec4& color)
+{
+    DrawRotatedQuad({position.x,position.y,0.0},size,rotation,color);
+}
+
+void Renderer2D::DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size,float rotation,const glm::vec4& m_SquareColor)
+{
+    RE_PROFILE_FUNCTION();
+    s_data->m_Texshader->Bind();
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) 
+    * glm::rotate(glm::mat4(1.0),rotation,{0.0,0.0,1.0})
+    * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
+    s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
+    s_data->m_Texshader->SetUniformFloat4("u_color",m_SquareColor);
+    s_data->m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
+    
+    s_data->m_WhiteTexture->Bind();
+    s_data->vertexArray->Bind();
+    RenderCommand::DrawIndex(s_data->vertexArray);
+}
+
+void Renderer2D::DrawRotatedQuad(const glm::vec2& position,const glm::vec2& size,float rotation,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
+{
+    DrawRotatedQuad({position.x,position.y,0.0},size,rotation,texture,tile_factor,tintColor);
+}
+
+void Renderer2D::DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size,float rotation,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
+{
+    RE_PROFILE_FUNCTION();
+
+    s_data->m_Texshader->Bind();
+    
+    s_data->m_Texshader->SetUniformFloat4("u_color",tintColor);
+    
+    s_data->m_Texshader->SetUniformFloat("u_TilingFactor",tile_factor);
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) 
+    * glm::rotate(glm::mat4(1.0),rotation,{0.0,0.0,1.0})
+    * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
+    s_data->m_Texshader->SetUniformMat4("u_Transform",transforms);
+
+    texture->Bind();
+    s_data->vertexArray->Bind();
+    RenderCommand::DrawIndex(s_data->vertexArray);
+}
 
 } // namespace Rengin
