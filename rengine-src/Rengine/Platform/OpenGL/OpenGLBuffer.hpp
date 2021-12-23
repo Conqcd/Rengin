@@ -10,6 +10,7 @@ private:
     uint32_t m_render_id;
     BufferLayout m_layout;
 public:
+    OpenGLVertexBuffer(uint32_t size);
     OpenGLVertexBuffer(float *vertices,uint32_t size);
     virtual ~OpenGLVertexBuffer();
 
@@ -18,6 +19,8 @@ public:
 
     virtual void SetLayout(const BufferLayout& layout) override;
     virtual const BufferLayout& getLayout()const override;
+
+    virtual void SetData(const void* data,uint32_t size) override;
 };
 
 class RE_API OpenGLIndexBuffer : public IndexBuffer

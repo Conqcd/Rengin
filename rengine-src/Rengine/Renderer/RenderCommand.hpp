@@ -29,9 +29,9 @@ public:
     {
         s_api->Clear();
     }
-    inline static void DrawIndex(const Ref<VertexArray>& vertexArray)
+    inline static void DrawIndex(const Ref<VertexArray>& vertexArray,uint32_t count = 0)
     {
-        s_api->DrawIndexed(vertexArray);
+        s_api->DrawIndexed(vertexArray,count);
     }
 };
 

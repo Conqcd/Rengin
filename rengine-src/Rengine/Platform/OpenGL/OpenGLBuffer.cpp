@@ -10,6 +10,15 @@ namespace Rengin
 //VertexBuffer ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+{
+    RE_PROFILE_FUNCTION();
+ 
+    glCreateBuffers(1,&m_render_id);
+    glBindBuffer(GL_ARRAY_BUFFER,m_render_id);
+    glBufferData(GL_ARRAY_BUFFER,size,nullptr,GL_DYNAMIC_DRAW);
+}
+
 OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices,uint32_t size)
 {
     RE_PROFILE_FUNCTION();
@@ -46,6 +55,11 @@ const BufferLayout& OpenGLVertexBuffer::getLayout()const
     return m_layout;
 }
 
+void OpenGLVertexBuffer::SetData(const void* data,uint32_t size)
+{
+    glBindBuffer(GL_ARRAY_BUFFER,m_render_id);
+    glBufferSubData(GL_ARRAY_BUFFER,0,size,data);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //IndexBuffer ////////////////////////////////////////////////////////////////////////////////////////////////////////////

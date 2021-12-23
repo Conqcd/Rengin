@@ -49,7 +49,8 @@ void SandBox2D::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Rengin::Texture2D::Create("D:\\secret\\109951166175641343.jpg");
+    // m_texture = Rengin::Texture2D::Create("D:\\secret\\109951166175641343.jpg");
+    m_texture = Rengin::Texture2D::Create("../../../SandBox/assets/textures/France.jpg");
 }
 
 void SandBox2D::OnDetach()
