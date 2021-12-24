@@ -14,6 +14,8 @@ public:
 
     virtual void Bind(uint32_t slot = 0) const = 0;
     virtual void Unbind() const = 0;
+
+    virtual bool operator==(const Texture& other) const = 0;
 };
 
 class RE_API Texture2D :public Texture
@@ -22,6 +24,7 @@ public:
     virtual ~Texture2D() = default;
     static Ref<Texture2D> Create(uint32_t width,uint32_t height);
     static Ref<Texture2D> Create(const std::string& path);
+
 };
 
 

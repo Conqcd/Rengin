@@ -72,11 +72,18 @@ void OpenGLShader::SetUniformInt(const std::string& name,int value)
 	UpLoadUniformInt(name,value);
 }
 
+void OpenGLShader::SetUniformIntArray(const std::string& name,int* values,uint32_t count)
+{
+    RE_PROFILE_FUNCTION();
+	UpLoadUniformIntArray(name,values,count);
+}
+
 void OpenGLShader::SetUniformMat4(const std::string& name,const glm::mat4& mat)
 {
     RE_PROFILE_FUNCTION();
 	UpLoadUniformMat4(name,mat);
 }
+
 
 void OpenGLShader::SetUniformFloat(const std::string& name,float value)
 {
@@ -98,49 +105,48 @@ void OpenGLShader::SetUniformFloat4(const std::string& name,const glm::vec4& vec
 
 void OpenGLShader::UpLoadUniformMat3(const std::string& name, const glm::mat3& matrix)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniformMatrix3fv(location,1,GL_FALSE,glm::value_ptr(matrix));
 }
 
+void OpenGLShader::UpLoadUniformIntArray(const std::string& name,int* values,uint32_t count)
+{
+	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
+	glUniform1iv(location,count,values);
+}
+
 void OpenGLShader::UpLoadUniformMat4(const std::string& name, const glm::mat4& matrix)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniformMatrix4fv(location,1,GL_FALSE,glm::value_ptr(matrix));
 }
 
 void OpenGLShader::UpLoadUniformInt(const std::string& name, int value)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform1i(location,value);
 }
 
 void OpenGLShader::UpLoadUniformFloat(const std::string& name, float value)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform1f(location,value);
 }
 
 void OpenGLShader::UpLoadUniformFloat2(const std::string& name, const glm::vec2& value)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform2f(location,value.x,value.y);
 }
 
 void OpenGLShader::UpLoadUniformFloat3(const std::string& name, const glm::vec3& value)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform3f(location,value.x,value.y,value.z);
 }
 
 void OpenGLShader::UpLoadUniformFloat4(const std::string& name, const glm::vec4& value)
 {
-    RE_PROFILE_FUNCTION();
 	GLint location =  glGetUniformLocation(m_render_id,name.c_str());
 	glUniform4f(location,value.x,value.y,value.z,value.w);
 }

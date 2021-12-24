@@ -14,6 +14,8 @@ struct QuadVertex
     glm::vec3 m_position;
     glm::vec4 m_color;
     glm::vec2 m_texCoord;
+    float TexIndex;
+    float tiling_factor;
 };
 
 struct Renderer2DData
@@ -21,6 +23,7 @@ struct Renderer2DData
     const uint32_t MaxQuads = 10000;
     const uint32_t MaxVertices = MaxQuads * 4;
     const uint32_t MaxIndices = MaxQuads * 6;
+    static const uint32_t MaxTextureSlots = 32;
 
     
     Ref<VertexArray> QuadVertexArray;
@@ -33,6 +36,9 @@ struct Renderer2DData
     uint32_t IndicesCount = 0;
     QuadVertex* QuadVertexBufferBase = nullptr;
     QuadVertex* QuadVertexBufferPtr = nullptr;
+
+    std::array<Ref<Texture>,MaxTextureSlots> TextureSolts;
+    uint32_t TextureSlotIndex = 1;
 };
 
 static Renderer2DData s_data;
@@ -58,7 +64,10 @@ void Renderer2D::Init()
 
     BufferLayout layout = {
         {ShadeDataType::Float3 , "a_position"},
-        {ShadeDataType::Float2 , "a_texCoords"}
+        {ShadeDataType::Float4 , "a_color"},
+        {ShadeDataType::Float2 , "a_texCoords"},
+        {ShadeDataType::Float , "a_texIndex"},
+        {ShadeDataType::Float , "a_TilingFactor"}
         };
     // m_verbuf->SetLayout(layout);
     s_data.QuadVertexBuffer->SetLayout(layout);
@@ -99,7 +108,15 @@ void Renderer2D::Init()
     // s_data.m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/FlatColorVertex.glsl","../../../SandBox/assets/shaders/FlatColorFragment.glsl");
     s_data.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
     s_data.m_Texshader->Bind();
-    s_data.m_Texshader->SetUniformInt("u_texture",0);
+
+    int32_t samplers[s_data.MaxTextureSlots];
+
+    for (int i = 0; i < s_data.MaxTextureSlots; i++)
+        samplers[i] = i;
+    
+    s_data.m_Texshader->SetUniformIntArray("u_textures",samplers,s_data.MaxTextureSlots);
+
+    s_data.TextureSolts[0] = s_data.m_WhiteTexture;
 }
 
 void Renderer2D::Shutdown()
@@ -121,6 +138,8 @@ void Renderer2D::BeginScene(OrthoGraphicsCamera& camera)
 
     s_data.QuadVertexBufferPtr = s_data.QuadVertexBufferBase;
     s_data.IndicesCount = 0;
+
+    s_data.TextureSlotIndex = 1;
 }
 
 void Renderer2D::EndScene()
@@ -134,6 +153,9 @@ void Renderer2D::EndScene()
 
 void Renderer2D::Flush()
 {
+    for (uint32_t i = 0 ; i < s_data.TextureSlotIndex; i++)
+        s_data.TextureSolts[i]->Bind(i);
+
     RenderCommand::DrawIndex(s_data.vertexArray,s_data.IndicesCount);
 }
 
@@ -146,39 +168,52 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
 {
     RE_PROFILE_FUNCTION();
 
-    s_data.QuadVertexBufferBase->m_position = position;
-    s_data.QuadVertexBufferBase->m_color = m_SquareColor;
-    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,0.0f};
+    const float TexIndex = 0.0f;
+    const float tile_factor = 1.0f;
+
+    s_data.QuadVertexBufferPtr->m_position = position;
+    s_data.QuadVertexBufferPtr->m_color = m_SquareColor;
+    s_data.QuadVertexBufferPtr->m_texCoord = {0.0f,0.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = TexIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
 
     
-    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = m_SquareColor;
-    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,0.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x + size.x,position.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = m_SquareColor;
+    s_data.QuadVertexBufferPtr->m_texCoord = {1.0f,0.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = TexIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
     
-    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y + size.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = m_SquareColor;
-    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,1.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x + size.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = m_SquareColor;
+    s_data.QuadVertexBufferPtr->m_texCoord = {1.0f,1.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = TexIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
     
-    s_data.QuadVertexBufferBase->m_position = {position.x,position.y + size.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = m_SquareColor;
-    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,1.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = m_SquareColor;
+    s_data.QuadVertexBufferPtr->m_texCoord = {0.0f,1.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = TexIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
 
 
     s_data.IndicesCount += 6;
 
-    // s_data.m_Texshader->Bind();
-    // glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    // s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
-    // s_data.m_Texshader->SetUniformFloat4("u_color",m_SquareColor);
-    // s_data.m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
+#if OLD_PATH
+    s_data.m_Texshader->Bind();
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
+    s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
+    s_data.m_Texshader->SetUniformFloat4("u_color",m_SquareColor);
+    s_data.m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
     
-    // s_data.m_WhiteTexture->Bind();
-    // s_data.vertexArray->Bind();
-    // RenderCommand::DrawIndex(s_data.vertexArray);
+    s_data.m_WhiteTexture->Bind();
+    s_data.vertexArray->Bind();
+    RenderCommand::DrawIndex(s_data.vertexArray);
+#endif
 }
 
 void Renderer2D::DrawQuad(const glm::vec2& position,const glm::vec2& size,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
@@ -192,25 +227,51 @@ void Renderer2D::DrawQuad(const glm::vec3& position,const glm::vec2& size,const 
 
     constexpr glm::vec4 Color = {1.0f,1.0f,1.0f,1.0f};
 
-    s_data.QuadVertexBufferBase->m_position = position;
-    s_data.QuadVertexBufferBase->m_color = Color;
-    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,0.0f};
+    float textureIndex = 0.0f;
+
+    for (uint32_t i = 1 ; i < s_data.TextureSolts.size(); i++)
+    {
+        if(*s_data.TextureSolts[i].get() == *texture.get())
+        {
+            textureIndex = static_cast<float>(i);
+            break;
+        }
+    }
+
+    if(textureIndex == 0.0f)
+    {
+        textureIndex = static_cast<float>(s_data.TextureSlotIndex);
+        s_data.TextureSolts[s_data.TextureSlotIndex] = texture;
+        s_data.TextureSlotIndex++;
+    }
+
+    s_data.QuadVertexBufferPtr->m_position = position;
+    s_data.QuadVertexBufferPtr->m_color = Color;
+    s_data.QuadVertexBufferPtr->m_texCoord = {0.0f,0.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
 
     
-    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = Color;
-    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,0.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x + size.x,position.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = Color;
+    s_data.QuadVertexBufferPtr->m_texCoord = {1.0f,0.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
     
-    s_data.QuadVertexBufferBase->m_position = {position.x + size.x,position.y + size.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = Color;
-    s_data.QuadVertexBufferBase->m_texCoord = {1.0f,1.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x + size.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = Color;
+    s_data.QuadVertexBufferPtr->m_texCoord = {1.0f,1.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
     
-    s_data.QuadVertexBufferBase->m_position = {position.x,position.y + size.y,position.z};
-    s_data.QuadVertexBufferBase->m_color = Color;
-    s_data.QuadVertexBufferBase->m_texCoord = {0.0f,1.0f};
+    s_data.QuadVertexBufferPtr->m_position = {position.x,position.y + size.y,position.z};
+    s_data.QuadVertexBufferPtr->m_color = Color;
+    s_data.QuadVertexBufferPtr->m_texCoord = {0.0f,1.0f};
+    s_data.QuadVertexBufferPtr->TexIndex = textureIndex;
+    s_data.QuadVertexBufferPtr->tiling_factor = tile_factor;
     s_data.QuadVertexBufferPtr++;
 
 
