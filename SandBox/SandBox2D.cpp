@@ -15,14 +15,15 @@ void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
     RE_PROFILE_FUNCTION();
 
     m_camera_controller.OnUpdate(timestep);
-
+    Rengin::Renderer2D::resetStats();
     {
+        RE_PROFILE_SCOPE("SandBox2D::Prep");
         Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
         Rengin::RenderCommand::Clear();
-        RE_PROFILE_SCOPE("SandBox2D::Prep");
     }
 
     {
+        RE_PROFILE_SCOPE("SandBox2D::Draw");
         Rengin::Renderer2D::BeginScene(m_camera_controller.getCamera());
 
         // Rengin::MaterialRef material = new Rengin::Material(m_shader);
@@ -33,7 +34,6 @@ void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
         // Rengin::Renderer::Submit(m_shader,m_verarr);
 
         Rengin::Renderer2D::EndScene();
-        RE_PROFILE_SCOPE("SandBox2D::Draw");
     }
 }
 
@@ -41,6 +41,13 @@ void SandBox2D::OnImGuiRender()
 {
     RE_PROFILE_FUNCTION();
     ImGui::Begin("Settings");
+
+    auto stats = Rengin::Renderer2D::getStats();
+    ImGui::Text("Renderer2D Stats:");
+    ImGui::Text("Call Draw: %d",stats.DrawCall);
+    ImGui::Text("Quads: %d",stats.QuadCount);
+    ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
+    ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
 
     ImGui::End();
 }

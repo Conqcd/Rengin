@@ -29,6 +29,20 @@ public:
     static void DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size,float rotation,const glm::vec4& color);
     static void DrawRotatedQuad(const glm::vec2& position,const glm::vec2& size,float rotation,const Ref<Texture>& texture,float tile_factor = 1.0,const glm::vec4& tintColor = glm::vec4(1.0f));
     static void DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size,float rotation,const Ref<Texture>& texture,float tile_factor = 1.0,const glm::vec4& tintColor = glm::vec4(1.0f));
+
+    struct Statistic
+    {
+        uint32_t DrawCall = 0;
+        uint32_t QuadCount = 0;
+
+        uint32_t GetTotalVertexCount()const {return QuadCount * 4;}
+        uint32_t GetTotalIndexCount()const {return QuadCount * 6;}
+    };
+    static Statistic getStats();
+    static void resetStats();
+
+private:
+    static void FlushAndReset();
 };
 
 
