@@ -8,6 +8,7 @@ class SubTexture2D : public Texture2D
 {
 private:
     /* data */
+    void inmt();
 public:
     SubTexture2D(/* args */);
     ~SubTexture2D();
