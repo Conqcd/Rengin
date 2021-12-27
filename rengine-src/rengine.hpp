@@ -22,6 +22,7 @@
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Buffer.hpp"
 #include "Rengine/Renderer/Renderer.hpp"
+#include "Rengine/Renderer/FrameBuffer.hpp"
 #include "Rengine/Renderer/Renderer2D.hpp"
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"

@@ -14,7 +14,12 @@ class RE_API FrameBuffer
 {
 public:
     virtual const FrameBufferSpecification& getSpecification()const = 0;
+    virtual uint32_t getColorAttachment()const = 0;
     static Ref<FrameBuffer> Create(const FrameBufferSpecification& spec);
+    
+    virtual void Bind() = 0;
+
+    virtual void Unbind() = 0;
 };
 
 

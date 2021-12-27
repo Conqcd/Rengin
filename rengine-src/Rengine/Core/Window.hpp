@@ -7,9 +7,9 @@ namespace Rengin
 struct WindowProps
 {
     std::string title;
-    unsigned int width;
-    unsigned int height;
-    WindowProps(const std::string &name = "Hohen Engine",unsigned int w = 1280,unsigned int h = 720):title(name),width(w),height(h){}
+    uint32_t width;
+    uint32_t height;
+    WindowProps(const std::string &name = "Hohen Engine",uint32_t w = 1280,uint32_t h = 720):title(name),width(w),height(h){}
 };
 
 class RE_API Window
@@ -21,8 +21,8 @@ public:
 
     virtual void OnUpdate() = 0;
 
-    virtual unsigned int getHeight()const = 0;
-    virtual unsigned int getWidth()const = 0;
+    virtual uint32_t getHeight()const = 0;
+    virtual uint32_t getWidth()const = 0;
 
     //Windows Attributes
 

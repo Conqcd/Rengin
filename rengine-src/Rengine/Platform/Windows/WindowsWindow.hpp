@@ -6,8 +6,7 @@
 struct GLFWwindow;
 namespace Rengin
 {
-class WindowsWindow :public Window
-{
+class WindowsWindow :public Window{
 private:
     GLFWwindow* m_win;
     GraphicsContext* m_context;
@@ -27,8 +26,8 @@ public:
 
     void OnUpdate() override;
 
-    inline unsigned int getHeight()const override { return m_data.m_height;}
-    inline unsigned int getWidth()const override { return m_data.m_width;}
+    inline uint32_t getHeight()const override { return m_data.m_height;}
+    inline uint32_t getWidth()const override { return m_data.m_width;}
 
     void setEventCallBack(const EventCallBackFunc& fn) override;
     void setVSync(bool enable) override;
