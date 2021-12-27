@@ -25,14 +25,14 @@ struct Renderer2DData
     static const uint32_t MaxIndices = MaxQuads * 6;
     static const uint32_t MaxTextureSlots = 32;
 
-    
+
     Ref<VertexArray> QuadVertexArray;
     Ref<VertexBuffer> QuadVertexBuffer;
 
     Ref<VertexArray> vertexArray;
     Ref<Shader> m_Texshader;
     Ref<Texture2D> m_WhiteTexture;
-    
+
     uint32_t IndicesCount = 0;
     QuadVertex* QuadVertexBufferBase = nullptr;
     QuadVertex* QuadVertexBufferPtr = nullptr;
