@@ -49,6 +49,12 @@ void OrthoGraphicsCameraController::OnEvent(Event& ev)
 void OrthoGraphicsCameraController::setZoomLevel(float level)
 {
     m_zoomLevel = level;
+    CalculateView();
+}
+
+void OrthoGraphicsCameraController::CalculateView()
+{
+    m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
 }
 
 bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
@@ -57,8 +63,8 @@ bool OrthoGraphicsCameraController::OnMouseScrolled(MouseScrolledEvent& ev)
     
     m_zoomLevel -= ev.getYoffset() * 0.25f;
     m_zoomLevel = std::max(m_zoomLevel,0.25f);
-
-    m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
+    
+    CalculateView();
     return false;
 }
 
@@ -67,8 +73,9 @@ bool OrthoGraphicsCameraController::OnWindowResized(WindowResizeEvent& ev)
     RE_PROFILE_FUNCTION();
     
     m_aspectRatio = static_cast<float>(ev.getWidth())/static_cast<float>(ev.getHeight());
-    m_camera.SetProjection(-m_aspectRatio * m_zoomLevel,m_aspectRatio * m_zoomLevel,-m_zoomLevel, m_zoomLevel);
+    CalculateView();
     return false;
 }
 
 } // namespace Rengin
+

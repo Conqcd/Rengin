@@ -22,6 +22,7 @@ public:
     inline virtual uint32_t getWidth() const override {return m_width;}
     inline virtual uint32_t getHeight() const override {return m_height;}
     
+    virtual uint32_t getRendererID() const override {return m_render_id;}
     virtual void setData(void* data,uint32_t size) override;
 
     virtual void Bind(uint32_t slot = 0) const override;

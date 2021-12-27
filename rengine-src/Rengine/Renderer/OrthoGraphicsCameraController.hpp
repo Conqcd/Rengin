@@ -22,6 +22,8 @@ public:
     void setZoomLevel(float level);
     inline float getZoomLevel() const {return m_zoomLevel;}
 private:
+    void CalculateView();
+    
     bool OnMouseScrolled(MouseScrolledEvent& ev);
     bool OnWindowResized(WindowResizeEvent& ev);
 private:
