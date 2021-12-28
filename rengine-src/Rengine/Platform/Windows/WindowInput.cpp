@@ -8,7 +8,7 @@ namespace Rengin
 {
 
 
-Input* Input::s_instance = new WindowInput();
+Scope<Input> Input::s_instance = CreateScope<WindowInput>();
 
 WindowInput::WindowInput(/* args */)
 {

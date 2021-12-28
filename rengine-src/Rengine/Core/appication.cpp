@@ -39,6 +39,8 @@ Application::Application()
 Application::~Application()
 {
     RE_PROFILE_FUNCTION();
+
+    // Renderer::Shutdown();
 }
 
 bool Application::OnWindowClose(WindowCloseEvent& ev)

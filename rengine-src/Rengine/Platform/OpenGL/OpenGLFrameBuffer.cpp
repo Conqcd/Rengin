@@ -5,6 +5,8 @@
 namespace Rengin
 {
 
+static const uint32_t s_MaxFramebufferSize = 8192;
+
 OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
     : m_specification(spec)
 {
@@ -73,6 +75,11 @@ void OpenGLFrameBuffer::Unbind()
 
 void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
 {
+    if(width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
+    {
+        RE_CORE_WARN("Attempted to resize framebuffer to {0} , {1}",width,height);
+        return;
+    }
     m_specification.Width = width;
     m_specification.Height = height;
     Invalidate();

@@ -17,6 +17,8 @@ private:
     OrthoGraphicsCameraController m_camera_controller;
 
     glm::vec2 m_ViewPortSize;
+    bool m_ViewportFocused = false;
+    bool m_ViewportHovered = false;
 public:
     EditorLayer(/* args */);
     ~EditorLayer();

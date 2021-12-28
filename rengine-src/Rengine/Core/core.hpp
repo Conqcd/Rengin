@@ -26,6 +26,9 @@
 #elif defined(__ANDROID__)
     #define RE_PLATFORM_ANDROID
     #error "Android is not supported!"
+#elif defined(__linux__)
+    #define RE_PLATFORM_LINUX
+    #error "Linux is not supported!"
 #else
     #error "Unkowned Platform!"
 #endif
@@ -47,6 +50,15 @@
 #endif
 
 #ifdef RE_DEBUG
+    #if defined(RE_PLATFORM_WINDOWS)
+        #define RE_DEBUGBREAK() __debugbreak()
+    #elif defined(RE_PLATFORM_LINUX)
+        #include <signal.h>
+        #define RE_DEBUGBREAK() raise(SIGTRAP)
+    #else
+        #error "platforms have no support for other platforms"
+    
+    #endif 
     #define RE_ENABLE_ASSERT
 #endif 
 

@@ -32,6 +32,11 @@ void Renderer::EndScene()
 
 }
 
+void Renderer::Shutdown()
+{
+
+}
+
 void Renderer::Submit(const Ref<Shader>& shader,const Ref<VertexArray>& vertexArray,const glm::mat4& transform)
 {
     shader->Bind();
