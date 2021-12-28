@@ -1,15 +1,16 @@
 #include <rengine.hpp>
 #include <Rengine/Core/entrypoint.hpp>
-#include "SandBox2D.hpp"
+#include "EditorLayer.hpp"
 #include <imgui.h>
 
-class ExampleLayer : public Rengin::Layer
+namespace Rengin{
+class ExampleLayer : public Layer
 {
 public:
     ExampleLayer()
     :Layer("Example"),m_camera_controller(1280.f/720.f,true)
     {
-        m_verarr = Rengin::VertexArray::Create();
+        m_verarr = VertexArray::Create();
 
         float vertices[9] = {
             -0.5f,-0.5f,0.0f,
@@ -20,23 +21,23 @@ public:
             0,1,2
         };
 
-        m_verbuf = Rengin::VertexBuffer::Create(vertices,sizeof(vertices));
+        m_verbuf = VertexBuffer::Create(vertices,sizeof(vertices));
         // m_verbuf->Bind();
 
-        Rengin::BufferLayout layout = {{Rengin::ShadeDataType::Float3 , "a_position"}};
+        BufferLayout layout = {{ShadeDataType::Float3 , "a_position"}};
         m_verbuf->SetLayout(layout);
 
         m_verarr->AddVertexBuffer(m_verbuf);
 
-        m_indbuf = Rengin::IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
+        m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
         // m_indbuf->Bind();
 
         m_verarr->SetIndexBuffer(m_indbuf);
 
-        m_shader = Rengin::Shader::Create("litle","../../../SandBox/assets/shaders/vertex.glsl","../../../SandBox/assets/shaders/fragment.glsl");
+        m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/vertex.glsl","../../../SandBox/assets/shaders/fragment.glsl");
     }
 
-    void OnUpdate(Rengin::TimeStep timestep) override
+    void OnUpdate(TimeStep timestep) override
     {
         RE_INFO("Delta Time is {0}s ({1}ms)",timestep.getSeconds(),timestep.getMilliSeconds());
         // RE_INFO("Updating");
@@ -47,16 +48,16 @@ public:
 
         m_camera_controller.OnUpdate(timestep);
 
-        Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
-        Rengin::RenderCommand::Clear();
+        RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+        RenderCommand::Clear();
 
-        Rengin::Renderer::BeginScene(m_camera_controller.getCamera());
+        Renderer::BeginScene(m_camera_controller.getCamera());
 
-        // Rengin::MaterialRef material = new Rengin::Material(m_shader);
+        // MaterialRef material = new Material(m_shader);
 
-        Rengin::Renderer::Submit(m_shader,m_verarr);
+        Renderer::Submit(m_shader,m_verarr);
 
-        Rengin::Renderer::EndScene();
+        Renderer::EndScene();
     }
     
     virtual void OnImGuiRender() override
@@ -79,31 +80,31 @@ public:
         // }
     }
 private:
-    Rengin::ShaderLibrary m_shader_lib;
-    Rengin::Ref<Rengin::Shader> m_shader;
-    Rengin::Ref<Rengin::VertexBuffer> m_verbuf;
-    Rengin::Ref<Rengin::IndexBuffer> m_indbuf;
-    Rengin::Ref<Rengin::VertexArray> m_verarr;
-    Rengin::Ref<Rengin::Texture> m_texture;
-
-    Rengin::OrthoGraphicsCameraController m_camera_controller;
+    ShaderLibrary m_shader_lib;
+    Ref<Shader> m_shader;
+    Ref<VertexBuffer> m_verbuf;
+    Ref<IndexBuffer> m_indbuf;
+    Ref<VertexArray> m_verarr;
+    Ref<Texture> m_texture;
+    OrthoGraphicsCameraController m_camera_controller;
 };
 
-class SandBox :public Rengin::Application
+class SandBox :public Application
 {
 public:
-    SandBox() :Rengin::Application()
+    SandBox() :Application()
     {
 
-        PushLayer(new ExampleLayer());
-        PushLayer(new SandBox2D());
+        // PushLayer(new ExampleLayer());
+        PushLayer(new EditorLayer());
     }
 
     ~SandBox(){}
 };
 
 
-Rengin::Application* Rengin::CreateApplication()
+Application* CreateApplication()
 {
     return new SandBox();
+}
 }

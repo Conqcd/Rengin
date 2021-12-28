@@ -1,47 +1,50 @@
 #include "SandBox2D.hpp"
 #include <chrono>
+namespace Rengin
+{
+    
 
-SandBox2D::SandBox2D(/* args */)
+EditorLayer::EditorLayer(/* args */)
         :Layer("SandBox2D"),m_camera_controller(1280.f/720.f,true)
 {
 }
 
-SandBox2D::~SandBox2D()
+EditorLayer::~EditorLayer()
 {
 }
 
-void SandBox2D::OnUpdate(Rengin::TimeStep timestep)
+void EditorLayer::OnUpdate(TimeStep timestep)
 {
     RE_PROFILE_FUNCTION();
 
     m_camera_controller.OnUpdate(timestep);
-    Rengin::Renderer2D::resetStats();
+    Renderer2D::resetStats();
     {
         RE_PROFILE_SCOPE("SandBox2D::Prep");
 
         m_framebuffer->Bind();
-        Rengin::RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
-        Rengin::RenderCommand::Clear();
+        RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+        RenderCommand::Clear();
     }
 
     {
         RE_PROFILE_SCOPE("SandBox2D::Draw");
-        Rengin::Renderer2D::BeginScene(m_camera_controller.getCamera());
+        Renderer2D::BeginScene(m_camera_controller.getCamera());
 
         // Rengin::MaterialRef material = new Rengin::Material(m_shader);
 
-        Rengin::Renderer2D::DrawQuad({1.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
+        Renderer2D::DrawQuad({1.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
         // Rengin::Renderer2D::DrawRotatedQuad({1.0f,0.0f},{1.0f,1.0f},glm::radians(45.0f),{0.2f,0.3f,0.8f,1.0f});
         // Rengin::Renderer2D::DrawQuad({-1.0f,0.0f},{1.0f,1.0f},m_texture);
         // Rengin::Renderer::Submit(m_shader,m_verarr);
 
-        Rengin::Renderer2D::EndScene();
+        Renderer2D::EndScene();
         
         m_framebuffer->Unbind();
     }
 }
 
-void SandBox2D::OnImGuiRender()
+void EditorLayer::OnImGuiRender()
 {
     RE_PROFILE_FUNCTION();
     ImGui::Begin("Settings");
@@ -137,26 +140,28 @@ void SandBox2D::OnImGuiRender()
     ImGui::End();
 }
 
-void SandBox2D::OnAttach()
+void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
     // m_texture = Rengin::Texture2D::Create("D:\\secret\\109951166175641343.jpg");
-    m_texture = Rengin::Texture2D::Create("../../../SandBox/assets/textures/France.jpg");
+    m_texture = Texture2D::Create("../../../SandBox/assets/textures/France.jpg");
     
-    Rengin::FrameBufferSpecification FbSpec;
+    FrameBufferSpecification FbSpec;
     FbSpec.Width = 1280;
     FbSpec.Height = 720;
-    m_framebuffer = Rengin::FrameBuffer::Create(FbSpec);
+    m_framebuffer = FrameBuffer::Create(FbSpec);
 }
 
-void SandBox2D::OnDetach()
+void EditorLayer::OnDetach()
 {
     RE_PROFILE_FUNCTION();
 
 }
 
-void SandBox2D::OnEvent(Rengin::Event& ev)
+void EditorLayer::OnEvent(Event& ev)
 {
     m_camera_controller.OnEvent(ev);
 }
+
+} // namespace Rengin
