@@ -16,6 +16,7 @@ private:
     Ref<FrameBuffer> m_framebuffer;
     OrthoGraphicsCameraController m_camera_controller;
 
+    glm::vec2 m_ViewportSize;
 public:
     EditorLayer(/* args */);
     ~EditorLayer();
