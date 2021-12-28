@@ -134,9 +134,19 @@ void EditorLayer::OnImGuiRender()
         ImGui::EndMenuBar();
     }
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     uint32_t textureID = m_framebuffer->getColorAttachment();
 
-    ImGui::Image((void*)textureID,ImVec2{320.f,180.f});
+    ImVec2 vps = ImGui::GetContentRegionAvail();
+    if(*((glm::vec2*)&vps) != m_ViewPortSize)
+    {
+        m_ViewPortSize = {vps.x,vps.y};
+        m_framebuffer->Resize(static_cast<uint32_t>(vps.x),static_cast<uint32_t>(vps.y));
+        m_camera_controller.OnResize(vps.x,vps.y);
+    }
+    ImGui::Image((void*)textureID,vps);
+    
+    ImGui::PopStyleVar();
     ImGui::End();
 }
 

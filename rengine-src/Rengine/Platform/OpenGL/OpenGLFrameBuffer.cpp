@@ -14,10 +14,19 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
     glDeleteFramebuffers(1,&m_render_id);
+    glDeleteTextures(1,&m_ColorAttachment);
+    glDeleteTextures(1,&m_DepthAttachment);
 }
 
 void OpenGLFrameBuffer::Invalidate()
 {
+    if(m_render_id)
+    {
+        glDeleteFramebuffers(1,&m_render_id);
+        glDeleteTextures(1,&m_ColorAttachment);
+        glDeleteTextures(1,&m_DepthAttachment);
+    }
+
     glCreateFramebuffers(1,&m_render_id);
     glBindFramebuffer(GL_FRAMEBUFFER,m_render_id);
 
@@ -54,6 +63,7 @@ uint32_t OpenGLFrameBuffer::getColorAttachment()const
 void OpenGLFrameBuffer::Bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER,m_render_id);
+    glViewport(0,0,m_specification.Width,m_specification.Height);
 }
 
 void OpenGLFrameBuffer::Unbind()
@@ -61,5 +71,11 @@ void OpenGLFrameBuffer::Unbind()
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
+void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
+{
+    m_specification.Width = width;
+    m_specification.Height = height;
+    Invalidate();
+}
 
 } // namespace Rengin
