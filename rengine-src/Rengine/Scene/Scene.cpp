@@ -24,13 +24,13 @@ Scene::Scene(/* args */)
         operator const glm::mat4& () const {return Transform;}
         operator glm::mat4& () {return Transform;}
     };
-    TransformComponent transform;
+    // TransformComponent transform;
 
-    DoMath(transform);
+    // DoMath(transform);
 
     entt::entity entity_ = m_registry.create();
 
-    m_registry.emplace<>()
+    m_registry.emplace<TransformComponent>(entity_,glm::mat4(1.0f));
 
 }
 
