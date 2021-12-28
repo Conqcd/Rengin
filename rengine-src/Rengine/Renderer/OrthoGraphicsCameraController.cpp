@@ -46,6 +46,12 @@ void OrthoGraphicsCameraController::OnEvent(Event& ev)
     dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(OrthoGraphicsCameraController::OnWindowResized));
 }
 
+void OrthoGraphicsCameraController::OnResize(float width,float height)
+{
+    m_aspectRatio = static_cast<float>(width)/static_cast<float>(height);
+    CalculateView();
+}
+
 void OrthoGraphicsCameraController::setZoomLevel(float level)
 {
     m_zoomLevel = level;
@@ -72,8 +78,7 @@ bool OrthoGraphicsCameraController::OnWindowResized(WindowResizeEvent& ev)
 {
     RE_PROFILE_FUNCTION();
     
-    m_aspectRatio = static_cast<float>(ev.getWidth())/static_cast<float>(ev.getHeight());
-    CalculateView();
+    OnResize(static_cast<float>(ev.getWidth()),static_cast<float>(ev.getHeight()));
     return false;
 }
 

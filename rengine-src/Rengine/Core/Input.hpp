@@ -6,7 +6,7 @@ namespace Rengin
 class RE_API Input
 {
 private:
-    static Input* s_instance;
+    static Scope<Input> s_instance;
 public:
     inline static bool isKeyPressed(int key_code) {return s_instance->isKeyPressedImpl(key_code);}
     

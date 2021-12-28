@@ -1,4 +1,4 @@
-#include "SandBox2D.hpp"
+#include "EditorLayer.hpp"
 #include <chrono>
 namespace Rengin
 {
@@ -16,8 +16,9 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnUpdate(TimeStep timestep)
 {
     RE_PROFILE_FUNCTION();
+    if(m_ViewportFocused)
+        m_camera_controller.OnUpdate(timestep);
 
-    m_camera_controller.OnUpdate(timestep);
     Renderer2D::resetStats();
     {
         RE_PROFILE_SCOPE("SandBox2D::Prep");
@@ -134,9 +135,24 @@ void EditorLayer::OnImGuiRender()
         ImGui::EndMenuBar();
     }
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
+    ImGui::Begin("ViewPort");
     uint32_t textureID = m_framebuffer->getColorAttachment();
 
-    ImGui::Image((void*)textureID,ImVec2{320.f,180.f});
+    m_ViewportFocused = ImGui::IsWindowFocused();
+    m_ViewportHovered = ImGui::IsWindowHovered();
+    Application::getApplication().getImGuiLayer()->SetBlockEvents(!m_ViewportFocused && !m_ViewportHovered);
+
+    ImVec2 vps = ImGui::GetContentRegionAvail();
+    if(*((glm::vec2*)&vps) != m_ViewPortSize && vps.x > 0 && vps.y > 0)
+    {
+        m_ViewPortSize = {vps.x,vps.y};
+        m_framebuffer->Resize(static_cast<uint32_t>(vps.x),static_cast<uint32_t>(vps.y));
+        m_camera_controller.OnResize(vps.x,vps.y);
+    }
+    ImGui::Image((void*)textureID,vps);
+    
+    ImGui::PopStyleVar();
     ImGui::End();
 }
 

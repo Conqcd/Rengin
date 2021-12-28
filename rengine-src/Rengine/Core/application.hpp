@@ -34,6 +34,8 @@ public:
     void PushLayer(Layer* layer);
     void PushOverLayer(Layer* layer);
 
+    inline ImGuiLayer* getImGuiLayer() {return m_imgui_layer;}
+
     inline static Application& getApplication() {return *m_instance;}
     inline Window& getWindow() {return *m_window;}
 private:

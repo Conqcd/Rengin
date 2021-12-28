@@ -8,9 +8,9 @@ class RE_API OpenGLFrameBuffer : public FrameBuffer
 {
 private:
     FrameBufferSpecification m_specification;
-    uint32_t m_render_id;
-    uint32_t m_ColorAttachment;
-    uint32_t m_DepthAttachment;
+    uint32_t m_render_id = 0;
+    uint32_t m_ColorAttachment = 0;
+    uint32_t m_DepthAttachment = 0;
 public:
     OpenGLFrameBuffer(const FrameBufferSpecification& spec);
     virtual ~OpenGLFrameBuffer();
@@ -22,6 +22,8 @@ public:
 
     virtual void Bind() override;
     virtual void Unbind() override;
+    
+    virtual void Resize(uint32_t width,uint32_t height) override;
 };
 
     

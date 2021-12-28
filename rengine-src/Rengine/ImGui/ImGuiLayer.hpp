@@ -13,18 +13,21 @@ class RE_API ImGuiLayer :public Layer
 {
 private:
     float m_time = 0.0f;
+    bool m_BlockImGuiEvents = true;
 public:
     ImGuiLayer(/* args */);
     ~ImGuiLayer();
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
+    virtual void OnEvent(Event& ev)override;
 
     virtual void OnImGuiRender() override;
 
     void Begin();
     void End();
 
+    void SetBlockEvents(bool blockEvent) {m_BlockImGuiEvents = blockEvent;}
 };
 
 } // namespace Rengin
