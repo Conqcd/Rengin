@@ -7,7 +7,7 @@ add_definitions(-DRE_ENABLE_ASSERT)
 include_directories(../rengine-src)
 include_directories(../Imgui)
 include_directories(../Stb)
-add_executable(Rengin main.cpp SandBox2D.cpp)
+add_executable(Rengin main.cpp EditorLayer.cpp)
 target_link_libraries(Rengin
     PRIVATE 
     rengine
