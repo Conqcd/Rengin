@@ -110,7 +110,7 @@ void ImGuiLayer::OnImGuiRender()
     RE_PROFILE_FUNCTION();
 
     static bool show = true;
-    ImGui::ShowDemoWindow(&show);   
+    ImGui::ShowDemoWindow(&show);
 }
 
 } // namespace Rengin

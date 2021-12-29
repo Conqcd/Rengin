@@ -5,7 +5,7 @@ namespace Rengin
     
 
 EditorLayer::EditorLayer(/* args */)
-        :Layer("SandBox2D"),m_camera_controller(1280.f/720.f,true)
+        :Layer("Editor"),m_camera_controller(1280.f/720.f,true)
 {
 }
 
@@ -28,7 +28,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     Renderer2D::BeginScene(m_camera_controller.getCamera());
 
     //Update Scene
-    m_ActiveScene->OnUpdate(timestep);
+    // m_ActiveScene->OnUpdate(timestep);
 
     Renderer2D::EndScene();
     
@@ -73,16 +73,9 @@ void EditorLayer::OnImGuiRender()
         dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
     }
 
-    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-    // and handle the pass-thru hole, so we ask Begin() to not render a background.
     if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
         window_flags |= ImGuiWindowFlags_NoBackground;
 
-    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-    // all active windows docked into it will lose their parent and become undocked.
-    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
     if (!opt_padding)
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("DockSpace Demo", &p_open, window_flags);
@@ -144,13 +137,13 @@ void EditorLayer::OnImGuiRender()
     
     ImGui::PopStyleVar();
     ImGui::End();
+    ImGui::End();
 }
 
 void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    // m_texture = Rengin::Texture2D::Create("D:\\secret\\109951166175641343.jpg");
     m_texture = Texture2D::Create("../../../SandBox/assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
@@ -163,6 +156,8 @@ void EditorLayer::OnAttach()
     auto square = m_ActiveScene->CreateEntity();
     m_ActiveScene->Reg().emplace<TransformComponent>(square);
     m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square,glm::vec4{0.0f,1.0f,0.0f,1.0f});
+
+    m_SquareEntity = square;
 }
 
 void EditorLayer::OnDetach()

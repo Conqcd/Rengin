@@ -1,11 +1,12 @@
 #pragma once
-#include "entt.hpp"
+#include "Rengine/Core/core.hpp"
 #include "Rengine/Core/TimeStep.hpp"
 #include "Component.hpp"
+#include "entt.hpp"
 
 namespace Rengin
 {
-class Scene
+class RE_API Scene
 {
 private:
     entt::registry m_registry;
@@ -17,7 +18,6 @@ public:
 
     //TEMP
     entt::registry& Reg() {return m_registry;}
-
 };
 
 } // namespace Rengin
