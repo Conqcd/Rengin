@@ -27,3 +27,6 @@
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
 #include "Rengine/Renderer/Texture.hpp"
+
+#include "Rengine/Scene/Scene.hpp"
+#include "Rengine/Scene/Component.hpp"

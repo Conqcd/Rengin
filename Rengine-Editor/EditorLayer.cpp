@@ -18,31 +18,21 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RE_PROFILE_FUNCTION();
     if(m_ViewportFocused)
         m_camera_controller.OnUpdate(timestep);
-
+    
     Renderer2D::resetStats();
-    {
-        RE_PROFILE_SCOPE("SandBox2D::Prep");
 
-        m_framebuffer->Bind();
-        RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
-        RenderCommand::Clear();
-    }
+    m_framebuffer->Bind();
+    RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+    RenderCommand::Clear();
 
-    {
-        RE_PROFILE_SCOPE("SandBox2D::Draw");
-        Renderer2D::BeginScene(m_camera_controller.getCamera());
+    Renderer2D::BeginScene(m_camera_controller.getCamera());
 
-        // Rengin::MaterialRef material = new Rengin::Material(m_shader);
+    //Update Scene
+    m_ActiveScene->OnUpdate(timestep);
 
-        Renderer2D::DrawQuad({1.0f,0.0f},{1.0f,1.0f},{0.2f,0.3f,0.8f,1.0f});
-        // Rengin::Renderer2D::DrawRotatedQuad({1.0f,0.0f},{1.0f,1.0f},glm::radians(45.0f),{0.2f,0.3f,0.8f,1.0f});
-        // Rengin::Renderer2D::DrawQuad({-1.0f,0.0f},{1.0f,1.0f},m_texture);
-        // Rengin::Renderer::Submit(m_shader,m_verarr);
-
-        Renderer2D::EndScene();
-        
-        m_framebuffer->Unbind();
-    }
+    Renderer2D::EndScene();
+    
+    m_framebuffer->Unbind();
 }
 
 void EditorLayer::OnImGuiRender()
@@ -167,6 +157,12 @@ void EditorLayer::OnAttach()
     FbSpec.Width = 1280;
     FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
+
+    m_ActiveScene = CreateRef<Scene>();
+    
+    auto square = m_ActiveScene->CreateEntity();
+    m_ActiveScene->Reg().emplace<TransformComponent>(square);
+    m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square,glm::vec4{0.0f,1.0f,0.0f,1.0f});
 }
 
 void EditorLayer::OnDetach()

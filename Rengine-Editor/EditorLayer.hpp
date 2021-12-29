@@ -16,6 +16,8 @@ private:
     Ref<FrameBuffer> m_framebuffer;
     OrthoGraphicsCameraController m_camera_controller;
 
+    Ref<Scene> m_ActiveScene;
+
     glm::vec2 m_ViewPortSize;
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
