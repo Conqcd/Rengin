@@ -168,8 +168,9 @@ void EditorLayer::OnAttach()
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
     
-    // m_Camera = m_ActiveScene->CreateEntity("Camera");
+    m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
+    m_Camera.AddComponent<CameraComponent>();
 
 
     class CameraController :public ScriptableEntity
