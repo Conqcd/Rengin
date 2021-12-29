@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
+#include "Rengine/Renderer/Camera.hpp"
 namespace Rengin
 {
     struct TagComponent
@@ -33,6 +33,16 @@ namespace Rengin
         SpriteRendererComponent(const glm::vec4& color)
             :Color(color)   {}
 
+    };
+
+    struct CameraComponent
+    {
+        Rengin::Camera Camera;
+        bool Primary = true;
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
+        CameraComponent(const glm::mat4& projection)
+            :Camera(projection)   {}
     };
 
 } // namespace Rengin

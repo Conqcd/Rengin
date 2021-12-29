@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "Scene.hpp"
 #include "Entity.hpp"
+#include "Rengine/Renderer/Renderer2D.hpp"
 #include <glm/glm.hpp>
 
 namespace Rengin
@@ -53,13 +54,35 @@ Scene::~Scene()
 }
 
 void Scene::OnUpdate(TimeStep ts)
-{
-    auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-    for(auto _entity : group)
+{    
+    auto view = m_registry.view<TransformComponent,CameraComponent>();
+    Camera* MainCamera = nullptr;
+    glm::mat4* CameraTransform = nullptr;
+    for(auto entity : view)
     {
-        auto&[transform,sprite] = group.get<TransformComponent,SpriteRendererComponent>(_entity);
-        // Renderer2D::DrawQuad();
+        auto&[transform,camera] = view.get<TransformComponent,CameraComponent>(entity);
+        if(camera.Primary)
+        {
+            MainCamera = & camera.Camera;
+            CameraTransform = &transform.Transform;
+            break;
+        }
     }
+    if (MainCamera)
+    {
+        Renderer2D::BeginScene(MainCamera->getProjection(),*CameraTransform);
+
+        auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for(auto _entity : group)
+        {
+            auto&[transform,sprite] = group.get<TransformComponent,SpriteRendererComponent>(_entity);
+            // Renderer2D::DrawQuad();
+        }
+
+        Renderer2D::EndScene();
+    }
+    
+    
 }
 
 Entity Scene::CreateEntity(const std::string name)

@@ -139,7 +139,21 @@ void Renderer2D::OnWindowResized(uint32_t width,uint32_t height)
 
 }
 
-void Renderer2D::BeginScene(OrthoGraphicsCamera& camera)
+void Renderer2D::BeginScene(const Camera& camera,const glm::mat4& transform)
+{
+    RE_PROFILE_FUNCTION();
+
+    glm::mat4 viewPro = camera.getProjection() * glm::inverse(transform);
+    s_data.m_Texshader->Bind();
+    s_data.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
+
+    s_data.QuadVertexBufferPtr = s_data.QuadVertexBufferBase;
+    s_data.IndicesCount = 0;
+
+    s_data.TextureSlotIndex = 1;
+}
+
+void Renderer2D::BeginScene(const OrthoGraphicsCamera& camera)
 {
     RE_PROFILE_FUNCTION();
 

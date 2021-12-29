@@ -18,6 +18,7 @@ private:
 
     Ref<Scene> m_ActiveScene;
     Entity m_SquareEntity;
+    Entity m_Camera;
 
     glm::vec2 m_ViewPortSize;
     bool m_ViewportFocused = false;

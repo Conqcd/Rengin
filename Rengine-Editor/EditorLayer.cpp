@@ -1,5 +1,7 @@
 #include "EditorLayer.hpp"
 #include <chrono>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 namespace Rengin
 {
     
@@ -54,8 +56,6 @@ void EditorLayer::OnImGuiRender()
     static bool opt_padding = false;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-    // because it would be confusing to have two docking targets within each others.
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
     if (opt_fullscreen)
     {
@@ -157,6 +157,11 @@ void EditorLayer::OnAttach()
     square.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
     m_SquareEntity = square;
+    
+    auto camera = m_ActiveScene->CreateEntity("Camera");
+    camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
+
+    m_Camera = camera;
 }
 
 void EditorLayer::OnDetach()
