@@ -30,3 +30,4 @@
 
 #include "Rengine/Scene/Scene.hpp"
 #include "Rengine/Scene/Component.hpp"
+#include "Rengine/Scene/Entity.hpp"

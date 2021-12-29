@@ -6,6 +6,7 @@
 
 namespace Rengin
 {
+class Entity;
 class RE_API Scene
 {
 private:
@@ -14,10 +15,12 @@ public:
     Scene(/* args */);
     ~Scene();
     void OnUpdate(TimeStep ts);
-    entt::entity CreateEntity();
+    Entity CreateEntity(const std::string name = std::string());
 
     //TEMP
     entt::registry& Reg() {return m_registry;}
+
+    friend class Entity;
 };
 
 } // namespace Rengin

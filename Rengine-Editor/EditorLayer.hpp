@@ -17,7 +17,7 @@ private:
     OrthoGraphicsCameraController m_camera_controller;
 
     Ref<Scene> m_ActiveScene;
-    entt::entity m_SquareEntity;
+    Entity m_SquareEntity;
 
     glm::vec2 m_ViewPortSize;
     bool m_ViewportFocused = false;

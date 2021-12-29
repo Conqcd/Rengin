@@ -1,6 +1,6 @@
 #include "repch.hpp"
 #include "Scene.hpp"
-
+#include "Entity.hpp"
 #include <glm/glm.hpp>
 
 namespace Rengin
@@ -62,9 +62,14 @@ void Scene::OnUpdate(TimeStep ts)
     }
 }
 
-entt::entity Scene::CreateEntity()
+Entity Scene::CreateEntity(const std::string name)
 {
-    return m_registry.create();
+    Entity entity{m_registry.create(),this};
+    entity.AddComponent<TransformComponent>();
+    auto& tag = entity.AddComponent<TagComponent>();
+    tag.Tag =name.empty()? "Entity" : name;
+    
+    return entity; 
 }
 
 } // namespace Rengin
