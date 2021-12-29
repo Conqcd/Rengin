@@ -1,5 +1,13 @@
 #pragma once
 
+#include "Rengine/Core/core.hpp"
+
+#ifdef RE_PLATFORM_WINDOWS
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+#endif
+
 #include <iostream>
 #include <memory>
 #include <utility>

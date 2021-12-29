@@ -1,12 +1,12 @@
 #pragma once
+#include <entt.hpp>
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Core/TimeStep.hpp"
-#include "Component.hpp"
-#include "entt.hpp"
+
 
 namespace Rengin
 {
-class Entity;
+class RE_API Entity;
 class RE_API Scene
 {
 private:

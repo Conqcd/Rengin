@@ -72,6 +72,7 @@
         "iostream": "cpp",
         "unordered_set": "cpp",
         "glad.h": "c",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "set": "cpp"
     }
 }

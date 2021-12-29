@@ -2,6 +2,7 @@
 #include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 namespace Rengin
 {
     
@@ -163,15 +164,28 @@ void EditorLayer::OnAttach()
 
     m_ActiveScene = CreateRef<Scene>();
     
-    auto square = m_ActiveScene->CreateEntity("Square");
-    square.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
+    m_SquareEntity = m_ActiveScene->CreateEntity("Square");
+    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
-    m_SquareEntity = square;
     
-    auto camera = m_ActiveScene->CreateEntity("Camera");
-    camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
+    // m_Camera = m_ActiveScene->CreateEntity("Camera");
+    // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
 
-    m_Camera = camera;
+
+    class CameraController :public ScriptableEntity
+    {
+    public:
+        void OnUpdate(TimeStep ts) {
+            std::cout << "OnUpdate :" << ts << std::endl;
+        }
+        void OnDestroy() {}
+        void OnCreate() {
+            // GetComponent<TransformComponent>();
+            std::cout << "OnCreate :"  << std::endl;
+        }
+    };
+
+    m_Camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
 void EditorLayer::OnDetach()

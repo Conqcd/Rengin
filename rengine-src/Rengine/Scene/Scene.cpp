@@ -2,8 +2,8 @@
 #include "Scene.hpp"
 #include "Entity.hpp"
 #include "Rengine/Renderer/Renderer2D.hpp"
+#include "Component.hpp"
 #include <glm/glm.hpp>
-
 namespace Rengin
 {
 
@@ -55,6 +55,23 @@ Scene::~Scene()
 
 void Scene::OnUpdate(TimeStep ts)
 {    
+    //Update Script
+    {
+        m_registry.view<NativeScriptComponent>().each([=](auto entity,auto& nsc)
+        {
+            if (!nsc.Instance)
+            {
+                nsc.InstantiateFunction();
+                nsc.Instance->m_Entity = Entity{entity,this};
+                if(nsc.OnCreateFunction)
+                    nsc.OnCreateFunction(nsc.Instance);
+            }
+            if(nsc.OnUpdateFunction)
+                nsc.OnUpdateFunction(nsc.Instance,ts);
+        });
+    }
+
+    //Render 2D
     auto view = m_registry.view<TransformComponent,CameraComponent>();
     Camera* MainCamera = nullptr;
     glm::mat4* CameraTransform = nullptr;
@@ -103,11 +120,11 @@ void Scene::OnViewportResize(uint32_t width,uint32_t height)
     auto view = m_registry.view<CameraComponent>();
     for(auto entity : view)
     {
-        auto& CameraComponent = view.get<CameraComponent>(entity).Camera;
-        if(!CameraComponent.FixedAspectRatio)
-        {
-            CameraComponent.Camera.SetViewportSize(width,height);
-        }
+        // auto& CameraComponent = view.get<CameraComponent>(entity).Camera;
+        // if(!CameraComponent.FixedAspectRatio)
+        // {
+        //     CameraComponent.Camera.SetViewportSize(width,height);
+        // }
     }
 }
 
