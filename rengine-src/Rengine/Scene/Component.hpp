@@ -47,4 +47,9 @@ namespace Rengin
         //     :Camera(projection)   {}
     };
 
+    struct NativeScriptComponent
+    {
+        
+    };
+    
 } // namespace Rengin
