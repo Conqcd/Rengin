@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "Rengine/Renderer/Camera.hpp"
+#include "SceneCamera.hpp"
 namespace Rengin
 {
     struct TagComponent
@@ -37,12 +38,13 @@ namespace Rengin
 
     struct CameraComponent
     {
-        Rengin::Camera Camera;
+        SceneCamera Camera;
         bool Primary = true;
+        bool FixedAspectRatio = false;
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
-        CameraComponent(const glm::mat4& projection)
-            :Camera(projection)   {}
+        // CameraComponent(const glm::mat4& projection)
+        //     :Camera(projection)   {}
     };
 
 } // namespace Rengin

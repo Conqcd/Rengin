@@ -18,6 +18,16 @@ EditorLayer::~EditorLayer()
 void EditorLayer::OnUpdate(TimeStep timestep)
 {
     RE_PROFILE_FUNCTION();
+    if(FrameBufferSpecification spec = m_framebuffer->getSpecification();
+        m_ViewPortSize.x > 0.0f && m_ViewPortSize.x > 0.0f && 
+        (spec.Width != m_ViewPortSize.x || spec.Height != m_ViewPortSize.y))
+    {
+        m_framebuffer->Resize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
+        m_camera_controller.OnResize(m_ViewPortSize.x,m_ViewPortSize.y);
+
+        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
+    }
+
     if(m_ViewportFocused)
         m_camera_controller.OnUpdate(timestep);
     

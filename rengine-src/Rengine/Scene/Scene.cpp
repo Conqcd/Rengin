@@ -95,4 +95,20 @@ Entity Scene::CreateEntity(const std::string name)
     return entity; 
 }
 
+void Scene::OnViewportResize(uint32_t width,uint32_t height)
+{
+    m_ViewportWidth = width;
+    m_ViewportHeight = height;
+
+    auto view = m_registry.view<CameraComponent>();
+    for(auto entity : view)
+    {
+        auto& CameraComponent = view.get<CameraComponent>(entity).Camera;
+        if(!CameraComponent.FixedAspectRatio)
+        {
+            CameraComponent.Camera.SetViewportSize(width,height);
+        }
+    }
+}
+
 } // namespace Rengin
