@@ -1,6 +1,7 @@
 #pragma once
 #include <rengine.hpp>
 #include <imgui.h>
+#include "Panels/SceneHierarchyPanel.hpp"
 
 namespace Rengin
 {
@@ -23,6 +24,9 @@ private:
     glm::vec2 m_ViewPortSize;
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
+
+    //Panels
+    SceneHierarchyPanel m_panel;
 public:
     EditorLayer(/* args */);
     ~EditorLayer();

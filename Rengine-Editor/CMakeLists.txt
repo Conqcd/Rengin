@@ -8,7 +8,11 @@ include_directories(../rengine-src)
 include_directories(../Imgui)
 include_directories(../Stb)
 include_directories(../Entt)
-add_executable(Editor main.cpp EditorLayer.cpp)
+add_executable(Editor 
+    main.cpp 
+    EditorLayer.cpp 
+    Panels/SceneHierarchyPanel.cpp)
+
 target_link_libraries(Editor
     PRIVATE 
     rengine

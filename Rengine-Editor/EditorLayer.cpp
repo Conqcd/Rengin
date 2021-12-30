@@ -129,6 +129,8 @@ void EditorLayer::OnImGuiRender()
         ImGui::EndMenuBar();
     }
 
+    m_panel.OnImGuiRender();
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");
     uint32_t textureID = m_framebuffer->getColorAttachment();
@@ -187,6 +189,8 @@ void EditorLayer::OnAttach()
     };
 
     m_Camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+    m_panel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnDetach()

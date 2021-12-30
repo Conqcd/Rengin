@@ -24,6 +24,7 @@ public:
     entt::registry& Reg() {return m_registry;}
 
     friend class Entity;
+    friend class SceneHierarchyPanel;
 };
 
 } // namespace Rengin
