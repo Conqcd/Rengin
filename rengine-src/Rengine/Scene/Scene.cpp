@@ -7,15 +7,6 @@
 namespace Rengin
 {
 
-static void DoMath(const glm::mat4& transform)
-{
-
-}
-static void OnTransformConstruct(entt::registry& _registry,entt::entity _entity)
-{
-
-}
-
 Scene::Scene(/* args */)
 {
 #if RE_EXAMPLE_CODE
@@ -61,13 +52,11 @@ void Scene::OnUpdate(TimeStep ts)
         {
             if (!nsc.Instance)
             {
-                nsc.InstantiateFunction();
+                nsc.Instance = nsc.InstantiateScript();
                 nsc.Instance->m_Entity = Entity{entity,this};
-                if(nsc.OnCreateFunction)
-                    nsc.OnCreateFunction(nsc.Instance);
+                nsc.Instance->OnCreate();
             }
-            if(nsc.OnUpdateFunction)
-                nsc.OnUpdateFunction(nsc.Instance,ts);
+            nsc.Instance->OnUpdate(ts);
         });
     }
 
