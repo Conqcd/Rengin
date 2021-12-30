@@ -63,20 +63,20 @@ void Scene::OnUpdate(TimeStep ts)
     //Render 2D
     auto view = m_registry.view<TransformComponent,CameraComponent>();
     Camera* MainCamera = nullptr;
-    glm::mat4* CameraTransform = nullptr;
+    glm::mat4 CameraTransform;
     for(auto entity : view)
     {
         auto&[transform,camera] = view.get<TransformComponent,CameraComponent>(entity);
         if(camera.Primary)
         {
             MainCamera = & camera.Camera;
-            CameraTransform = &transform.Transform;
+            CameraTransform = transform.GetTransform();
             break;
         }
     }
     if (MainCamera)
     {
-        Renderer2D::BeginScene(MainCamera->getProjection(),*CameraTransform);
+        Renderer2D::BeginScene(MainCamera->getProjection(),CameraTransform);
 
         auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for(auto _entity : group)
