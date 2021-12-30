@@ -43,6 +43,17 @@ public:
     }
 
     operator bool() const {return m_EntityHandle != entt::null;}
+    operator uint32_t() const {return static_cast<uint32_t>(m_EntityHandle);}
+
+    bool operator==(const Entity& others)const
+    {
+        return m_EntityHandle == others.m_EntityHandle && m_scene == others.m_scene;
+    }
+    
+    bool operator!=(const Entity& others)const
+    {
+        return !operator==(others);
+    }
 };
 
 } // namespace Rengin

@@ -1,6 +1,7 @@
 #include <rengine.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include "imgui.h"
+#include "Rengine/Scene/Component.hpp"
 
 namespace Rengin
 {
@@ -19,14 +20,33 @@ void SceneHierarchyPanel::OnImGuiRender()
 {
     ImGui::Begin("Scene Hierarchy");
 
-    m_Context->m_registry.each([](auto entity)
+    m_Context->m_registry.each([&](auto entityID)
     {
-        auto& tc = m_Context->m_registry.get<TagComponent>(entity);
-
-        ImGui::Text("%s",tc.Tag);
+        Entity entity{entityID,m_Context.get()};
+        
+        DrawEntityNode(entity);
     });
 
     ImGui::End();
+}
+
+void SceneHierarchyPanel::DrawEntityNode(Entity entity)
+{
+    auto& tag = entity.GetComponent<TagComponent>().Tag;
+
+    ImGuiTreeNodeFlags flags = (m_SelectionContext == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow; 
+    bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity,flags,tag.c_str());
+
+    if (ImGui::IsItemClicked())
+    {
+        m_SelectionContext = entity;
+    }
+
+    if (opened)
+    {
+        ImGui::TreePop();
+    }
+    
 }
 
 } // namespace Rengin
