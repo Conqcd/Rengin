@@ -208,7 +208,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         }
 
         if (removeComponent)
-            entity.RemoveComponent<>
+            entity.RemoveComponent<TransformComponent>();
         
     }
 
