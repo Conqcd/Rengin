@@ -45,7 +45,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
     auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-    ImGuiTreeNodeFlags flags = (m_SelectionContext == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow; 
+    ImGuiTreeNodeFlags flags = (m_SelectionContext == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
     bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity,flags,tag.c_str());
 
     if (ImGui::IsItemClicked())
@@ -57,7 +57,6 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     {
         ImGui::TreePop();
     }
-    
 }
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
