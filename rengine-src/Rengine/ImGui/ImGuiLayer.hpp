@@ -14,10 +14,12 @@ class RE_API ImGuiLayer :public Layer
 private:
     float m_time = 0.0f;
     bool m_BlockImGuiEvents = true;
+
 public:
     ImGuiLayer(/* args */);
     ~ImGuiLayer();
 
+    void SetDarkThemeColors();
     virtual void OnAttach() override;
     virtual void OnDetach() override;
     virtual void OnEvent(Event& ev)override;
