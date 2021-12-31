@@ -101,6 +101,11 @@ Entity Scene::CreateEntity(const std::string name)
     return entity; 
 }
 
+void Scene::DestroyEntity(Entity entity)
+{
+    m_registry.destroy(entity);
+}
+
 void Scene::OnViewportResize(uint32_t width,uint32_t height)
 {
     m_ViewportWidth = width;

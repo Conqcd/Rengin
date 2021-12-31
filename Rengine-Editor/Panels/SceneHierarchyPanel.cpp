@@ -31,12 +31,44 @@ void SceneHierarchyPanel::OnImGuiRender()
 
     if(ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
         m_SelectionContext = {};
+
+    //Right Click On Right Space
+    if (ImGui::BeginPopupContextWindow(0,1,false))
+    {
+        if(ImGui::MenuItem("Create Empty Entity"))
+            m_Context->CreateEntity("Empty Entity");
+        ImGui::EndPopup();
+    }
+    
+
     ImGui::End();
 
     ImGui::Begin("Proterties");
+
     if (m_SelectionContext)
     {
         DrawComponents(m_SelectionContext);
+
+        if (ImGui::Button("Add Component"))
+            ImGui::OpenPopup("AddComponent");
+        
+        if (ImGui::BeginPopup("AddComponent"))
+        {
+            if (ImGui::MenuItem("Camera"))
+            {
+                m_SelectionContext.AddComponent<CameraComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+         
+            if (ImGui::MenuItem("Sprite Render"))
+            {
+                m_SelectionContext.AddComponent<SpriteRendererComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+        
     }
     
     ImGui::End();
@@ -50,15 +82,25 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity,flags,tag.c_str());
 
     if (ImGui::IsItemClicked())
-    {
         m_SelectionContext = entity;
+    
+    bool entityDeleted = false;
+    if (ImGui::BeginPopupContextItem())
+    {
+        if(ImGui::MenuItem("Delete Entity"))
+            entityDeleted = true;
+        ImGui::EndPopup();
     }
 
     if (opened)
-    {
         ImGui::TreePop();
+
+    if(entityDeleted)
+    {
+        m_Context->DestroyEntity(entity);
+        if (m_SelectionContext == entity)
+            m_SelectionContext = {};
     }
-    
 }
 
 static void DrawVec3Control(const std::string& label,glm::vec3& values,float resetValue = 0.f,float columnWidth = 100.f)
@@ -132,10 +174,28 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             tag = std::string(buffer);
         }
     }
+
+    const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
     
     if(entity.HasComponent<TransformComponent>())
     {
-        if(ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(),ImGuiTreeNodeFlags_DefaultOpen,"Transform"))
+        bool open = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(),treeNodeFlags,"Transform");
+        ImGui::SameLine();
+        if (ImGui::Button("+"))
+        {
+            ImGui::OpenPopup("Component Setting");
+        }
+
+        bool removeComponent = false;
+        if (ImGui::BeginPopup("Component Setting"))
+        {
+            if (ImGui::MenuItem("Remove Component"))
+                removeComponent = true;
+            ImGui::EndPopup();
+        }
+        
+        
+        if(open)
         {
             auto tc = entity.GetComponent<TransformComponent>();
 
@@ -146,11 +206,15 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             DrawVec3Control("Scale",tc.Scale,1.0f);
             ImGui::TreePop();
         }
+
+        if (removeComponent)
+            entity.RemoveComponent<>
+        
     }
 
     if(entity.HasComponent<CameraComponent>())
     {
-        if(ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(),ImGuiTreeNodeFlags_DefaultOpen,"Camera"))
+        if(ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(),treeNodeFlags,"Camera"))
         {
             auto& cameraComponent = entity.GetComponent<CameraComponent>();
             auto& camera = cameraComponent.Camera;
@@ -215,7 +279,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
     if (entity.HasComponent<SpriteRendererComponent>())
     {
-        if(ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(),ImGuiTreeNodeFlags_DefaultOpen,"Sprite Renderer"))
+        if(ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(),treeNodeFlags,"Sprite Renderer"))
         {
             auto& src = entity.GetComponent<SpriteRendererComponent>();
             ImGui::ColorEdit4("Color",glm::value_ptr(src.Color));
