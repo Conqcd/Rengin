@@ -44,6 +44,43 @@ Scene::~Scene()
 {
 }
 
+template<typename T>
+void Scene::OnComponentAdd(Entity entity,T& component)
+{
+    static_assert(false);
+}
+
+
+template<>
+void Scene::OnComponentAdd<TransformComponent>(Entity entity,TransformComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<TagComponent>(Entity entity,TagComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity,SpriteRendererComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<NativeScriptComponent>(Entity entity,NativeScriptComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<CameraComponent>(Entity entity,CameraComponent& component)
+{
+    component.Camera.SetViewportSize(m_ViewportWidth,m_ViewportHeight);
+}
+
 void Scene::OnUpdate(TimeStep ts)
 {    
     //Update Script
@@ -63,20 +100,20 @@ void Scene::OnUpdate(TimeStep ts)
     //Render 2D
     auto view = m_registry.view<TransformComponent,CameraComponent>();
     Camera* MainCamera = nullptr;
-    glm::mat4* CameraTransform = nullptr;
+    glm::mat4 CameraTransform;
     for(auto entity : view)
     {
         auto&[transform,camera] = view.get<TransformComponent,CameraComponent>(entity);
         if(camera.Primary)
         {
             MainCamera = & camera.Camera;
-            CameraTransform = &transform.Transform;
+            CameraTransform = transform.GetTransform();
             break;
         }
     }
     if (MainCamera)
     {
-        Renderer2D::BeginScene(MainCamera->getProjection(),*CameraTransform);
+        Renderer2D::BeginScene(MainCamera->getProjection(),CameraTransform);
 
         auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for(auto _entity : group)
@@ -99,6 +136,11 @@ Entity Scene::CreateEntity(const std::string name)
     tag.Tag =name.empty()? "Entity" : name;
     
     return entity; 
+}
+
+void Scene::DestroyEntity(Entity entity)
+{
+    m_registry.destroy(entity);
 }
 
 void Scene::OnViewportResize(uint32_t width,uint32_t height)

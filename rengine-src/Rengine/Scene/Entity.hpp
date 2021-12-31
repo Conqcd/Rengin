@@ -32,18 +32,22 @@ public:
     T& AddComponent(Args&&... args)
     {
         RE_CORE_ASSERT(!HasComponent<T>(),"Entity already has component!");
-        return m_scene->m_registry.emplace<T>(m_EntityHandle,std::forward<Args>(args)...);
+
+        T& component = m_scene->m_registry.emplace<T>(m_EntityHandle,std::forward<Args>(args)...);
+        m_scene->OnComponentAdd<T>(*this,component);
+        return component;
     }
     
     template<typename T>
     void RemoveComponent()
     {
         RE_CORE_ASSERT(HasComponent<T>(),"Entity does not have component!");
-        return m_scene->m_registry.remove<T>(m_EntityHandle);
+        m_scene->m_registry.remove<T>(m_EntityHandle);
     }
 
     operator bool() const {return m_EntityHandle != entt::null;}
     operator uint32_t() const {return static_cast<uint32_t>(m_EntityHandle);}
+    operator entt::entity() const {return m_EntityHandle;}
 
     bool operator==(const Entity& others)const
     {

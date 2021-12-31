@@ -51,16 +51,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
 void EditorLayer::OnImGuiRender()
 {
     RE_PROFILE_FUNCTION();
-    ImGui::Begin("Settings");
 
-    auto stats = Rengin::Renderer2D::getStats();
-    ImGui::Text("Renderer2D Stats:");
-    ImGui::Text("Call Draw: %d",stats.DrawCall);
-    ImGui::Text("Quads: %d",stats.QuadCount);
-    ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
-    ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
-
-    ImGui::End();
 
     static bool p_open = true;
     static bool opt_fullscreen = true;
@@ -150,6 +141,17 @@ void EditorLayer::OnImGuiRender()
     
     ImGui::PopStyleVar();
     ImGui::End();
+    ImGui::End();
+
+    ImGui::Begin("Settings");
+
+    auto stats = Rengin::Renderer2D::getStats();
+    ImGui::Text("Renderer2D Stats:");
+    ImGui::Text("Call Draw: %d",stats.DrawCall);
+    ImGui::Text("Quads: %d",stats.QuadCount);
+    ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
+    ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
+
     ImGui::End();
 }
 
