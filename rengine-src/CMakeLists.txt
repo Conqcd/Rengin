@@ -30,5 +30,5 @@ target_link_libraries(rengine
     glad
     imgui
     glm
-    # yaml_cpp
+    yaml-cpp
     )
