@@ -2,10 +2,11 @@
 
 #include "Rengine/Core/core.hpp"
 #include "Scene.hpp"
+#include "Entity.hpp"
 
 namespace Rengin
 {
-class SceneSerializer
+class RE_API SceneSerializer
 {
 private:
     Ref<Scene> m_scene;

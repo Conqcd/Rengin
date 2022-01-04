@@ -28,6 +28,7 @@ public:
     entt::registry& Reg() {return m_registry;}
 
     friend class Entity;
+    friend class SceneSerializer;
     friend class SceneHierarchyPanel;
 };
 

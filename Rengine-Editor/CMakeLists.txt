@@ -28,4 +28,5 @@ target_link_libraries(Editor
     glfw
     glm
     imgui
+    yaml-cpp
     )

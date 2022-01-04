@@ -70,6 +70,7 @@
     #define RE_ASSERT(x,...)
 #endif
 
+#define YAML_CPP_API RE_API
 
 #define LEFT(x) (1<<x)
 

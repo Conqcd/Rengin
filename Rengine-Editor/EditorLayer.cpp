@@ -2,7 +2,7 @@
 #include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "Rengine/Scene/SceneSerializer.hpp"
 namespace Rengin
 {
     
@@ -163,7 +163,7 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Texture2D::Create("../../../SandBox/assets/textures/France.jpg");
+    m_texture = Texture2D::Create("../../../Regine-Editor/assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
     FbSpec.Width = 1280;
@@ -197,6 +197,9 @@ void EditorLayer::OnAttach()
     m_Camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
     m_panel.SetContext(m_ActiveScene);
+
+    SceneSerializer serializer(m_ActiveScene);
+    serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
 }
 
 void EditorLayer::OnDetach()

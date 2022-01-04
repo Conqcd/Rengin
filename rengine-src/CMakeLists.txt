@@ -20,8 +20,8 @@ include_directories(../Imgui)
 include_directories(../rengine-src)
 include_directories(../stb)
 include_directories(../Entt)
-# add_library(rengine SHARED ${RENGINE_SRC})
-add_library(rengine STATIC ${RENGINE_SRC})
+add_library(rengine SHARED ${RENGINE_SRC})
+# add_library(rengine STATIC ${RENGINE_SRC})
 target_link_libraries(rengine
     PRIVATE
     spdlog
