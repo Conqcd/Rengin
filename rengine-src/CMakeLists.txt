@@ -17,6 +17,7 @@ file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
 
 include_directories(../Glad/include)
 include_directories(../Imgui)
+include_directories(../ImGuizmo)
 include_directories(../rengine-src)
 include_directories(../stb)
 include_directories(../Entt)
@@ -29,6 +30,7 @@ target_link_libraries(rengine
     glfw
     glad
     imgui
+    imguizmo
     glm
     yaml-cpp
     )
