@@ -18,6 +18,7 @@ endif()
 
 add_subdirectory(Glad)
 add_subdirectory(Imgui)
+add_subdirectory(ImGuizmo)
 add_subdirectory(Stb)
 add_subdirectory(rengine-src)
 add_subdirectory(Rengine-Editor)

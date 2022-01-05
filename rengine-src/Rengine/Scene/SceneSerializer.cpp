@@ -2,10 +2,70 @@
 #include "SceneSerializer.hpp"
 #include "Component.hpp"
 #include <fstream>
+#define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/yaml.h>
 
+
+namespace YAML
+{
+template<>
+struct convert<glm::vec3>
+{
+    static Node encode(const glm::vec3& rhs)
+    {
+        Node node;
+        node.push_back(rhs.x);
+        node.push_back(rhs.y);
+        node.push_back(rhs.z);
+        return node;
+    }
+    
+    static bool decode(const Node& node,glm::vec3& rhs)
+    {
+        if (!node.IsSequence() || node.size() != 3)
+        {
+            return false;
+        }
+        
+        rhs.x = node[0].as<float>();
+        rhs.y = node[1].as<float>();
+        rhs.z = node[2].as<float>();
+        return true;
+    }
+};
+template<>
+struct convert<glm::vec4>
+{
+    static Node encode(const glm::vec4& rhs)
+    {
+        Node node;
+        node.push_back(rhs.x);
+        node.push_back(rhs.y);
+        node.push_back(rhs.z);
+        node.push_back(rhs.w);
+        return node;
+    }
+    
+    static bool decode(const Node& node,glm::vec4& rhs)
+    {
+        if (!node.IsSequence() || node.size() != 4)
+        {
+            return false;
+        }
+        
+        rhs.x = node[0].as<float>();
+        rhs.y = node[1].as<float>();
+        rhs.z = node[2].as<float>();
+        rhs.w = node[3].as<float>();
+        return true;
+    }
+};
+}
 namespace Rengin
 {
+
+
+
 YAML::Emitter& operator<<(YAML::Emitter& out,const glm::vec4& v)
 {
     out << YAML::Flow;
@@ -60,9 +120,9 @@ static void SerializeEntity(YAML::Emitter& out,Entity entity)
         auto& cameraComponent = entity.GetComponent<CameraComponent>();
         auto camera = cameraComponent.Camera;
         
-        out <<  YAML::Key << "CameraComponent" << YAML::Value;
+        out <<  YAML::Key << "Camera" << YAML::Value;
         out <<  YAML::BeginMap;
-        out <<  YAML::Key << "Projectiopn" << YAML::Value << static_cast<int>(camera.GetProjectionType());
+        out <<  YAML::Key << "ProjectionType" << YAML::Value << static_cast<int>(camera.GetProjectionType());
         out <<  YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveFOV();
         out <<  YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
         out <<  YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
@@ -106,7 +166,7 @@ void SceneSerializer::Serializer(const std::string& filePath)
     out << YAML::EndSeq;
     out << YAML::EndMap;
 
-    std::ofstream fout(filePath);
+    std::ofstream fout(filePath + ".yaml");
     fout << out.c_str();
 }
 
@@ -118,7 +178,74 @@ void SceneSerializer::SerializerRuntime(const std::string& filePath)
 
 bool SceneSerializer::Deserializer(const std::string& filePath)
 {
-    return false;
+    std::ifstream stream(filePath);
+    std::stringstream strStream;
+    strStream << stream.rdbuf();
+
+    YAML::Node data = YAML::Load(strStream.str());
+    if(!data["Scene"])
+        return false;
+    
+    std::string sceneName = data["Scene"].as<std::string>();
+
+    RE_CORE_TRACE("Deserializing Scene '{0}'",sceneName);
+
+    auto entities = data["Entities"];
+    if (entities)
+    {
+        for(auto entity: entities)
+        {
+            uint64_t uuid = entity["Entity"].as<uint64_t>();
+
+            std::string name;
+            auto tagComponent = entity["TagComponent"];
+            if(tagComponent)
+                name = tagComponent["Tag"].as<std::string>();
+            RE_CORE_TRACE("Deserializing Entity with ID = {0} , name = {1}",uuid,name);
+
+            Entity deserializerEntity = m_scene->CreateEntity(name);
+
+            auto transformComponent = entity["TrasformComponent"];
+
+            if (transformComponent)
+            {
+                auto& tc = deserializerEntity.AddComponent<TransformComponent>();
+                tc.Translation = transformComponent["Translation"].as<glm::vec3>();
+                tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+                tc.Translation = transformComponent["Scale"].as<glm::vec3>();
+            }
+            
+            auto cameraComponent = entity["CameraComponent"];
+
+            if (cameraComponent)
+            {
+                auto& cc = deserializerEntity.AddComponent<CameraComponent>();
+
+                auto& cameraProps = cameraComponent["Camera"];
+                cc.Camera.SetProjectionType(static_cast<SceneCamera::ProjectionType>(cameraProps["ProjectionType"].as<int>()));
+
+                cc.Camera.SetPerspectiveFOV(cameraProps["PerspectiveFOV"].as<float>());
+                cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+                cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+                cc.Camera.SetOrthographicsSize(cameraProps["OrthographicSize"].as<float>());
+                cc.Camera.SetOrthographicsNearClip(cameraProps["OrthographicNear"].as<float>());
+                cc.Camera.SetOrthographicsFarClip(cameraProps["OrthographicFar"].as<float>());
+
+                cc.Primary = cameraComponent["Primary"].as<bool>();
+                cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+            }
+
+            auto spriteRendererComponent = entity["SpriteRendererComponent"];
+
+            if (spriteRendererComponent)
+            {
+                auto& src = deserializerEntity.AddComponent<SpriteRendererComponent>();
+                src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+            }
+        }
+    }
+    return true;
 }
 
 bool SceneSerializer::DeserializerRuntime(const std::string& filePath)

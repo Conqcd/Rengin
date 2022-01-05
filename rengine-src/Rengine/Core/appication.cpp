@@ -43,6 +43,11 @@ Application::~Application()
     // Renderer::Shutdown();
 }
 
+void Application::Close()
+{
+    m_running = false;
+}
+
 bool Application::OnWindowClose(WindowCloseEvent& ev)
 {
     m_running = false;

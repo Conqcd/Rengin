@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Rengine/Scene/SceneSerializer.hpp"
+#include "Rengine/Scene/Utils/PlatformUtils.hpp"
+
 namespace Rengin
 {
     
@@ -101,23 +103,25 @@ void EditorLayer::OnImGuiRender()
 
     if (ImGui::BeginMenuBar())
     {
-        if (ImGui::BeginMenu("Options"))
+        if (ImGui::BeginMenu("File"))
         {
             // Disabling fullscreen would allow the window to be moved to the front of other windows,
             // which we can't undo at the moment without finer window depth/z control.
-            ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
-            ImGui::MenuItem("Padding", NULL, &opt_padding);
-            ImGui::Separator();
+            if(ImGui::MenuItem("New","Ctrl+N"))
+            {
+                NewScene();
+            }
+            if(ImGui::MenuItem("Open...","Ctrl+O"))
+            {
+                OpenScene();
+            }
+            if(ImGui::MenuItem("Save as ...","Ctrl+Shift+S"))
+            {
+                SaveSceneAs();
+            }
 
-            if (ImGui::MenuItem("Flag: NoSplit",                "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))                 { dockspace_flags ^= ImGuiDockNodeFlags_NoSplit; }
-            if (ImGui::MenuItem("Flag: NoResize",               "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0))                { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
-            if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))  { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode; }
-            if (ImGui::MenuItem("Flag: AutoHideTabBar",         "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))          { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
-            if (ImGui::MenuItem("Flag: PassthruCentralNode",    "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Close", NULL, false, p_open != NULL))
-                p_open = false;
+            if (ImGui::MenuItem("Exit"))
+                Application::getApplication().Close();
             ImGui::EndMenu();
         }
 
@@ -163,14 +167,16 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Texture2D::Create("../../../Regine-Editor/assets/textures/France.jpg");
+    m_texture = Texture2D::Create("../../../Rengine-Editor/assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
-    FbSpec.Width = 1280;
-    FbSpec.Height = 720;
+    m_ViewPortSize.x = FbSpec.Width = 1280;
+    m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
 
     m_ActiveScene = CreateRef<Scene>();
+    
+    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
@@ -198,8 +204,8 @@ void EditorLayer::OnAttach()
 
     m_panel.SetContext(m_ActiveScene);
 
-    SceneSerializer serializer(m_ActiveScene);
-    serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
+    // SceneSerializer serializer(m_ActiveScene);
+    // serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
 }
 
 void EditorLayer::OnDetach()
@@ -211,6 +217,66 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnEvent(Event& ev)
 {
     m_camera_controller.OnEvent(ev);
+    EventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnKeyPressed));
+}
+
+bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
+{
+    if (e.getRepeatCount() > 0)
+        return false;
+    bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl));
+    bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift));
+
+    switch (e.getKeyValue())
+    {
+    case KeyCode::N:
+        if (control)
+            NewScene();
+        
+        break;
+    case KeyCode::O:
+        if (control)
+            OpenScene();
+        
+        break;
+    case KeyCode::S:
+        if (control && shift)
+            SaveSceneAs();
+        break;
+    default:
+        break;
+    }
+}
+
+void EditorLayer::NewScene()
+{
+    m_ActiveScene = CreateRef<Scene>();
+    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
+    m_panel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OpenScene()
+{
+    std::string filepath = FileDialogs::OpenFile("Rengine Scene (*.yaml)\0*.yaml\0");
+    if (!filepath.empty())
+    {
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
+        m_panel.SetContext(m_ActiveScene);
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Deserializer(filepath);
+    }
+}
+
+void EditorLayer::SaveSceneAs()
+{
+    std::string filepath = FileDialogs::SaveFile("Rengine Scene (*.yaml)\0*.yaml\0");
+    if (!filepath.empty())
+    {
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Serializer(filepath);
+    }
 }
 
 } // namespace Rengin
