@@ -32,3 +32,4 @@
 #include "Rengine/Scene/Component.hpp"
 #include "Rengine/Scene/Entity.hpp"
 #include "Rengine/Scene/ScriptableEntity.hpp"
+#include "Rengine/Scene/SceneSerializer.hpp"

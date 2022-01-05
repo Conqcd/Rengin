@@ -70,8 +70,6 @@
     #define RE_ASSERT(x,...)
 #endif
 
-#define YAML_CPP_API RE_API
-
 #define LEFT(x) (1<<x)
 
 #define RE_BIND_FUNC_EVENT_1(fn) std::bind(&fn , this , std::placeholders::_1)
