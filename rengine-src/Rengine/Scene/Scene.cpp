@@ -151,11 +151,11 @@ void Scene::OnViewportResize(uint32_t width,uint32_t height)
     auto view = m_registry.view<CameraComponent>();
     for(auto entity : view)
     {
-        // auto& CameraComponent = view.get<CameraComponent>(entity).Camera;
-        // if(!CameraComponent.FixedAspectRatio)
-        // {
-        //     CameraComponent.Camera.SetViewportSize(width,height);
-        // }
+        auto& cameraComponent = view.get<CameraComponent>(entity);
+        if(!cameraComponent.FixedAspectRatio)
+        {
+            cameraComponent.Camera.SetViewportSize(width,height);
+        }
     }
 }
 

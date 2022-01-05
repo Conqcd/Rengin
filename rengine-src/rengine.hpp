@@ -14,6 +14,7 @@
 
 //event
 #include "Rengine/Event/Event.hpp"
+#include "Rengine/Event/KeyEvent.hpp"
 
 #include "Rengine/ImGui/ImGuiLayer.hpp"
 //Render

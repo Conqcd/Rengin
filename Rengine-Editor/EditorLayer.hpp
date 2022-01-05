@@ -27,6 +27,11 @@ private:
 
     //Panels
     SceneHierarchyPanel m_panel;
+private:
+    bool OnKeyPressed(KeyPressEvent& e);
+    void NewScene();
+    void OpenScene();
+    void SaveSceneAs();
 public:
     EditorLayer(/* args */);
     ~EditorLayer();

@@ -74,6 +74,12 @@
         "unordered_set": "cpp",
         "glad.h": "c",
         "fstream": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "random": "cpp",
+        "regex": "cpp",
+        "stack": "cpp",
+        "variant": "cpp"
     }
 }

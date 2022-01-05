@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Rengine/Scene/SceneSerializer.hpp"
+#include "Rengine/Scene/Utils/PlatformUtils.hpp"
+
 namespace Rengin
 {
     
@@ -105,15 +107,17 @@ void EditorLayer::OnImGuiRender()
         {
             // Disabling fullscreen would allow the window to be moved to the front of other windows,
             // which we can't undo at the moment without finer window depth/z control.
-            if(ImGui::MenuItem("Serialize"))
+            if(ImGui::MenuItem("New","Ctrl+N"))
             {
-                SceneSerializer serializer(m_ActiveScene);
-                serialzer.Serialize("");
+                NewScene();
             }
-            if(ImGui::MenuItem("Deserialize"))
+            if(ImGui::MenuItem("Open...","Ctrl+O"))
             {
-                SceneSerializer serializer(m_ActiveScene);
-                serialzer.Serialize("");
+                OpenScene();
+            }
+            if(ImGui::MenuItem("Save as ...","Ctrl+Shift+S"))
+            {
+                SaveSceneAs();
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -163,14 +167,16 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Texture2D::Create("../../../Regine-Editor/assets/textures/France.jpg");
+    m_texture = Texture2D::Create("../../../Rengine-Editor/assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
-    FbSpec.Width = 1280;
-    FbSpec.Height = 720;
+    m_ViewPortSize.x = FbSpec.Width = 1280;
+    m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
 
     m_ActiveScene = CreateRef<Scene>();
+    
+    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
@@ -198,8 +204,8 @@ void EditorLayer::OnAttach()
 
     m_panel.SetContext(m_ActiveScene);
 
-    SceneSerializer serializer(m_ActiveScene);
-    serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
+    // SceneSerializer serializer(m_ActiveScene);
+    // serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
 }
 
 void EditorLayer::OnDetach()
@@ -211,6 +217,66 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnEvent(Event& ev)
 {
     m_camera_controller.OnEvent(ev);
+    EventDispatcher dispatcher(ev);
+    dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnKeyPressed));
+}
+
+bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
+{
+    if (e.getRepeatCount() > 0)
+        return false;
+    bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl));
+    bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift));
+
+    switch (e.getKeyValue())
+    {
+    case KeyCode::N:
+        if (control)
+            NewScene();
+        
+        break;
+    case KeyCode::O:
+        if (control)
+            OpenScene();
+        
+        break;
+    case KeyCode::S:
+        if (control && shift)
+            SaveSceneAs();
+        break;
+    default:
+        break;
+    }
+}
+
+void EditorLayer::NewScene()
+{
+    m_ActiveScene = CreateRef<Scene>();
+    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
+    m_panel.SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OpenScene()
+{
+    std::string filepath = FileDialogs::OpenFile("Rengine Scene (*.yaml)\0*.yaml\0");
+    if (!filepath.empty())
+    {
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
+        m_panel.SetContext(m_ActiveScene);
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Deserializer(filepath);
+    }
+}
+
+void EditorLayer::SaveSceneAs()
+{
+    std::string filepath = FileDialogs::SaveFile("Rengine Scene (*.yaml)\0*.yaml\0");
+    if (!filepath.empty())
+    {
+        SceneSerializer serializer(m_ActiveScene);
+        serializer.Serializer(filepath);
+    }
 }
 
 } // namespace Rengin

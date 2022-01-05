@@ -122,7 +122,7 @@ static void SerializeEntity(YAML::Emitter& out,Entity entity)
         
         out <<  YAML::Key << "CameraComponent" << YAML::Value;
         out <<  YAML::BeginMap;
-        out <<  YAML::Key << "Projectiopn" << YAML::Value << static_cast<int>(camera.GetProjectionType());
+        out <<  YAML::Key << "ProjectionType" << YAML::Value << static_cast<int>(camera.GetProjectionType());
         out <<  YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveFOV();
         out <<  YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
         out <<  YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
@@ -166,7 +166,7 @@ void SceneSerializer::Serializer(const std::string& filePath)
     out << YAML::EndSeq;
     out << YAML::EndMap;
 
-    std::ofstream fout(filePath);
+    std::ofstream fout(filePath + ".yaml");
     fout << out.c_str();
 }
 
@@ -198,8 +198,9 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
             uint64_t uuid = entity["Entity"].as<uint64_t>();
 
             std::string name;
-            auto tagComponent = entity["TagComponent"].as<std::string>();
-
+            auto tagComponent = entity["TagComponent"];
+            if(tagComponent)
+                name = tagComponent["Tag"].as<std::string>();
             RE_CORE_TRACE("Deserializing Entity with ID = {0} , name = {1}",uuid,name);
 
             Entity deserializerEntity = m_scene->CreateEntity(name);
