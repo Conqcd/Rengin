@@ -120,7 +120,7 @@ static void SerializeEntity(YAML::Emitter& out,Entity entity)
         auto& cameraComponent = entity.GetComponent<CameraComponent>();
         auto camera = cameraComponent.Camera;
         
-        out <<  YAML::Key << "CameraComponent" << YAML::Value;
+        out <<  YAML::Key << "Camera" << YAML::Value;
         out <<  YAML::BeginMap;
         out <<  YAML::Key << "ProjectionType" << YAML::Value << static_cast<int>(camera.GetProjectionType());
         out <<  YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveFOV();
@@ -222,7 +222,7 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
                 auto& cc = deserializerEntity.AddComponent<CameraComponent>();
 
                 auto& cameraProps = cameraComponent["Camera"];
-                cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+                cc.Camera.SetProjectionType(static_cast<SceneCamera::ProjectionType>(cameraProps["ProjectionType"].as<int>()));
 
                 cc.Camera.SetPerspectiveFOV(cameraProps["PerspectiveFOV"].as<float>());
                 cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
