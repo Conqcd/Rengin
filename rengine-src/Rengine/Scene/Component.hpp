@@ -51,6 +51,15 @@ struct SpriteRendererComponent
     SpriteRendererComponent(const SpriteRendererComponent&) = default;
     SpriteRendererComponent(const glm::vec4& color)
         :Color(color)   {}
+};
+
+struct TextureComponent
+{
+    glm::vec4 Color{1.0f,1.0f,1.0f,1.0f};
+    TextureComponent() = default;
+    TextureComponent(const TextureComponent&) = default;
+    TextureComponent(const glm::vec4& color)
+        :Color(color)   {}
 
 };
 

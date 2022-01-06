@@ -164,20 +164,20 @@ void EditorLayer::OnImGuiRender()
         auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
         const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
         
-        const glm::mat4& cameraProjection = camera.GetProjection();
-        glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+        // const glm::mat4& cameraProjection = camera.GetProjection();
+        // glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
-        auto &tc = selectedEntity.GetComponent<TransformComponent>();
-        glm::mat4 transform = tc.GetTransform();
+        // auto &tc = selectedEntity.GetComponent<TransformComponent>();
+        // glm::mat4 transform = tc.GetTransform();
 
-        ImGuizmo::Manipulate(glm::value_ptr(cameraView),glm::value_ptr(cameraProjection),
-                            ImGuizmo::OPERATION::TRANSLATE,ImGuizmo::LOCAL,glm::value_ptr(transform));
+        // ImGuizmo::Manipulate(glm::value_ptr(cameraView),glm::value_ptr(cameraProjection),
+        //                     ImGuizmo::OPERATION::TRANSLATE,ImGuizmo::LOCAL,glm::value_ptr(transform));
 
-        if(ImGuizmo::IsUsing())
-        {
-            tc.Translation = glm::vec3(transform[3]);
-            glm::decompose
-        }
+        // if(ImGuizmo::IsUsing())
+        // {
+        //     tc.Translation = glm::vec3(transform[3]);
+            // glm::decompose
+        // }
     }
 
     
