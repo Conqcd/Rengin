@@ -29,6 +29,14 @@ public:
 
 };
 
+class RE_API Texture3D :public Texture
+{
+public:
+    virtual ~Texture3D() = default;
+    static Ref<Texture3D> Create(uint32_t width,uint32_t height,uint32_t depth);
+    static Ref<Texture3D> Create(const std::string& path);
 
+    virtual uint32_t getDepth() const = 0;
+};
 
 } // namespace Rengin

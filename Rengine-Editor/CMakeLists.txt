@@ -10,6 +10,7 @@ add_definitions(-DRE_ENABLE_ASSERT)
 #         "${bin_dir}/$<CONFIGURATION>")
 # endif()
 
+include_directories(../Glad/include)
 include_directories(../rengine-src)
 include_directories(../Imgui)
 include_directories(../ImGuizmo)

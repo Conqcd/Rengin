@@ -1,5 +1,6 @@
 #include "EditorLayer.hpp"
 #include <chrono>
+#include "Rengine/Platform/OpenGL/OpenGLTexture.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -135,6 +136,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");
     uint32_t textureID = m_framebuffer->getColorAttachment();
+    textureID = std::dynamic_pointer_cast<OpenGLTexture2D>(m_texture)->getRendererID();
 
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
