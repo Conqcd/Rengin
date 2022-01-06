@@ -158,5 +158,18 @@ void Scene::OnViewportResize(uint32_t width,uint32_t height)
         }
     }
 }
+Entity Scene::GetPrimaryCameraEntity()
+{
+    auto view = m_registry.view<CameraComponent>();
+    for(auto entity : view)
+    {
+        const auto& cameraComponent = view.get<CameraComponent>(entity);
+        if(cameraComponent.Primary)
+        {
+            return {entity,this};
+        }
+    }
+    return {};
+}
 
 } // namespace Rengin

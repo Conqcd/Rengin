@@ -12,6 +12,7 @@ add_definitions(-DRE_ENABLE_ASSERT)
 
 include_directories(../rengine-src)
 include_directories(../Imgui)
+include_directories(../ImGuizmo)
 include_directories(../Stb)
 include_directories(../Entt)
 add_executable(Editor
@@ -28,5 +29,6 @@ target_link_libraries(Editor
     glfw
     glm
     imgui
+    imguizmo
     yaml-cpp
     )

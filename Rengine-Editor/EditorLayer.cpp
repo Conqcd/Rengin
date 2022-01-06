@@ -2,8 +2,10 @@
 #include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Rengine/Scene/SceneSerializer.hpp"
 #include "Rengine/Scene/Utils/PlatformUtils.hpp"
+#include <ImGuizmo.h>
 
 namespace Rengin
 {
@@ -31,9 +33,9 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     }
 
-    if(m_ViewportFocused)
+    if (m_ViewportFocused)
         m_camera_controller.OnUpdate(timestep);
-    
+
     Renderer2D::resetStats();
 
     m_framebuffer->Bind();
@@ -145,8 +147,39 @@ void EditorLayer::OnImGuiRender()
         m_framebuffer->Resize(static_cast<uint32_t>(vps.x),static_cast<uint32_t>(vps.y));
         m_camera_controller.OnResize(vps.x,vps.y);
     }
-    ImGui::Image((void*)textureID,vps);
+    ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
     
+    //Gizmos
+    Entity selectedEntity = m_panel.GetSelectedEntity();
+    if (selectedEntity)
+    {
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        float windowWidth = static_cast<float>(ImGui::GetWindowWidth());
+        float windowHeight = static_cast<float>(ImGui::GetWindowHeight());
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y,windowWidth,windowHeight);
+
+        auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+        const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+        
+        const glm::mat4& cameraProjection = camera.GetProjection();
+        glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+        auto &tc = selectedEntity.GetComponent<TransformComponent>();
+        glm::mat4 transform = tc.GetTransform();
+
+        ImGuizmo::Manipulate(glm::value_ptr(cameraView),glm::value_ptr(cameraProjection),
+                            ImGuizmo::OPERATION::TRANSLATE,ImGuizmo::LOCAL,glm::value_ptr(transform));
+
+        if(ImGuizmo::IsUsing())
+        {
+            tc.Translation = glm::vec3(transform[3]);
+            glm::decompose
+        }
+    }
+
+    
+
     ImGui::PopStyleVar();
     ImGui::End();
     ImGui::End();
