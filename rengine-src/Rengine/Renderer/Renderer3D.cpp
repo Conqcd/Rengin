@@ -26,11 +26,12 @@ struct Renderer3DData
     static const uint32_t MaxTextureSlots = 32;
 
 
-    Ref<VertexArray> CubeVertexArray;
+    Ref<VertexArray> VolumeVertexArray;
     Ref<VertexBuffer> CubeVertexBuffer;
 
     Ref<VertexArray> vertexArray;
     Ref<Shader> m_Texshader;
+    Ref<Shader> m_VolumeShader;
     Ref<Texture3D> m_WhiteTexture;
 
     uint32_t IndicesCount = 0;
@@ -53,7 +54,7 @@ void Renderer3D::Init()
     RE_PROFILE_FUNCTION();
     s_data.vertexArray = VertexArray::Create();
 
-    float CubicVertices[5 * 8] = {
+    float CubicVertices[3 * 8] = {
         -1.0f, -1.0f, 1.0f,
         1.0f, -1.0f, 1.0f,
         1.0f, 1.0f, 1.0f,
@@ -83,9 +84,18 @@ void Renderer3D::Init()
         4, 5, 1,
         4, 1, 0,
     };
+    auto VolumeVertexBuffer = VertexBuffer::Create(CubicVertices,sizeof(CubicVertices));
+    
+    BufferLayout layout_v = {
+        {ShadeDataType::Float3 , "a_position"}
+        };
+    VolumeVertexBuffer->SetLayout(layout_v);
+    auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
+    s_data.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);
+    s_data.VolumeVertexArray->SetIndexBuffer(m_indbuf);
+
     s_data.CubeVertexBuffer = VertexBuffer::Create(s_data.MaxVertices * sizeof(CubeVertex));
-    // auto m_verbuf = VertexBuffer::Create(CubicVertices,sizeof(CubicVertices));
-    s_data.CubeVertexBufferBase = new CubeVertex[s_data.MaxVertices]; 
+    s_data.CubeVertexBufferBase = new CubeVertex[s_data.MaxVertices];
 
     BufferLayout layout = {
         {ShadeDataType::Float3 , "a_position"},
@@ -94,10 +104,9 @@ void Renderer3D::Init()
         {ShadeDataType::Float , "a_texIndex"},
         {ShadeDataType::Float , "a_TilingFactor"}
         };
-    // m_verbuf->SetLayout(layout);
+
     s_data.CubeVertexBuffer->SetLayout(layout);
     
-    // s_data.vertexArray->AddVertexBuffer(m_verbuf);
     s_data.vertexArray->AddVertexBuffer(s_data.CubeVertexBuffer);
 
     uint32_t *CubeIndices = new uint32_t[s_data.MaxIndices];
@@ -122,16 +131,14 @@ void Renderer3D::Init()
     s_data.vertexArray->SetIndexBuffer(CubeIB);
     delete[] CubeIndices;
 
-    // auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
 
-    // s_data.vertexArray->SetIndexBuffer(m_indbuf);
 
     s_data.m_WhiteTexture = Texture3D::Create(1,1,1);
     uint32_t whiteColor = 0xffffffff;
     s_data.m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
 
-    // s_data.m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/FlatColorVertex.glsl","../../../SandBox/assets/shaders/FlatColorFragment.glsl");
     s_data.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
+    s_data.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex.glsl","../../../Rengine-Editor/assets/shaders/textureFragment.glsl");
     s_data.m_Texshader->Bind();
 
     int32_t samplers[s_data.MaxTextureSlots];
@@ -148,6 +155,11 @@ void Renderer3D::Init()
     s_data.CubeVertexPosition[1] = {0.5f,-0.5f,0.0f,1.0f};
     s_data.CubeVertexPosition[2] = {0.5f,0.5f,0.0f,1.0f};
     s_data.CubeVertexPosition[3] = {-0.5f,0.5f,0.0f,1.0f};
+    s_data.CubeVertexPosition[4] = {-0.5f,-0.5f,0.0f,1.0f};
+    s_data.CubeVertexPosition[5] = {0.5f,-0.5f,0.0f,1.0f};
+    s_data.CubeVertexPosition[6] = {0.5f,0.5f,0.0f,1.0f};
+    s_data.CubeVertexPosition[7] = {-0.5f,0.5f,0.0f,1.0f};
+
 }
 
 void Renderer3D::Shutdown()
@@ -243,17 +255,6 @@ void Renderer3D::DrawCube(const glm::vec3& position,const glm::vec3& size,const 
     s_data.IndicesCount += 6;
 
     s_data.stats.CubeCount++;
-#if OLD_PATH
-    s_data.m_Texshader->Bind();
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
-    s_data.m_Texshader->SetUniformFloat4("u_color",m_CubicColor);
-    s_data.m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
-    
-    s_data.m_WhiteTexture->Bind();
-    s_data.vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data.vertexArray);
-#endif
 }
 
 void Renderer3D::DrawCube(const glm::vec3& position,const glm::vec3& size,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
@@ -301,19 +302,6 @@ void Renderer3D::DrawCube(const glm::vec3& position,const glm::vec3& size,const 
     s_data.IndicesCount += 36;
     
     s_data.stats.CubeCount++;
-#if OLD_PATH
-    s_data.m_Texshader->Bind();
-    
-    s_data.m_Texshader->SetUniformFloat4("u_color",tintColor);
-    
-    s_data.m_Texshader->SetUniformFloat("u_TilingFactor",tile_factor);
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0),position) * glm::scale(glm::mat4(1.0),{size.x,size.y,1.0});
-    s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
-
-    texture->Bind();
-    s_data.vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data.vertexArray);
-#endif
 }
 
 void Renderer3D::DrawCube(const glm::vec3& position,const glm::vec3& size,const Ref<SubTexture3D>& subtexture,float tile_factor,const glm::vec4& tintColor)
@@ -395,19 +383,6 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
     s_data.IndicesCount += 6;
 
     s_data.stats.CubeCount++;
-#if OLD_PATH
-    s_data.m_Texshader->Bind();
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
-    * glm::rotate(glm::mat4(1.0f),rotation,{0.0f,0.0f,1.0f})
-    * glm::scale(glm::mat4(1.0f),{size.x,size.y,1.0});
-    s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
-    s_data.m_Texshader->SetUniformFloat4("u_color",m_CubicColor);
-    s_data.m_Texshader->SetUniformFloat("u_TilingFactor",1.0f);
-    
-    s_data.m_WhiteTexture->Bind();
-    s_data.vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data.vertexArray);
-#endif
 }
 
 void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size,float rotation,const Ref<Texture>& texture,float tile_factor,const glm::vec4& tintColor)
@@ -453,24 +428,9 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
         s_data.CubeVertexBufferPtr++;
     }
 
-    s_data.IndicesCount += 6;
+    s_data.IndicesCount += 36;
 
     s_data.stats.CubeCount++;
-#if OLD_PATH
-    s_data.m_Texshader->Bind();
-    
-    s_data.m_Texshader->SetUniformFloat4("u_color",tintColor);
-    
-    s_data.m_Texshader->SetUniformFloat("u_TilingFactor",tile_factor);
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
-    * glm::rotate(glm::mat4(1.0f),rotation,{0.0f,0.0f,1.0f})
-    * glm::scale(glm::mat4(1.0f),{size.x,size.y,1.0f});
-    s_data.m_Texshader->SetUniformMat4("u_Transform",transforms);
-
-    texture->Bind();
-    s_data.vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data.vertexArray);
-#endif
 }
 
 void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size,float rotation,const Ref<SubTexture3D>& subtexture,float tile_factor,const glm::vec4& tintColor)
@@ -521,6 +481,44 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
     s_data.stats.CubeCount++;
 
+}
+
+void Renderer3D::DrawVolome(const glm::vec3 &position, const glm::vec3 &size, const Ref<Texture> &texture)
+{
+    RE_PROFILE_FUNCTION();
+
+    s_data.m_VolumeShader->Bind();
+    
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
+    * glm::scale(glm::mat4(1.0f),size);
+    s_data.m_VolumeShader->SetUniformMat4("u_Transform",transforms);
+
+    texture->Bind();
+    s_data.vertexArray->Bind();
+    RenderCommand::DrawIndex(s_data.VolumeVertexArray);
+    
+    s_data.m_WhiteTexture->Bind();
+}
+
+void Renderer3D::DrawRotatedVolome(const glm::vec3 &position, const glm::vec3 &size, const glm::vec3 &rotation, const Ref<Texture> &texture)
+{
+    RE_PROFILE_FUNCTION();
+
+    s_data.m_VolumeShader->Bind();
+    
+    
+    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
+    * glm::rotate(glm::mat4(1.0f),rotation.x,{1.0f,0.0f,0.0f}) 
+    * glm::rotate(glm::mat4(1.0f),rotation.y,{0.0f,1.0f,0.0f})
+    * glm::rotate(glm::mat4(1.0f),rotation.z,{0.0f,0.0f,1.0f})
+    * glm::scale(glm::mat4(1.0f),size);
+    s_data.m_VolumeShader->SetUniformMat4("u_Transform",transforms);
+
+    texture->Bind();
+    s_data.vertexArray->Bind();
+    RenderCommand::DrawIndex(s_data.VolumeVertexArray);
+    
+    s_data.m_WhiteTexture->Bind();
 }
 
 Renderer3D::Statistic Renderer3D::getStats()
