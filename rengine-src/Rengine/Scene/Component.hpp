@@ -6,6 +6,8 @@
 #include "Rengine/Core/TimeStep.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Rengine/Renderer/Texture.hpp>
+#include <Rengine/Utils/mapping.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
@@ -53,14 +55,33 @@ struct SpriteRendererComponent
         :Color(color)   {}
 };
 
-struct TextureComponent
+struct TransferFunctionComponent
 {
-    glm::vec4 Color{1.0f,1.0f,1.0f,1.0f};
-    TextureComponent() = default;
-    TextureComponent(const TextureComponent&) = default;
-    TextureComponent(const glm::vec4& color)
-        :Color(color)   {}
+    Ref<Texture2D> m_texture;
+    TransferFunctionComponent() = default;
+    TransferFunctionComponent(const TransferFunctionComponent&) = default;
+    TransferFunctionComponent(const Ref<Texture2D> texture)
+        :m_texture(texture)   {}
+};
 
+struct Texture2DComponent
+{
+    Ref<Texture2D> m_texture;
+    std::string path;
+    Texture2DComponent() = default;
+    Texture2DComponent(const Texture2DComponent&) = default;
+    Texture2DComponent(const Ref<Texture2D> texture)
+        :m_texture(texture)   {}
+};
+
+struct Texture3DComponent
+{
+    Ref<Texture3D> m_texture;
+    std::string path;
+    Texture3DComponent() = default;
+    Texture3DComponent(const Texture3DComponent&) = default;
+    Texture3DComponent(const Ref<Texture3D> texture)
+        :m_texture(texture)   {}
 };
 
 struct CameraComponent

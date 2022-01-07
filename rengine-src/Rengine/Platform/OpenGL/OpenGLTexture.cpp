@@ -133,19 +133,37 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     : m_path(path)
 {
     RE_PROFILE_FUNCTION();
-    int width,height,depth,channels;
-    stbi_set_flip_vertically_on_load(1);
-    stbi_uc *data = nullptr;
+    int width = 512,height = 512,depth = 507,channels;
+    float *data = nullptr;
+    
+    FILE* f = fopen(path.c_str(), "rb");
+    RE_ASSERT(f,"Can't Open the Texture file");
+    
+    int wd = height * depth;
+    data = new float[wd * width];
+    unsigned short *s = new unsigned short[width];
+
+    for (int k = 0; k < height; k++)
     {
-        RE_PROFILE_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
-        data = stbi_load(path.c_str(),&width,&height,&channels,0);
+        for (int j = 0; j < depth; j++)
+        {
+            fread(s, sizeof(unsigned short), width, f);
+            for (int i = 0; i < width; i++)
+            {
+                data[k * wd + j * width + i] = s[i];
+                // if (s[i] > max_number)
+                //     max_number = s[i];
+            }
+        }
     }
+    delete[] s;
+
     RE_CORE_ASSERT(data,"fail to load image!");
     m_width = static_cast<uint32_t>(width);
     m_height = static_cast<uint32_t>(height);
     m_depth = static_cast<uint32_t>(depth);
 
-    GLenum interFormat = 0 , dataFormat = 0;
+    GLenum interFormat = GL_R32F , dataFormat = GL_RED;
 
     if (channels == 4)
     {
@@ -176,7 +194,7 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
 
     glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_UNSIGNED_BYTE,data);
 
-    stbi_image_free(data);
+    delete[] data;
 }
 
 OpenGLTexture3D::~OpenGLTexture3D()

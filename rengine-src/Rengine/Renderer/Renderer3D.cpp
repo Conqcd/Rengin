@@ -52,7 +52,7 @@ static Renderer3DData s_data;
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data.vertexArray = VertexArray::Create();
+    s_data.VolumeVertexArray = VertexArray::Create();
 
     float CubicVertices[3 * 8] = {
         -1.0f, -1.0f, 1.0f,
@@ -94,6 +94,7 @@ void Renderer3D::Init()
     s_data.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);
     s_data.VolumeVertexArray->SetIndexBuffer(m_indbuf);
 
+    s_data.vertexArray = VertexArray::Create();
     s_data.CubeVertexBuffer = VertexBuffer::Create(s_data.MaxVertices * sizeof(CubeVertex));
     s_data.CubeVertexBufferBase = new CubeVertex[s_data.MaxVertices];
 
@@ -483,7 +484,7 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
 }
 
-void Renderer3D::DrawVolome(const glm::vec3 &position, const glm::vec3 &size, const Ref<Texture> &texture)
+void Renderer3D::DrawVolume(const glm::vec3 &position, const glm::vec3 &size, const Ref<Texture> &texture)
 {
     RE_PROFILE_FUNCTION();
 
@@ -500,7 +501,7 @@ void Renderer3D::DrawVolome(const glm::vec3 &position, const glm::vec3 &size, co
     s_data.m_WhiteTexture->Bind();
 }
 
-void Renderer3D::DrawRotatedVolome(const glm::vec3 &position, const glm::vec3 &size, const glm::vec3 &rotation, const Ref<Texture> &texture)
+void Renderer3D::DrawRotatedVolume(const glm::vec3 &position, const glm::vec3 &size, const glm::vec3 &rotation, const Ref<Texture> &texture)
 {
     RE_PROFILE_FUNCTION();
 

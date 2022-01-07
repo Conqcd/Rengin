@@ -2,6 +2,7 @@
 #include "Scene.hpp"
 #include "Entity.hpp"
 #include "Rengine/Renderer/Renderer2D.hpp"
+#include "Rengine/Renderer/Renderer3D.hpp"
 #include "Component.hpp"
 #include <glm/glm.hpp>
 namespace Rengin
@@ -70,6 +71,24 @@ void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity,SpriteRenderer
 }
 
 template<>
+void Scene::OnComponentAdd<TransferFunctionComponent>(Entity entity,TransferFunctionComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<Texture3DComponent>(Entity entity,Texture3DComponent& component)
+{
+
+}
+
+template<>
+void Scene::OnComponentAdd<Texture2DComponent>(Entity entity,Texture2DComponent& component)
+{
+
+}
+
+template<>
 void Scene::OnComponentAdd<NativeScriptComponent>(Entity entity,NativeScriptComponent& component)
 {
 
@@ -121,8 +140,19 @@ void Scene::OnUpdate(TimeStep ts)
             auto&[transform,sprite] = group.get<TransformComponent,SpriteRendererComponent>(_entity);
             // Renderer2D::DrawQuad();
         }
-
         Renderer2D::EndScene();
+        
+        Renderer3D::BeginScene(MainCamera->getProjection(),CameraTransform);
+
+        auto tt = entt::get<Texture3DComponent>;
+        auto viewv = m_registry.view<TransformComponent,Texture3DComponent>();
+        for(auto _entity : viewv)
+        {
+            auto&[transform,texture] = viewv.get<TransformComponent,Texture3DComponent>(_entity);
+            Renderer3D::DrawVolume(transform.Translation,transform.Scale,texture.m_texture);
+        }
+        
+        Renderer3D::EndScene();
     }
     
     

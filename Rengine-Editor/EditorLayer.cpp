@@ -46,7 +46,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     Renderer2D::BeginScene(m_camera_controller.getCamera());
 
     //Update Scene
-    // m_ActiveScene->OnUpdate(timestep);
+    m_ActiveScene->OnUpdate(timestep);
 
     Renderer2D::EndScene();
     
@@ -136,7 +136,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");
     uint32_t textureID = m_framebuffer->getColorAttachment();
-    textureID = std::dynamic_pointer_cast<OpenGLTexture2D>(m_texture)->getRendererID();
+    // textureID = std::dynamic_pointer_cast<OpenGLTexture2D>(m_texture)->getRendererID();
 
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
@@ -216,7 +216,12 @@ void EditorLayer::OnAttach()
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
-    
+    Ref<Texture3D> texture_v = Texture3D::Create("D:\\CADCG\\volume render\\gpusv3\\gpusv3\\raw_data\\cbct_sample_z=507_y=512_x=512.raw");
+    auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
+    m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
+    auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
+    texCom.path = "D:\\CADCG\\volume render\\gpusv3\\gpusv3\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
+
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
     m_Camera.AddComponent<CameraComponent>();
