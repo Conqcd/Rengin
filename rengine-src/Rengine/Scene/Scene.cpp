@@ -71,7 +71,14 @@ void Scene::OnComponentAdd<SpriteRendererComponent>(Entity entity,SpriteRenderer
 }
 
 template<>
-void Scene::OnComponentAdd<TransferFunctionComponent>(Entity entity,TransferFunctionComponent& component)
+void Scene::OnComponentAdd<OpacityTransferFunctionComponent>(Entity entity,OpacityTransferFunctionComponent& component)
+{
+
+}
+
+
+template<>
+void Scene::OnComponentAdd<ColorTransferFunctionComponent>(Entity entity,ColorTransferFunctionComponent& component)
 {
 
 }
@@ -149,13 +156,11 @@ void Scene::OnUpdate(TimeStep ts)
         for(auto _entity : viewv)
         {
             auto&[transform,texture] = viewv.get<TransformComponent,Texture3DComponent>(_entity);
-            Renderer3D::DrawVolume(transform.Translation,transform.Scale,texture.m_texture);
+            Renderer3D::DrawVolume(MainCamera->getProjection() * transform.GetTransform(),texture.Texture);
         }
         
         Renderer3D::EndScene();
     }
-    
-    
 }
 
 Entity Scene::CreateEntity(const std::string name)

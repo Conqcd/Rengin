@@ -213,11 +213,11 @@ void EditorLayer::OnAttach()
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
-    Ref<Texture3D> texture_v = Texture3D::Create("D:\\CADCG\\volume render\\gpusv3\\gpusv3\\raw_data\\cbct_sample_z=507_y=512_x=512.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
-    texCom.path = "D:\\CADCG\\volume render\\gpusv3\\gpusv3\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
+    texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
 
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
@@ -262,8 +262,8 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
 {
     if (e.getRepeatCount() > 0)
         return false;
-    bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl));
-    bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift));
+    bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightControl));
+    bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightShift));
 
     switch (e.getKeyValue())
     {

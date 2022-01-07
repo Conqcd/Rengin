@@ -139,7 +139,7 @@ void Renderer3D::Init()
     s_data.m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
 
     s_data.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
-    s_data.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex.glsl","../../../Rengine-Editor/assets/shaders/textureFragment.glsl");
+    s_data.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data.m_Texshader->Bind();
 
     int32_t samplers[s_data.MaxTextureSlots];
@@ -484,39 +484,17 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
 }
 
-void Renderer3D::DrawVolume(const glm::vec3 &position, const glm::vec3 &size, const Ref<Texture> &texture)
-{
-    RE_PROFILE_FUNCTION();
-
-    s_data.m_VolumeShader->Bind();
-    
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
-    * glm::scale(glm::mat4(1.0f),size);
-    s_data.m_VolumeShader->SetUniformMat4("u_Transform",transforms);
-
-    texture->Bind();
-    s_data.vertexArray->Bind();
-    RenderCommand::DrawIndex(s_data.VolumeVertexArray);
-    
-    s_data.m_WhiteTexture->Bind();
-}
-
-void Renderer3D::DrawRotatedVolume(const glm::vec3 &position, const glm::vec3 &size, const glm::vec3 &rotation, const Ref<Texture> &texture)
+void Renderer3D::DrawVolume(const glm::mat4 &transforms,const Ref<Texture> &texture)
 {
     RE_PROFILE_FUNCTION();
 
     s_data.m_VolumeShader->Bind();
     
     
-    glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
-    * glm::rotate(glm::mat4(1.0f),rotation.x,{1.0f,0.0f,0.0f})
-    * glm::rotate(glm::mat4(1.0f),rotation.y,{0.0f,1.0f,0.0f})
-    * glm::rotate(glm::mat4(1.0f),rotation.z,{0.0f,0.0f,1.0f})
-    * glm::scale(glm::mat4(1.0f),size);
-    s_data.m_VolumeShader->SetUniformMat4("u_Transform",transforms);
+    s_data.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",transforms);
 
     texture->Bind();
-    s_data.vertexArray->Bind();
+    s_data.VolumeVertexArray->Bind();
     RenderCommand::DrawIndex(s_data.VolumeVertexArray);
     
     s_data.m_WhiteTexture->Bind();

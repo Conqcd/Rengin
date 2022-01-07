@@ -32,8 +32,7 @@ public:
     static void DrawRotatedCube(const glm::vec3& position,const glm::vec3& size,float rotation,const Ref<Texture>& texture,float tile_factor = 1.0,const glm::vec4& tintColor = glm::vec4(1.0f));
     static void DrawRotatedCube(const glm::vec3& position,const glm::vec3& size,float rotation,const Ref<SubTexture3D>& subtexture,float tile_factor = 1.0,const glm::vec4& tintColor = glm::vec4(1.0f));
 
-    static void DrawVolume(const glm::vec3& position,const glm::vec3& size,const Ref<Texture>& texture);
-    static void DrawRotatedVolume(const glm::vec3& position,const glm::vec3& size,const glm::vec3 &rotation,const Ref<Texture>& texture);
+    static void DrawVolume(const glm::mat4 &transforms,const Ref<Texture>& texture);
     struct Statistic
     {
         uint32_t DrawCall = 0;

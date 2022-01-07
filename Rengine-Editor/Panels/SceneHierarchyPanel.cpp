@@ -115,7 +115,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
 
     ImGui::SameLine();
-    ImGui::DragFloat("##X",&values.x,0.1f,0.0f,1.0f,"%.2f");
+    ImGui::DragFloat("##X",&values.x,0.1f,-10.0f,10.0f,"%.2f");
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
@@ -129,7 +129,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
     
     ImGui::SameLine();
-    ImGui::DragFloat("##Y",&values.y,0.1f,0.0f,1.0f,"%.2f");
+    ImGui::DragFloat("##Y",&values.y,0.1f,-10.0f,10.0f,"%.2f");
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
@@ -143,7 +143,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
     
     ImGui::SameLine();
-    ImGui::DragFloat("##Z",&values.z,0.1f,0.0f,1.0f,"%.2f");
+    ImGui::DragFloat("##Z",&values.z,0.1f,-10.0f,10.0f,"%.2f");
     ImGui::PopItemWidth();
 
     ImGui::PopStyleVar();
@@ -308,6 +308,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::ColorEdit4("Color",glm::value_ptr(component.Color));
     });
     
+    DrawComponent<Texture3DComponent>("Texture3D",entity,[](auto& component)
+    {
+        ImGui::Text(component.Path.c_str());
+    });
+
+    DrawComponent<ColorTransferFunctionComponent>("ColorTransferFunction", entity, [](auto &component) {});
+
+    DrawComponent<OpacityTransferFunctionComponent>("OpacityTransferFunction",entity,[](auto& component)
+    {
+    });
+
 }
 
 } // namespace Rengin
