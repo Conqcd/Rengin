@@ -508,7 +508,7 @@ void Renderer3D::DrawRotatedVolome(const glm::vec3 &position, const glm::vec3 &s
     
     
     glm::mat4 transforms = glm::translate(glm::mat4(1.0f),position)
-    * glm::rotate(glm::mat4(1.0f),rotation.x,{1.0f,0.0f,0.0f}) 
+    * glm::rotate(glm::mat4(1.0f),rotation.x,{1.0f,0.0f,0.0f})
     * glm::rotate(glm::mat4(1.0f),rotation.y,{0.0f,1.0f,0.0f})
     * glm::rotate(glm::mat4(1.0f),rotation.z,{0.0f,0.0f,1.0f})
     * glm::scale(glm::mat4(1.0f),size);
