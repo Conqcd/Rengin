@@ -43,12 +43,9 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
-    Renderer2D::BeginScene(m_camera_controller.getCamera());
-
     //Update Scene
     m_ActiveScene->OnUpdate(timestep);
 
-    Renderer2D::EndScene();
     
     m_framebuffer->Unbind();
 }
