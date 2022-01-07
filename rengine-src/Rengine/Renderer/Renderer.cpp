@@ -3,6 +3,7 @@
 #include "Rengine/Platform/OpenGL/OpenGLShader.hpp"
 #include <glm/glm.hpp>
 #include "Renderer2D.hpp"
+#include "Renderer3D.hpp"
 
 namespace Rengin
 {
@@ -15,6 +16,7 @@ void Renderer::Init()
     RE_PROFILE_FUNCTION();
     RenderCommand::Init();
     Renderer2D::Init();
+    Renderer3D::Init();
 }
 
 void Renderer::OnWindowResized(uint32_t width ,uint32_t height)

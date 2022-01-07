@@ -6,6 +6,10 @@
 #include "Rengine/Core/TimeStep.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Rengine/Renderer/Texture.hpp>
+#include <Rengine/Utils/mapping.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Rengin
 {
@@ -31,9 +35,10 @@ struct TransformComponent
         :Translation(translation)   {}
 
     glm::mat4 GetTransform()const{
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),Rotation.x,{1.0f,0.0f,0.0f})
-        * glm::rotate(glm::mat4(1.0f),Rotation.y,{0.0f,1.0f,0.0f})
-        * glm::rotate(glm::mat4(1.0f),Rotation.z,{0.0f,0.0f,1.0f});
+        glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+        // glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),Rotation.x,{1.0f,0.0f,0.0f})
+        // * glm::rotate(glm::mat4(1.0f),Rotation.y,{0.0f,1.0f,0.0f})
+        // * glm::rotate(glm::mat4(1.0f),Rotation.z,{0.0f,0.0f,1.0f});
         
         return glm::translate(glm::mat4(1.0f),Translation)
         *   rotation
@@ -48,7 +53,35 @@ struct SpriteRendererComponent
     SpriteRendererComponent(const SpriteRendererComponent&) = default;
     SpriteRendererComponent(const glm::vec4& color)
         :Color(color)   {}
+};
 
+struct TransferFunctionComponent
+{
+    Ref<Texture2D> m_texture;
+    TransferFunctionComponent() = default;
+    TransferFunctionComponent(const TransferFunctionComponent&) = default;
+    TransferFunctionComponent(const Ref<Texture2D> texture)
+        :m_texture(texture)   {}
+};
+
+struct Texture2DComponent
+{
+    Ref<Texture2D> m_texture;
+    std::string path;
+    Texture2DComponent() = default;
+    Texture2DComponent(const Texture2DComponent&) = default;
+    Texture2DComponent(const Ref<Texture2D> texture)
+        :m_texture(texture)   {}
+};
+
+struct Texture3DComponent
+{
+    Ref<Texture3D> m_texture;
+    std::string path;
+    Texture3DComponent() = default;
+    Texture3DComponent(const Texture3DComponent&) = default;
+    Texture3DComponent(const Ref<Texture3D> texture)
+        :m_texture(texture)   {}
 };
 
 struct CameraComponent

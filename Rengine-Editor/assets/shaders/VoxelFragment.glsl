@@ -125,6 +125,7 @@ vec4 colour_transfer(uint intensity)
 
 void main()
 {
+    gl_FragColor.rgb = vec3(1.0,1.0,1.0);
     vec3 ray_direction;
     ray_direction.xy = 2.0 * gl_FragCoord.xy / viewport_size - 1.0;
     ray_direction.x *= aspect_ratio;

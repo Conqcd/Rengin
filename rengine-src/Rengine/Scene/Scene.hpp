@@ -26,6 +26,7 @@ public:
     void OnViewportResize(uint32_t width,uint32_t height);
     //TEMP
     entt::registry& Reg() {return m_registry;}
+    Entity GetPrimaryCameraEntity();
 
     friend class Entity;
     friend class SceneSerializer;
