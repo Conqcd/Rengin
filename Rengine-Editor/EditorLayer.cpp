@@ -265,7 +265,7 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
     bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightControl));
     bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightShift));
 
-    switch (e.getKeyValue())
+    switch (static_cast<KeyCode>(e.getKeyValue()))
     {
     case KeyCode::N:
         if (control)

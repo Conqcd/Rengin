@@ -34,8 +34,8 @@
 #endif
 
 
-#ifdef RE_PLATFORM_WINDOWS
-    #ifdef RE_DYNAMICS_LINKS
+#if defined(RE_PLATFORM_WINDOWS)
+    #ifdef RE_DYNAMICS_LINKS && defined(_MSC_VER)
         #ifdef RE_BUILD_DLL
         #define RE_API __declspec(dllexport)
         #else
@@ -62,7 +62,7 @@
     #define RE_ENABLE_ASSERT
 #endif 
 
-#ifdef RE_ENABLE_ASSERT
+#if defined(RE_ENABLE_ASSERT) && defined(_MSC_VER)
     #define RE_CORE_ASSERT(x,...) { if(!x){ RE_CORE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
     #define RE_ASSERT(x,...) { if(!x){ RE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
 #else

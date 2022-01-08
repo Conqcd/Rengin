@@ -1,5 +1,6 @@
 #pragma once
 #include "Rengine/Core/core.hpp"
+#include "Rengine/Core/log.hpp"
 
 namespace Rengin
 {

@@ -138,8 +138,10 @@ void Renderer3D::Init()
     uint32_t whiteColor = 0xffffffff;
     s_data.m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
 
-    s_data.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
-    s_data.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
+    s_data.m_Texshader = Shader::Create("litle","../../SandBox/assets/shaders/textureVertex.glsl","../../SandBox/assets/shaders/textureFragment.glsl");
+    // s_data.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
+    s_data.m_VolumeShader = Shader::Create("VoxelRender","../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
+    // s_data.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data.m_Texshader->Bind();
 
     int32_t samplers[s_data.MaxTextureSlots];

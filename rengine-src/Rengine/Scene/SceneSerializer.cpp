@@ -221,7 +221,7 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
             {
                 auto& cc = deserializerEntity.AddComponent<CameraComponent>();
 
-                auto& cameraProps = cameraComponent["Camera"];
+                auto&& cameraProps = cameraComponent["Camera"];
                 cc.Camera.SetProjectionType(static_cast<SceneCamera::ProjectionType>(cameraProps["ProjectionType"].as<int>()));
 
                 cc.Camera.SetPerspectiveFOV(cameraProps["PerspectiveFOV"].as<float>());
