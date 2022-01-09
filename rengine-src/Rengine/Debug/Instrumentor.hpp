@@ -81,7 +81,7 @@ class InstrumentationTimer {
 private:
   const char *m_name;
   bool m_stop;
-  std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
+  std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimePoint;
 
 public:
   InstrumentationTimer(const char *name) : m_name(name), m_stop(false) {

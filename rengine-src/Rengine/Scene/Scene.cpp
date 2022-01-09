@@ -41,7 +41,7 @@ Scene::Scene(/* args */) {
 Scene::~Scene() {}
 
 template <typename T> void Scene::OnComponentAdd(Entity entity, T &component) {
-  static_assert(false);
+  // static_assert(false);
 }
 
 template <>

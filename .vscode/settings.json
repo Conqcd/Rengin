@@ -3,8 +3,8 @@
         "<C-a>": false,
         "<C-f>": false
     },
-    "cmake.generator": "MinGW Makefiles",
-    // "cmake.generator": "Ninja",
+    // "cmake.generator": "MinGW Makefiles",
+    "cmake.generator": "Ninja",
     // "cmake.generator": "Visual Studio 16 2019",
     "files.associations": {
         "cmath": "cpp",

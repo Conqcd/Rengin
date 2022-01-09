@@ -7,7 +7,7 @@ include(${PROJECT_SOURCE_DIR}/third_party/yaml_cpp.cmake)
 if (WIN32)
 add_definitions(-DRE_WINDOWS)
 endif()
-add_definitions(-DRE_ENABLE_ASSERT)
+# add_definitions(-DRE_ENABLE_ASSERT)
 add_definitions(-DRE_BUILD_DLL)
 
 

@@ -69,8 +69,8 @@ void ImGuiLayer::OnAttach()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    io.Fonts->AddFontFromFileTTF("../../../Rengine-Editor/assets/fonts/opensans/static/OpenSans/OpenSans-Bold.ttf",18.0f);
-    io.FontDefault = io.Fonts->AddFontFromFileTTF("../../../Rengine-Editor/assets/fonts/opensans/static/OpenSans/OpenSans-Regular.ttf",18.0f);
+    io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/static/OpenSans/OpenSans-Bold.ttf",18.0f);
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/static/OpenSans/OpenSans-Regular.ttf",18.0f);
 
     ImGui::StyleColorsDark();
 

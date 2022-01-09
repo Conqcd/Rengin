@@ -199,7 +199,7 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Texture2D::Create("../../../Rengine-Editor/assets/textures/France.jpg");
+    m_texture = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
     m_ViewPortSize.x = FbSpec.Width = 1280;
@@ -213,7 +213,7 @@ void EditorLayer::OnAttach()
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
-    Ref<Texture3D> texture_v = Texture3D::Create("E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
