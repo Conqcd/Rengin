@@ -2,26 +2,26 @@
 
 uniform float maxvalue;
 
-uniform mat4 ViewMatrix;
-uniform mat3 NormalMatrix;
+uniform mat4 u_ViewMatrix;
+uniform mat3 u_NormalMatrix;
 
-uniform float focal_length;
-uniform float aspect_ratio;
-uniform vec2 viewport_size;
-uniform vec3 ray_origin;
-uniform vec3 top;
-uniform vec3 bottom;
+uniform float u_focalLength;
+uniform float u_aspectRatio;
+uniform vec2 u_viewportSize;
+uniform vec3 u_rayOrigin;
+uniform vec3 u_top;
+uniform vec3 u_bottom;
 
-uniform vec3 background_color;
-uniform vec3 material_color;
-uniform vec3 light_position;
+uniform vec3 u_backgroundColor;
+uniform vec3 u_materialColor;
+uniform vec3 u_lightPosition;
 
-uniform float step_length;
+uniform float u_stepLength;
 
-//uniform sampler3D volume;
-uniform usampler3D volume;
+//uniform sampler3D u_volume;
+uniform usampler3D u_volume;
 
-uniform float gamma;
+uniform float u_gamma;
 
 struct Ray
 {
@@ -45,19 +45,19 @@ struct MapNodeA
     float opacity;
 };
 
-uniform MapNodeC mapc[20];
-uniform MapNodeA mapa[20];
+uniform MapNodeC u_mapc[20];
+uniform MapNodeA u_mapa[20];
 
-uniform int nodec_num;
-uniform int nodea_num;
+uniform int u_nodecNum;
+uniform int u_nodeaNum;
 
 vec3 normal(vec3 position, float intensity)
 {
-    float d = step_length;
-    float dx = texture(volume, position + vec3(d,0,0)).r - intensity;
-    float dy = texture(volume, position + vec3(0,d,0)).r - intensity;
-    float dz = texture(volume, position + vec3(0,0,d)).r - intensity;
-    return -normalize(NormalMatrix * vec3(dx, dy, dz));
+    float d = u_stepLength;
+    float dx = texture(u_volume, position + vec3(d,0,0)).r - intensity;
+    float dy = texture(u_volume, position + vec3(0,d,0)).r - intensity;
+    float dz = texture(u_volume, position + vec3(0,0,d)).r - intensity;
+    return -normalize(u_NormalMatrix * vec3(dx, dy, dz));
 }
 
 vec3 rgb2hsv(vec3 c)
@@ -91,31 +91,31 @@ void ray_box_intersection(Ray ray, AABB box, out float t_0, out float t_1)
     t_1 = min(t.x, t.y);
 }
 
-//vec4 colour_transfer(int intensity)
-vec4 colour_transfer(uint intensity)
+//vec4 color_transfer(int intensity)
+vec4 color_transfer(float intensity)
 {
     vec4 color;
-    float rate=0.5;
-    for(int i = nodea_num - 2;i >= 0;i--)
+    float rate = 0.5;
+    for(int i = u_nodeaNum - 2;i >= 0;i--)
     {
-        if(mapa[i].data <= intensity)
+        if(u_mapa[i].data <= intensity)
         {
-            float opacity = mapa[i].opacity;
-            float forward = float(mapa[i].data), back = float(mapa[i + 1].data);
-            rate = (float(intensity) - forward) / (back - forward);
-            opacity = opacity * (1 - rate) + rate * mapa[i + 1].opacity;
+            float opacity = u_mapa[i].opacity;
+            float forward = float(u_mapa[i].data), back = float(u_mapa[i + 1].data);
+            rate = (intensity - forward) / (back - forward);
+            opacity = opacity * (1 - rate) + rate * u_mapa[i + 1].opacity;
             color.a = opacity;
             break;
         }
     }
-    for(int i = nodec_num - 2;i >= 0;i--)
+    for(int i = u_nodecNum - 2;i >= 0;i--)
     {
-        if(mapc[i].data <= intensity)
+        if(u_mapc[i].data <= intensity)
         {
-            vec3 color2 = mapc[i].color;
-            float forward = mapc[i].data, back = mapc[i + 1].data;
-            float rate = (float(intensity) - forward) / (back - forward);
-            color2 = color2 * (1 - rate) + rate * mapc[i + 1].color;
+            vec3 color2 = u_mapc[i].color;
+            float forward = u_mapc[i].data, back = u_mapc[i + 1].data;
+            float rate = (intensity - forward) / (back - forward);
+            color2 = color2 * (1 - rate) + rate * u_mapc[i + 1].color;
             color.rgb = color2;
             break;
         }
@@ -125,69 +125,77 @@ vec4 colour_transfer(uint intensity)
 
 void main()
 {
-    gl_FragColor.rgb = vec3(1.0,1.0,1.0);
     vec3 ray_direction;
-    ray_direction.xy = 2.0 * gl_FragCoord.xy / viewport_size - 1.0;
-    ray_direction.x *= aspect_ratio;
-    ray_direction.z = -focal_length;
-    ray_direction = (vec4(ray_direction, 0) * ViewMatrix).xyz;
+    ray_direction.xy = 2.0 * gl_FragCoord.xy / u_viewportSize - 1.0;
+    ray_direction.x *= u_aspectRatio;
+    ray_direction.z = -u_focalLength;
+    ray_direction = (vec4(ray_direction, 0) * u_ViewMatrix).xyz;
 
+    // gl_FragColor = vec4(ray_direction,1.0);
     float t_0 = 0, t_1 = 0;
-    Ray casting_ray = Ray(ray_origin, ray_direction);
-    AABB bounding_box = AABB(top, bottom);
+    Ray casting_ray = Ray(u_rayOrigin, ray_direction);
+    AABB bounding_box = AABB(u_top, u_bottom);
     ray_box_intersection(casting_ray, bounding_box, t_0, t_1);
 
-    vec3 ray_start = (ray_origin + ray_direction * t_0 - bottom) / (top - bottom);
-    vec3 ray_stop = (ray_origin + ray_direction * t_1 - bottom) / (top - bottom);
+    vec3 ray_start = (u_rayOrigin + ray_direction * t_0 - u_bottom) / (u_top - u_bottom);
+    vec3 ray_stop = (u_rayOrigin + ray_direction * t_1 - u_bottom) / (u_top - u_bottom);
     vec3 ray = ray_stop - ray_start;
     float ray_length = length(ray);
-    vec3 step_vector = step_length * ray / ray_length;
+    vec3 step_vector = u_stepLength * ray / ray_length;
     
     vec3 position = ray_start;
 
+    // gl_FragColor = vec4(position,1.0);
+    // gl_FragColor = vec4(ray_length,0.0,0.0,1.0);
     vec4 color = vec4(0.0);
-
+    int cnt = 0;
     while (ray_length > 0 && color.a < 1.0) {
-        uint intensity = texture(volume, position).r;
-        //int intensity = int(texture(volume, position).r);
-        if(intensity > 0u)
-        {
+        float intensity = texture(u_volume, position).r;
+        //int intensity = int(texture(u_volume, position).r);
+        vec4 c = color_transfer(intensity);
+        // color.x = intensity;
+        // color.a = 1.0;
+        // break;
+        cnt++;
+        // if(intensity > 0)
+        // {
 
-            vec4 c = colour_transfer(intensity);
+        //     vec3 L = normalize(u_lightPosition - position);
+        //     vec3 V = -normalize(ray);
+        //     vec3 N = normal(position, intensity);
+        //     vec3 H = normalize(L + V);
 
-            vec3 L = normalize(light_position - position);
-            vec3 V = -normalize(ray);
-            vec3 N = normal(position, intensity);
-            vec3 H = normalize(L + V);
+        //     float Ia = 0.1;
+        //     float Id = 1.0 * max(0, dot(N, L));
+        //     float Is = 8.0 * pow(max(0, dot(N, H)), 600);
 
-            float Ia = 0.1;
-            float Id = 1.0 * max(0, dot(N, L));
-            float Is = 8.0 * pow(max(0, dot(N, H)), 600);
+        //     color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor*0.1 + Is * vec3(0.1));
+        //     color.rgb = vec3(1.0);
+        //     //color.a = c.a + (1 - c.a) * color.a;
+        //     break;
+        // }
+        vec3 L = normalize(u_lightPosition - position);
+        vec3 V = -normalize(ray);
+        vec3 N = normal(position, intensity);
+        vec3 H = normalize(L + V);
 
-            color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * material_color*0.1 + Is * vec3(0.1));
-            color.rgb= vec3(1.0);
-            //color.a = c.a + (1 - c.a) * color.a;
-            break;
-        }
-//        vec3 L = normalize(light_position - position);
-//        vec3 V = -normalize(ray);
-//        vec3 N = normal(position, intensity);
-//        vec3 H = normalize(L + V);
+        float Ia = 0.1;
+        float Id = 1.0 * max(0, dot(N, L));
+        float Is = 8.0 * pow(max(0, dot(N, H)), 600);
 
-//        float Ia = 0.1;
-//        float Id = 1.0 * max(0, dot(N, L));
-//        float Is = 8.0 * pow(max(0, dot(N, H)), 600);
+        color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor*0.1 + Is * vec3(0.1));
+        color.a = c.a + (1 - c.a) * color.a;
 
-//        color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * material_color*0.1 + Is * vec3(0.1));
-//        color.a = c.a + (1 - c.a) * color.a;
-
-        ray_length -= step_length;
+        ray_length -= u_stepLength;
         position += step_vector;
     }
     
-//    color.rgb = color.a * color.rgb + (1 - color.a) * pow(background_color, vec3(gamma)).rgb;
+//    color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
 //    color.a = 1.0;
-    gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / gamma));
+    gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+    gl_FragColor.a = color.a;
+    // gl_FragColor = vec4(color.a,1.0,1.0,1.0);
+    // gl_FragColor = vec4(cnt - 5.0,1.0,1.0,1.0);
 
-//    gl_FragColor.a = color.a;
+//    gl_FragColor = color;
 }
