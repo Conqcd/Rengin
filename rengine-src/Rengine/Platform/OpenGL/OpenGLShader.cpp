@@ -86,6 +86,12 @@ void OpenGLShader::SetUniformFloat(const std::string &name, float value) {
   UpLoadUniformFloat(name, value);
 }
 
+void OpenGLShader::SetUniformFloat2(const std::string &name,
+                                    const glm::vec2 &vec) {
+  RE_PROFILE_FUNCTION();
+  UpLoadUniformFloat2(name, vec);
+}
+
 void OpenGLShader::SetUniformFloat3(const std::string &name,
                                     const glm::vec3 &vec) {
   RE_PROFILE_FUNCTION();

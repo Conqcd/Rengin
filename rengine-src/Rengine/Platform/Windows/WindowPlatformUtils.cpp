@@ -1,6 +1,6 @@
 #include "repch.hpp"
 #include "Rengine/Core/application.hpp"
-#include "Rengine/Scene/Utils/PlatformUtils.hpp"
+#include "Rengine/Utils/PlatformUtils.hpp"
 
 #include <commdlg.h>
 #include <GLFW/glfw3.h>

@@ -61,10 +61,10 @@ static Renderer3DData s_data_v;
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
+    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","assets/shaders/VoxelVertex.glsl","assets/shaders/VoxelFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
-    s_data_v.m_VolumeShader->Bind();GLCheckError();
-    s_data_v.VolumeVertexArray = VertexArray::Create();GLCheckError();
+    s_data_v.m_VolumeShader->Bind();
+    s_data_v.VolumeVertexArray = VertexArray::Create();
 
     float CubicVertices[3 * 8] = {
         -0.5f, -0.5f, 0.5f,
@@ -96,16 +96,15 @@ void Renderer3D::Init()
         4, 5, 1,
         4, 1, 0,
     };
-    s_data_v.VolumeVertexArray->Bind();GLCheckError();
+    s_data_v.VolumeVertexArray->Bind();
     auto VolumeVertexBuffer = VertexBuffer::Create(CubicVertices,sizeof(CubicVertices));
-    GLCheckError();
     BufferLayout layout_v = {
         {ShadeDataType::Float3 , "a_position"}
         };
     VolumeVertexBuffer->SetLayout(layout_v);
-    auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));GLCheckError();
-    s_data_v.VolumeVertexArray->SetIndexBuffer(m_indbuf);GLCheckError();
-    s_data_v.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);GLCheckError();
+    auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
+    s_data_v.VolumeVertexArray->SetIndexBuffer(m_indbuf);
+    s_data_v.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);
 
     s_data_v.m_Texshader = Shader::Create("litle","../../SandBox/assets/shaders/textureVertex.glsl","../../SandBox/assets/shaders/textureFragment.glsl");
     // s_data_v.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
@@ -497,19 +496,63 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
 }
 
-void Renderer3D::DrawVolume(const glm::mat4 &transforms,const Ref<Texture> &texture)
+void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
+                            const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,
+                            const TransferFunction<int,int>& transfera,const TransferFunction<int,glm::vec3>& transferc)
 {
     RE_PROFILE_FUNCTION();
 
     s_data_v.m_VolumeShader->Bind();
-    
-    
-    s_data_v.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",transforms);GLCheckError();
-    auto result = transforms * glm::vec4(1.0,1.0,1.0,1.0);
-    auto result2 = transforms * glm::vec4(1.0,1.0,1.0,-1.0);
+    float maxsc = 1.0 / std::max(std::max(scale.x,scale.y),scale.z);
+    glm::vec3 extent(scale.x * maxsc,scale.y * maxsc,scale.z * maxsc),top = glm::vec3(0.5) * extent,bottom = glm::vec3(0.5) * -extent;
+
+    s_data_v.m_VolumeShader->SetUniformMat4("u_ViewMatrix", viewMatrix);
+    s_data_v.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",ProjectionMatrix * viewMatrix * transforms);
+    glm::mat4 normalMatrix = glm::transpose(glm::inverse(viewMatrix * transforms));
+    float threshold = 1.f, gamma = 2.2f,aspect = viewPortSize.x / viewPortSize.y ;
+
+    s_data_v.m_VolumeShader->SetUniformMat4("u_NormalMatrix", normalMatrix);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_aspectRatio", aspect);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_focalLength", focalLength);
+    s_data_v.m_VolumeShader->SetUniformFloat2("u_viewportSize", viewPortSize);
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_rayOrigin", rayOrigin);
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_top", top);
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_bottom", bottom);
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {0.1f, 0.1f, 0.1f});
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_lightPosition", lightPosition);
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_materialColor", {1.0f,1.0f,1.0f});
+    s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", stepLength);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_gamma", gamma);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_threshold", threshold);
+    s_data_v.m_VolumeShader->SetUniformInt("u_volume", 0);
+
+    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 1200.0f);
+
+    s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
+    auto it = transfera.begin();
+    char result[20];
+    for (int i = 0; it != transfera.end(); it++, i++) {
+      const char s1[] = "u_mapa[%d].data";
+      const char s2[] = "u_mapa[%d].opacity";
+      sprintf(result, s1, i);
+      s_data_v.m_VolumeShader->SetUniformInt(result, it->first);
+      sprintf(result, s2, i);
+      s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
+    }
+
+    s_data_v.m_VolumeShader->SetUniformInt("u_nodecNum", transferc.Size());
+    auto itt = transferc.begin();
+    for (int i = 0; itt != transferc.end(); itt++, i++) {
+      const char s1[] = "u_mapc[%d].data";
+      const char s2[] = "u_mapc[%d].color";
+      sprintf(result, s1, i);
+      s_data_v.m_VolumeShader->SetUniformInt(result, itt->first);
+      sprintf(result, s2, i);
+      s_data_v.m_VolumeShader->SetUniformFloat3(result, itt->second);
+    }
     texture->Bind();
     s_data_v.VolumeVertexArray->Bind();
-    RenderCommand::DrawIndex(s_data_v.VolumeVertexArray);GLCheckError();
+    RenderCommand::DrawIndex(s_data_v.VolumeVertexArray);
     
     s_data_v.m_WhiteTexture->Bind();
     s_data_v.m_Texshader->Bind();

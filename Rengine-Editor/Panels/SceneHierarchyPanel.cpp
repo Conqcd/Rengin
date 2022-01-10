@@ -115,7 +115,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
 
     ImGui::SameLine();
-    ImGui::DragFloat("##X",&values.x,0.1f,-10.0f,10.0f,"%.2f");
+    ImGui::DragFloat("##X",&values.x,0.1f,-180.0f,180.0f,"%.2f");
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
@@ -129,7 +129,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
     
     ImGui::SameLine();
-    ImGui::DragFloat("##Y",&values.y,0.1f,-10.0f,10.0f,"%.2f");
+    ImGui::DragFloat("##Y",&values.y,0.1f,-180.0f,180.0f,"%.2f");
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
@@ -143,7 +143,7 @@ static void DrawVec3Control(const std::string& label,glm::vec3& values,float res
     ImGui::PopStyleColor(3);
     
     ImGui::SameLine();
-    ImGui::DragFloat("##Z",&values.z,0.1f,-10.0f,10.0f,"%.2f");
+    ImGui::DragFloat("##Z",&values.z,0.1f,-180.0f,180.0f,"%.2f");
     ImGui::PopItemWidth();
 
     ImGui::PopStyleVar();
@@ -273,7 +273,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
         {
             float perspectiveFOV = glm::degrees(camera.GetPerspectiveFOV());
-            if(ImGui::DragFloat("FOV",&perspectiveFOV))
+            if(ImGui::DragFloat("FOV",&perspectiveFOV,0.1,30.0f,90.0f,"%.2f"))
                 camera.SetPerspectiveFOV(glm::radians(perspectiveFOV));
 
             float perspectiveNearClip = camera.GetPerspectiveNearClip();

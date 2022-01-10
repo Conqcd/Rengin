@@ -65,10 +65,10 @@ struct OpacityTransferFunctionComponent
 
 struct ColorTransferFunctionComponent
 {
-    TransferFunction<int, glm::vec4> Color;
+    TransferFunction<int, glm::vec3> Color;
     ColorTransferFunctionComponent() = default;
     ColorTransferFunctionComponent(const ColorTransferFunctionComponent &) = default;
-    ColorTransferFunctionComponent(const TransferFunction<int, glm::vec4> &color)
+    ColorTransferFunctionComponent(const TransferFunction<int, glm::vec3> &color)
         : Color(color) {}
 };
 

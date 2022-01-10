@@ -16,7 +16,7 @@ Ref<Shader> Shader::Create(const std::string& name,const std::string& vertexPath
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
     case RendererAPI::API::OpenGL :
-        return std::make_shared<OpenGLShader>(name,vertexPath,fragmentPath);
+        return CreateRef<OpenGLShader>(name,vertexPath,fragmentPath);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         break;
@@ -32,7 +32,7 @@ Ref<Shader> Shader::Create(const std::string& vertexPath,const std::string& frag
         RE_CORE_ASSERT(false,"not support for No Render API");
         break;
     case RendererAPI::API::OpenGL :
-        return std::make_shared<OpenGLShader>(vertexPath,fragmentPath);
+        return CreateRef<OpenGLShader>(vertexPath,fragmentPath);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         break;

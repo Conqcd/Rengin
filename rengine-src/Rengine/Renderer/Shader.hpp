@@ -18,8 +18,9 @@ public:
     virtual void SetUniformIntArray(const std::string& name,int* values,uint32_t count) = 0;
     virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) = 0;
     virtual void SetUniformFloat(const std::string& name,float value) = 0;
-    virtual void SetUniformFloat3(const std::string& name,const glm::vec3& mat) = 0;
-    virtual void SetUniformFloat4(const std::string& name,const glm::vec4& mat) = 0;
+    virtual void SetUniformFloat2(const std::string& name,const glm::vec2& vec) = 0;
+    virtual void SetUniformFloat3(const std::string& name,const glm::vec3& vec) = 0;
+    virtual void SetUniformFloat4(const std::string& name,const glm::vec4& vec) = 0;
 
     static Ref<Shader> Create(const std::string& name,const std::string& vertexPath,const std::string& fragmentPath);
     static Ref<Shader> Create(const std::string& vertexPath,const std::string& fragmentPath);

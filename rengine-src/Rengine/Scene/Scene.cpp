@@ -99,12 +99,16 @@ void Scene::OnUpdate(TimeStep ts) {
   auto view = m_registry.view<TransformComponent, CameraComponent>();
   Camera *MainCamera = nullptr;
   glm::mat4 CameraTransform;
+  SceneCamera::ProjectionType CameraType;
+  float MainFOV;
   for (auto entity : view) {
     auto &&[transform, camera] =
         view.get<TransformComponent, CameraComponent>(entity);
     if (camera.Primary) {
       MainCamera = &camera.Camera;
       CameraTransform = transform.GetTransform();
+      CameraType = camera.Camera.GetProjectionType();
+      MainFOV = camera.Camera.GetPerspectiveFOV();
       break;
     }
   }
@@ -122,14 +126,23 @@ void Scene::OnUpdate(TimeStep ts) {
 
     Renderer3D::BeginScene(MainCamera->getProjection(), CameraTransform);
 
-    auto tt = entt::get<Texture3DComponent>;
-    auto viewv = m_registry.view<TransformComponent, Texture3DComponent>();
-    for (auto _entity : viewv) {
-      auto &&[transform, texture] =
-          viewv.get<TransformComponent, Texture3DComponent>(_entity);
-      Renderer3D::DrawVolume(MainCamera->getProjection() *
-                                 transform.GetTransform(),
-                             texture.Texture);
+    if(CameraType == SceneCamera::ProjectionType::Perspective)
+    {
+      auto viewv = m_registry.view<TransformComponent, Texture3DComponent,OpacityTransferFunctionComponent,ColorTransferFunctionComponent>();
+      for (auto _entity : viewv) {
+        auto &&[transform, texture, transfera, transferc] =
+            viewv.get<TransformComponent, Texture3DComponent,
+                      OpacityTransferFunctionComponent,
+                      ColorTransferFunctionComponent>(_entity);
+
+        float stepLength = 0.001, focalLength = 1.0 / tan(3.14 / 180.0 * MainFOV / 2.0);
+        
+        Renderer3D::DrawVolume(
+            MainCamera->getProjection(), glm::inverse(CameraTransform),
+            transform.GetTransform(), texture.Texture,transform.Scale,
+            {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
+            {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color);
+      }
     }
 
     Renderer3D::EndScene();

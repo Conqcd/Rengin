@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Rengine/Scene/SceneSerializer.hpp"
-#include "Rengine/Scene/Utils/PlatformUtils.hpp"
+#include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
 
 namespace Rengin
@@ -216,6 +216,15 @@ void EditorLayer::OnAttach()
     Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
+    std::vector<int> l1{0,1},l2{0,1},l3{0,1};
+    std::vector<glm::vec3> l4{{1.0,0.0,0.0},{0.0,0.0,1.0}};
+    TransferFunction<int, int> t1{l1,l2};
+    TransferFunction<int, glm::vec3> t2{l3,l4};
+
+    m_CubeEntity.AddComponent<OpacityTransferFunctionComponent>(t1);
+    // m_CubeEntity.AddComponent<OpacityTransferFunctionComponent>({0.0,1.0},{0.0,1.0});
+    m_CubeEntity.AddComponent<ColorTransferFunctionComponent>(t2);
+    // m_CubeEntity.AddComponent<ColorTransferFunctionComponent>({0.0,1.0},{{1.0,0.0,0.0},{0.0,0.0,1.0}});
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
     texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
 
