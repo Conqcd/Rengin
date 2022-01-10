@@ -5,6 +5,7 @@
     },
     // "cmake.generator": "MinGW Makefiles",
     "cmake.generator": "Ninja",
+    // "cmake.buildArgs": [],
     // "cmake.generator": "Visual Studio 16 2019",
     "files.associations": {
         "cmath": "cpp",

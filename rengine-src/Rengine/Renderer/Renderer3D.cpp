@@ -67,14 +67,14 @@ void Renderer3D::Init()
     s_data_v.VolumeVertexArray = VertexArray::Create();GLCheckError();
 
     float CubicVertices[3 * 8] = {
-        -10.0f, -10.0f, 10.0f,
-        10.0f, -10.0f, 10.0f,
-        10.0f, 10.0f, 10.0f,
-        -10.0f, 10.0f, 10.0f,
-        -10.0f, -10.0f, -10.0f,
-        10.0f, -10.0f, -10.0f,
-        10.0f, 10.0f, -10.0f,
-        -10.0f, 10.0f, -10.0f
+        -0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f
     };
     uint32_t indices[36] = {
         // front
@@ -106,12 +106,10 @@ void Renderer3D::Init()
     auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));GLCheckError();
     s_data_v.VolumeVertexArray->SetIndexBuffer(m_indbuf);GLCheckError();
     s_data_v.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);GLCheckError();
-    // while(1)
-    // RenderCommand::DrawIndex(s_data_v.VolumeVertexArray);
 
-    // s_data_v.m_Texshader = Shader::Create("litle","../../SandBox/assets/shaders/textureVertex.glsl","../../SandBox/assets/shaders/textureFragment.glsl");
+    s_data_v.m_Texshader = Shader::Create("litle","../../SandBox/assets/shaders/textureVertex.glsl","../../SandBox/assets/shaders/textureFragment.glsl");
     // s_data_v.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
-    // s_data_v.m_Texshader->Bind();
+    s_data_v.m_Texshader->Bind();
     s_data_v.vertexArray = VertexArray::Create();
     s_data_v.CubeVertexBuffer = VertexBuffer::Create(s_data_v.MaxVertices * sizeof(CubeVertex));
     s_data_v.CubeVertexBufferBase = new CubeVertex[s_data_v.MaxVertices];
@@ -162,7 +160,7 @@ void Renderer3D::Init()
     for (int i = 0; i < s_data_v.MaxTextureSlots; i++)
         samplers[i] = i;
 
-    // s_data_v.m_Texshader->SetUniformIntArray("u_textures",samplers,s_data_v.MaxTextureSlots);
+    s_data_v.m_Texshader->SetUniformIntArray("u_textures",samplers,s_data_v.MaxTextureSlots);
 
     s_data_v.TextureSolts[0] = s_data_v.m_WhiteTexture;
 
@@ -193,8 +191,8 @@ void Renderer3D::BeginScene(const Camera& camera,const glm::mat4& transform)
     RE_PROFILE_FUNCTION();
 
     glm::mat4 viewPro = camera.getProjection() * glm::inverse(transform);
-    // s_data_v.m_Texshader->Bind();
-    // s_data_v.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
+    s_data_v.m_Texshader->Bind();
+    s_data_v.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
 
     s_data_v.CubeVertexBufferPtr = s_data_v.CubeVertexBufferBase;
     s_data_v.IndicesCount = 0;
@@ -206,8 +204,8 @@ void Renderer3D::BeginScene(const OrthoGraphicsCamera& camera)
 {
     RE_PROFILE_FUNCTION();
 
-    // s_data_v.m_Texshader->Bind();
-    // s_data_v.m_Texshader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
+    s_data_v.m_Texshader->Bind();
+    s_data_v.m_Texshader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
 
     s_data_v.CubeVertexBufferPtr = s_data_v.CubeVertexBufferBase;
     s_data_v.IndicesCount = 0;
@@ -514,7 +512,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &transforms,const Ref<Texture> &text
     RenderCommand::DrawIndex(s_data_v.VolumeVertexArray);GLCheckError();
     
     s_data_v.m_WhiteTexture->Bind();
-    // s_data_v.m_Texshader->Bind();
+    s_data_v.m_Texshader->Bind();
 }
 
 Renderer3D::Statistic Renderer3D::getStats()

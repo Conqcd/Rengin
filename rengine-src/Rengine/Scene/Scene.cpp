@@ -109,16 +109,16 @@ void Scene::OnUpdate(TimeStep ts) {
     }
   }
   if (MainCamera) {
-    // Renderer2D::BeginScene(MainCamera->getProjection(), CameraTransform);
+    Renderer2D::BeginScene(MainCamera->getProjection(), CameraTransform);
 
-    // auto group = m_registry.group<TransformComponent>(
-    //     entt::get<SpriteRendererComponent>);
-    // for (auto _entity : group) {
-    //   auto &&[transform, sprite] =
-    //       group.get<TransformComponent, SpriteRendererComponent>(_entity);
-    // //   Renderer2D::DrawQuad(transform.Translation,transform.Scale,sprite.Color);
-    // }
-    // Renderer2D::EndScene();
+    auto group = m_registry.group<TransformComponent>(
+        entt::get<SpriteRendererComponent>);
+    for (auto _entity : group) {
+      auto &&[transform, sprite] =
+          group.get<TransformComponent, SpriteRendererComponent>(_entity);
+    //   Renderer2D::DrawQuad(transform.Translation,transform.Scale,sprite.Color);
+    }
+    Renderer2D::EndScene();
 
     Renderer3D::BeginScene(MainCamera->getProjection(), CameraTransform);
 
