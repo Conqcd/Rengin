@@ -145,7 +145,7 @@ void main()
     
     vec3 position = ray_start;
 
-    // gl_FragColor = vec4(position,1.0);
+    gl_FragColor = vec4(position,1.0);
     // gl_FragColor = vec4(ray_length,0.0,0.0,1.0);
     vec4 color = vec4(0.0);
     int cnt = 0;
@@ -192,8 +192,8 @@ void main()
     
 //    color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
 //    color.a = 1.0;
-    gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-    gl_FragColor.a = color.a;
+    // gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+    // gl_FragColor.a = color.a;
     // gl_FragColor = vec4(color.a,1.0,1.0,1.0);
     // gl_FragColor = vec4(cnt - 5.0,1.0,1.0,1.0);
 

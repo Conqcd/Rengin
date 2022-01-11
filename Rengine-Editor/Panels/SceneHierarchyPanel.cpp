@@ -318,8 +318,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
           auto &transferFun = component.Color;
           ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses
           ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to
-          glm::vec2 clip_board{400, 10};
-          canvas_sz.x = clip_board.x;
+          glm::vec2 clip_board{canvas_sz.x, 10};
           canvas_sz.y = clip_board.y;
           ImVec2 canvas_p1 =
               ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
@@ -357,7 +356,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
           for (auto it = transferFun.begin(); it != transferFun.end(); it++) {
             draw_list->AddCircleFilled(
-                ImVec2(origin.x + it->first * clip_board.x, 5.0f), 5.0f,
+                ImVec2(origin.x + it->first * clip_board.x,origin.y + 5.0f), 5.0f,
                 IM_COL32(255, 0, 0, 255));
           }
           draw_list->PopClipRect();
@@ -377,10 +376,9 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     DrawComponent<OpacityTransferFunctionComponent>(
         "OpacityTransferFunction", entity, [](auto &component) {
           auto &transferFun = component.Opacity;
-          glm::vec2 clip_board{400, 100};
           ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses
           ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to
-          canvas_sz.x = clip_board.x;
+          glm::vec2 clip_board{canvas_sz.x, 100.0f};
           canvas_sz.y = clip_board.y;
           ImVec2 canvas_p1 =
               ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
