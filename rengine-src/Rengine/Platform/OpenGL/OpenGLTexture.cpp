@@ -133,7 +133,7 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     : m_path(path)
 {
     RE_PROFILE_FUNCTION();
-    int width = 512,height = 512,depth = 507,channels;
+    int width = 512,height = 512,depth = 507;
     float *data = nullptr;
     
     FILE* f = fopen(path.c_str(), "rb");
@@ -165,16 +165,6 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
 
     GLenum interFormat = GL_R32F , dataFormat = GL_RED;
 
-    if (channels == 4)
-    {
-        interFormat = GL_RGBA8;
-        dataFormat = GL_RGBA;
-    }else if(channels == 3)
-    {
-        interFormat = GL_RGB8;
-        dataFormat = GL_RGB;
-    }
-
     m_interFormat = interFormat;
     m_dataFormat = dataFormat;
 
@@ -187,9 +177,9 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTextureParameteri(m_render_id,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_REPEAT);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
 
 
     glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_UNSIGNED_BYTE,data);

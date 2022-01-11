@@ -143,8 +143,8 @@ void EditorLayer::OnImGuiRender()
     if(*((glm::vec2*)&vps) != m_ViewPortSize && vps.x > 0 && vps.y > 0)
     {
         m_ViewPortSize = {vps.x,vps.y};
-        m_framebuffer->Resize(static_cast<uint32_t>(vps.x),static_cast<uint32_t>(vps.y));
-        m_camera_controller.OnResize(vps.x,vps.y);
+        // m_framebuffer->Resize(static_cast<uint32_t>(vps.x),static_cast<uint32_t>(vps.y));
+        // m_camera_controller.OnResize(vps.x,vps.y);
     }
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
     
