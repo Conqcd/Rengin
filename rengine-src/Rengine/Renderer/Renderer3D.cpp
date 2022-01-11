@@ -498,7 +498,7 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
 void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
                             const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,
-                            const TransferFunction<int,int>& transfera,const TransferFunction<int,glm::vec3>& transferc)
+                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc)
 {
     RE_PROFILE_FUNCTION();
 
@@ -509,7 +509,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformMat4("u_ViewMatrix", viewMatrix);
     s_data_v.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",ProjectionMatrix * viewMatrix * transforms);
     glm::mat4 normalMatrix = glm::transpose(glm::inverse(viewMatrix * transforms));
-    float threshold = 1.f, gamma = 2.2f,aspect = viewPortSize.x / viewPortSize.y ;
+    float threshold = 1.f, gamma = 2.2f,aspect = viewPortSize.x / viewPortSize.y;
 
     s_data_v.m_VolumeShader->SetUniformMat4("u_NormalMatrix", normalMatrix);
     s_data_v.m_VolumeShader->SetUniformFloat("u_aspectRatio", aspect);
@@ -518,15 +518,15 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformFloat3("u_rayOrigin", rayOrigin);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_top", top);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_bottom", bottom);
-    s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {0.1f, 0.1f, 0.1f});
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {0.9f, 0.1f, 0.1f});
     s_data_v.m_VolumeShader->SetUniformFloat3("u_lightPosition", lightPosition);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_materialColor", {1.0f,1.0f,1.0f});
     s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", stepLength);
     s_data_v.m_VolumeShader->SetUniformFloat("u_gamma", gamma);
     s_data_v.m_VolumeShader->SetUniformFloat("u_threshold", threshold);
-    s_data_v.m_VolumeShader->SetUniformInt("u_volume", 0);
+    s_data_v.m_VolumeShader->SetUniformUint("u_volume", 0);
 
-    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 1200.0f);
+    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
 
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
     auto it = transfera.begin();
@@ -535,7 +535,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
       const char s1[] = "u_mapa[%d].data";
       const char s2[] = "u_mapa[%d].opacity";
       sprintf(result, s1, i);
-      s_data_v.m_VolumeShader->SetUniformInt(result, it->first);
+      s_data_v.m_VolumeShader->SetUniformFloat(result, it->first);
       sprintf(result, s2, i);
       s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
     }
@@ -546,7 +546,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
       const char s1[] = "u_mapc[%d].data";
       const char s2[] = "u_mapc[%d].color";
       sprintf(result, s1, i);
-      s_data_v.m_VolumeShader->SetUniformInt(result, itt->first);
+      s_data_v.m_VolumeShader->SetUniformFloat(result, itt->first);
       sprintf(result, s2, i);
       s_data_v.m_VolumeShader->SetUniformFloat3(result, itt->second);
     }

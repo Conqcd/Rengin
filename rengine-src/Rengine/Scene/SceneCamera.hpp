@@ -45,7 +45,7 @@ public:
     void SetOrthographicsFarClip(float _far) { m_OrthographicsFar = _far; ReCalculateProjection();}
     
     float GetPerspectiveFOV()const {return m_PerspectiveFOV;}
-    void SetPerspectiveFOV(float fov){ m_PerspectiveFOV = fov;}
+    void SetPerspectiveFOV(float fov){ m_PerspectiveFOV = fov;ReCalculateProjection();}
 
     float GetPerspectiveNearClip()const {return m_PerspectiveNear;}
     void SetPerspectiveNearClip(float _near) { m_PerspectiveNear = _near; ReCalculateProjection();}

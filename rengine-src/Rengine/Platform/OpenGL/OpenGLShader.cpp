@@ -69,6 +69,11 @@ void OpenGLShader::SetUniformInt(const std::string &name, int value) {
   UpLoadUniformInt(name, value);
 }
 
+void OpenGLShader::SetUniformUint(const std::string &name, unsigned int value) {
+  RE_PROFILE_FUNCTION();
+  UpLoadUniformUint(name, value);
+}
+
 void OpenGLShader::SetUniformIntArray(const std::string &name, int *values,
                                       uint32_t count) {
   RE_PROFILE_FUNCTION();
@@ -125,6 +130,12 @@ void OpenGLShader::UpLoadUniformMat4(const std::string &name,
 void OpenGLShader::UpLoadUniformInt(const std::string &name, int value) {
   GLint location = glGetUniformLocation(m_render_id, name.c_str());
   glUniform1i(location, value);
+}
+
+void OpenGLShader::UpLoadUniformUint(const std::string &name, unsigned int value)
+{
+  GLint location = glGetUniformLocation(m_render_id, name.c_str());
+  glUniform1ui(location, value);
 }
 
 void OpenGLShader::UpLoadUniformFloat(const std::string &name, float value) {

@@ -56,19 +56,19 @@ struct SpriteRendererComponent
 
 struct OpacityTransferFunctionComponent
 {
-    TransferFunction<int,int> Opacity;
+    TransferFunction<float,float> Opacity;
     OpacityTransferFunctionComponent() = default;
     OpacityTransferFunctionComponent(const OpacityTransferFunctionComponent &) = default;
-    OpacityTransferFunctionComponent(const TransferFunction<int, int> &opacity)
+    OpacityTransferFunctionComponent(const TransferFunction<float, float> &opacity)
         : Opacity(opacity) {}
 };
 
 struct ColorTransferFunctionComponent
 {
-    TransferFunction<int, glm::vec3> Color;
+    TransferFunction<float, glm::vec3> Color;
     ColorTransferFunctionComponent() = default;
     ColorTransferFunctionComponent(const ColorTransferFunctionComponent &) = default;
-    ColorTransferFunctionComponent(const TransferFunction<int, glm::vec3> &color)
+    ColorTransferFunctionComponent(const TransferFunction<float, glm::vec3> &color)
         : Color(color) {}
 };
 

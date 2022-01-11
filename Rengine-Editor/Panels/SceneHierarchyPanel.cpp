@@ -313,12 +313,137 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::Text(component.Path.c_str());
     });
 
-    DrawComponent<ColorTransferFunctionComponent>("ColorTransferFunction", entity, [](auto &component) {});
+    DrawComponent<ColorTransferFunctionComponent>(
+        "ColorTransferFunction", entity, [](auto &component) {
+          auto &transferFun = component.Color;
+          ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses
+          ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to
+          glm::vec2 clip_board{400, 10};
+          canvas_sz.x = clip_board.x;
+          canvas_sz.y = clip_board.y;
+          ImVec2 canvas_p1 =
+              ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+          ImGuiIO &io = ImGui::GetIO();
+          ImDrawList *draw_list = ImGui::GetWindowDrawList();
+          draw_list->AddRectFilled(canvas_p0, canvas_p1,
+                                   IM_COL32(50, 50, 150, 255));
+          draw_list->AddRect(canvas_p0, canvas_p1,
+                             IM_COL32(255, 255, 255, 255));
 
-    DrawComponent<OpacityTransferFunctionComponent>("OpacityTransferFunction",entity,[](auto& component)
-    {
-    });
+          ImGui::InvisibleButton("Color TransferFunction", canvas_sz,
+                                 ImGuiButtonFlags_MouseButtonLeft |
+                                     ImGuiButtonFlags_MouseButtonRight);
+          const bool is_hovered = ImGui::IsItemHovered(); // Hovered
+          const bool is_active = ImGui::IsItemActive();   // Held
+          const ImVec2 origin(canvas_p0.x, canvas_p0.y); // Lock scrolled origin
+          const glm::vec2 mouse_pos_in_canvas(io.MousePos.x - origin.x,
+                                              io.MousePos.y - origin.y);
 
+          static int old_key = -1;
+          if (is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            old_key = mouse_pos_in_canvas.x;
+            transferFun.Insert(mouse_pos_in_canvas.x / clip_board.x);
+          }
+          if (is_active && old_key!= -1 &&
+              ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.0)) {
+            if (old_key != mouse_pos_in_canvas.x)
+            {
+              transferFun.Erase(old_key / clip_board.x);
+              old_key = mouse_pos_in_canvas.x;
+            }
+            transferFun.Insert(mouse_pos_in_canvas.x / clip_board.x);
+          }
+          draw_list->PushClipRect(canvas_p0, canvas_p1, true);
+
+          for (auto it = transferFun.begin(); it != transferFun.end(); it++) {
+            draw_list->AddCircleFilled(
+                ImVec2(origin.x + it->first * clip_board.x, 5.0f), 5.0f,
+                IM_COL32(255, 0, 0, 255));
+          }
+          draw_list->PopClipRect();
+
+          if (ImGui::Button("clear Color", {clip_board.x / 2, 20})) {
+            transferFun.Reset();
+          }
+          ImGui::SameLine();
+          if (ImGui::Button("delete Color", {clip_board.x / 2, 20})) {
+            if (old_key != -1) {
+              transferFun.Erase(old_key / clip_board.x);
+              old_key = -1;
+            }
+          }
+        });
+
+    DrawComponent<OpacityTransferFunctionComponent>(
+        "OpacityTransferFunction", entity, [](auto &component) {
+          auto &transferFun = component.Opacity;
+          glm::vec2 clip_board{400, 100};
+          ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses
+          ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to
+          canvas_sz.x = clip_board.x;
+          canvas_sz.y = clip_board.y;
+          ImVec2 canvas_p1 =
+              ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+          ImGuiIO &io = ImGui::GetIO();
+          ImDrawList *draw_list = ImGui::GetWindowDrawList();
+          draw_list->AddRectFilled(canvas_p0, canvas_p1,
+                                   IM_COL32(50, 50, 150, 255));
+          draw_list->AddRect(canvas_p0, canvas_p1,
+                             IM_COL32(255, 255, 255, 255));
+
+          ImGui::InvisibleButton("Opacity TransferFunction", canvas_sz,
+                                 ImGuiButtonFlags_MouseButtonLeft |
+                                     ImGuiButtonFlags_MouseButtonRight);
+          const bool is_hovered = ImGui::IsItemHovered(); // Hovered
+          const bool is_active = ImGui::IsItemActive();   // Held
+          const ImVec2 origin(canvas_p0.x, canvas_p0.y); // Lock scrolled origin
+          const glm::vec2 mouse_pos_in_canvas(io.MousePos.x - origin.x,
+                                              io.MousePos.y - origin.y);
+
+          static int old_key = -1;
+          if (is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            old_key = mouse_pos_in_canvas.x;
+            transferFun.Insert(mouse_pos_in_canvas.x / clip_board.x,1.0f - mouse_pos_in_canvas.y / clip_board.y);
+
+          }
+          if (is_active && old_key!= -1 &&
+              ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.0)) {
+            if (old_key != mouse_pos_in_canvas.x)
+            {
+              transferFun.Erase(old_key / clip_board.x);
+              old_key = mouse_pos_in_canvas.x;
+            }
+            transferFun.Insert(mouse_pos_in_canvas.x / clip_board.x,1.0f - mouse_pos_in_canvas.y / clip_board.y);
+          }
+          draw_list->PushClipRect(canvas_p0, canvas_p1, true);
+
+          for (auto it = transferFun.begin(); it != transferFun.end(); it++) {
+            draw_list->AddCircleFilled(
+                ImVec2(origin.x + it->first * clip_board.x, origin.y + (1.0f - it->second) * clip_board.y), 5.0f,
+                IM_COL32(255, 0, 0, 255));
+
+            auto temp = it;
+            temp++;
+
+            if (temp != transferFun.end())
+              draw_list->AddLine(
+                  ImVec2(origin.x + it->first * clip_board.x, origin.y + (1.0f - it->second) * clip_board.y),
+                  ImVec2(origin.x + temp->first * clip_board.x, origin.y + (1.0f - temp->second) * clip_board.y),
+                  IM_COL32(200, 200, 200, 40));
+          }
+          draw_list->PopClipRect();
+
+          if (ImGui::Button("clear Opacity", {clip_board.x / 2, 20})) {
+            transferFun.Reset();
+          }
+          ImGui::SameLine();
+          if (ImGui::Button("delete Opacity", {clip_board.x / 2, 20})) {
+            if (old_key != -1) {
+              transferFun.Erase(old_key / clip_board.x);
+              old_key = -1;
+            }
+          }
+        });
 }
 
 } // namespace Rengin

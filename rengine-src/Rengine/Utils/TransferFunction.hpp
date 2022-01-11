@@ -47,7 +47,7 @@ public:
         {
             T2 v;
 	    	list[d] = v;
-	    	list[d] = (list.find(d)--).second + ((list.find(d)++).second - (list.find(d)--).second) * (d - (list.find(d)--).first) / ((list.find(d)++).first - (list.find(d)--).first);
+	    	list[d] = (list.find(d)--)->second + ((list.find(d)++)->second - (list.find(d)--)->second) * (d - (list.find(d)--)->first) / ((list.find(d)++)->first - (list.find(d)--)->first);
         }
 	}
 

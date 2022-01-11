@@ -142,7 +142,8 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     int wd = height * depth;
     data = new float[wd * width];
     unsigned short *s = new unsigned short[width];
-
+    float maxval = 0.0f;
+    
     for (int k = 0; k < height; k++)
     {
         for (int j = 0; j < depth; j++)
@@ -152,6 +153,7 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
             {
                 data[k * wd + j * width + i] = s[i];
                 // if (s[i] > max_number)
+                maxval = std::max(maxval,data[k * wd + j * width + i]);
                 //     max_number = s[i];
             }
         }
@@ -171,7 +173,17 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     RE_CORE_ASSERT(interFormat & dataFormat,"Format not Support!");
     
     glCreateTextures(GL_TEXTURE_3D,1,&m_render_id);
+    // glBindTexture(GL_TEXTURE_3D, m_render_id);
 
+    // glTextureStorage3D(m_render_id,1,interFormat,m_width,m_height,m_depth);
+
+    // glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    // glTextureParameteri(m_render_id,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+    // glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    // glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    // glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+    
     glTextureStorage3D(m_render_id,1,interFormat,m_width,m_height,m_depth);
 
     glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
@@ -181,8 +193,7 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
 
-
-    glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_UNSIGNED_BYTE,data);
+    glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_FLOAT,data);
 
     delete[] data;
 }

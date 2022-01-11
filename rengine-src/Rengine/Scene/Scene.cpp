@@ -135,7 +135,7 @@ void Scene::OnUpdate(TimeStep ts) {
                       OpacityTransferFunctionComponent,
                       ColorTransferFunctionComponent>(_entity);
 
-        float stepLength = 0.001, focalLength = 1.0 / tan(MainFOV / 2.0);
+        float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
         
         Renderer3D::DrawVolume(
             MainCamera->getProjection(), glm::inverse(CameraTransform),
