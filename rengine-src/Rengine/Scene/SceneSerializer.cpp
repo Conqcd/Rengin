@@ -107,7 +107,7 @@ static void SerializeEntity(YAML::Emitter& out,Entity entity)
 
         auto& tc = entity.GetComponent<TransformComponent>();
         out <<  YAML::Key << "Translation" << YAML::Value << tc.Translation;
-        out <<  YAML::Key << "Rotate" << YAML::Value << tc.Rotation;
+        out <<  YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
         out <<  YAML::Key << "Scale" << YAML::Value << tc.Scale;
         out << YAML::EndMap;
     }
@@ -144,6 +144,51 @@ static void SerializeEntity(YAML::Emitter& out,Entity entity)
         out <<  YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
         out << YAML::EndMap;
     }
+    
+    if (entity.HasComponent<Texture3DComponent>())
+    {
+        out << YAML::Key << "Texture3DComponent";
+        out << YAML::BeginMap;
+
+        auto& texture3DComponent = entity.GetComponent<Texture3DComponent>();
+        out <<  YAML::Key << "Path" << YAML::Value << texture3DComponent.Path;
+        out << YAML::EndMap;
+    }
+    
+    if (entity.HasComponent<ColorTransferFunctionComponent>())
+    {
+        out << YAML::Key << "ColorTransferFunctionComponent";
+        out << YAML::BeginMap;
+
+        auto& colorTransfer = entity.GetComponent<ColorTransferFunctionComponent>().Color;
+        out <<  YAML::Key << "ColorTransfer" << YAML::Value << YAML::BeginSeq;
+        for (auto it = colorTransfer.begin(); it != colorTransfer.end(); it++)
+        {
+            // out << YAML::Key << "first" << YAML::Value << it->first;
+            // out << YAML::Key << "second" << YAML::Value << it->second;
+            out << it->first << it->second;
+        }
+        
+        out << YAML::EndSeq << YAML::EndMap;
+    }
+
+    if (entity.HasComponent<OpacityTransferFunctionComponent>())
+    {
+        out << YAML::Key << "OpacityTransferFunctionComponent";
+        out << YAML::BeginMap;
+
+        auto& opacityTransfer = entity.GetComponent<OpacityTransferFunctionComponent>().Opacity;
+        out <<  YAML::Key << "OpacityTransfer" << YAML::Value << YAML::BeginSeq;
+        for (auto it = opacityTransfer.begin(); it != opacityTransfer.end(); it++)
+        {
+            // out << YAML::Key << "first" << YAML::Value << it->first;
+            // out << YAML::Key << "second" << YAML::Value << it->second;
+            out << it->first << it->second;
+        }
+        
+        out << YAML::EndSeq << YAML::EndMap;
+    }
+
     out << YAML::EndMap;
 }
 
@@ -165,8 +210,10 @@ void SceneSerializer::Serializer(const std::string& filePath)
 
     out << YAML::EndSeq;
     out << YAML::EndMap;
-
-    std::ofstream fout(filePath + ".yaml");
+    std::string Path = filePath;
+    if(filePath.find_last_of(".yaml") == std::string::npos)
+        Path += ".yaml";
+    std::ofstream fout(Path);
     fout << out.c_str();
 }
 
@@ -205,11 +252,11 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
 
             Entity deserializerEntity = m_scene->CreateEntity(name);
 
-            auto transformComponent = entity["TrasformComponent"];
+            auto transformComponent = entity["TransformComponent"];
 
             if (transformComponent)
             {
-                auto& tc = deserializerEntity.AddComponent<TransformComponent>();
+                auto& tc = deserializerEntity.GetComponent<TransformComponent>();
                 tc.Translation = transformComponent["Translation"].as<glm::vec3>();
                 tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
                 tc.Translation = transformComponent["Scale"].as<glm::vec3>();
@@ -242,6 +289,62 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
             {
                 auto& src = deserializerEntity.AddComponent<SpriteRendererComponent>();
                 src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+            }
+
+            auto texture3DComponent = entity["Texture3DComponent"];
+            if (texture3DComponent) {
+                auto filepath = texture3DComponent["Path"].as<std::string>();
+                auto &t3c = deserializerEntity.AddComponent<Texture3DComponent>();
+                t3c.Path = filepath;
+                t3c.Texture = Texture3D::Create(filepath);
+            }
+
+            auto colorTransferFunctionComponent = entity["ColorTransferFunctionComponent"];
+            if (colorTransferFunctionComponent) {
+
+                auto ctcs = colorTransferFunctionComponent["ColorTransfer"];
+                std::vector<float> l1;
+                std::vector<glm::vec3> l2;
+                int odd = 1;
+                for (auto &&ct : ctcs)
+                {
+                    if(odd % 2)
+                    {
+                      auto fr = ct.as<float>();
+                      l1.push_back(fr);
+                    }else
+                    {
+                      auto cr = ct.as<glm::vec3>();
+                      l2.push_back(cr);
+                    }
+                    odd++;
+                }
+                
+                auto &ctc = deserializerEntity.AddComponent<ColorTransferFunctionComponent>(TransferFunction<float,glm::vec3>{l1,l2});
+            }
+
+            auto opacityTransferFunctionComponent = entity["OpacityTransferFunctionComponent"];
+            if (opacityTransferFunctionComponent) {
+                auto otcs = opacityTransferFunctionComponent["OpacityTransfer"];
+                std::vector<float> l1, l2;
+                int odd = 1;
+                for (auto &&ot : otcs)
+                {
+                    if(odd % 2)
+                    {
+                      auto fr = ot.as<float>();
+                      l1.push_back(fr);
+                    }else
+                    {
+                      auto cr = ot.as<float>();
+                      l2.push_back(cr);
+                    }
+                    odd++;   
+                }
+
+                auto &otc = deserializerEntity
+                                .AddComponent<OpacityTransferFunctionComponent>(
+                                    TransferFunction<float, float>{l1, l2});
             }
         }
     }

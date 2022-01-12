@@ -11,6 +11,7 @@ class TransferFunction
 {
 public:
     TransferFunction() = default;
+    TransferFunction(const TransferFunction&) = default;
 	TransferFunction(const std::vector<T1>& _ini1,const std::vector<T2>& _ini2)
 	{
         RE_ASSERT(_ini1.size() == _ini2.size(),"Data and Something do not match!");

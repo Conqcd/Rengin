@@ -190,8 +190,5 @@ void main()
     gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     gl_FragColor.a = color.a;
 
-    // gl_FragColor = vec4(color.a,1.0,1.0,1.0);
-    // gl_FragColor = vec4(cnt - 10.0f,1.0,1.0,1.0);
-
     // gl_FragColor = color;
 }
