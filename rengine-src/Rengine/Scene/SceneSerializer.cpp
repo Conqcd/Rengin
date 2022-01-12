@@ -259,9 +259,9 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
                 auto& tc = deserializerEntity.GetComponent<TransformComponent>();
                 tc.Translation = transformComponent["Translation"].as<glm::vec3>();
                 tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-                tc.Translation = transformComponent["Scale"].as<glm::vec3>();
+                tc.Scale = transformComponent["Scale"].as<glm::vec3>();
             }
-            
+
             auto cameraComponent = entity["CameraComponent"];
 
             if (cameraComponent)
@@ -339,7 +339,7 @@ bool SceneSerializer::Deserializer(const std::string& filePath)
                       auto cr = ot.as<float>();
                       l2.push_back(cr);
                     }
-                    odd++;   
+                    odd++;
                 }
 
                 auto &otc = deserializerEntity
