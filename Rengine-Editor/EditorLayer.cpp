@@ -216,8 +216,10 @@ void EditorLayer::OnAttach()
     Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
-    std::vector<float> l1{0,1},l2{0,1},l3{0,1};
-    std::vector<glm::vec3> l4{{1.0,0.0,0.0},{0.0,0.0,1.0}};
+    std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,0.5f,1.0f};
+    std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{1.0f,1.0f,1.0f},{0.0f,0.0f,1.0f}};
+    // std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,1.0f};
+    // std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{0.0f,0.0f,1.0f}};
     TransferFunction<float, float> t1{l1,l2};
     TransferFunction<float, glm::vec3> t2{l3,l4};
 

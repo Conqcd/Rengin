@@ -57,11 +57,10 @@ struct Renderer3DData
 
 static Renderer3DData s_data_v;
 
-
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","assets/shaders/VoxelVertex.glsl","assets/shaders/VoxelFragment.glsl");
+    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Rengine-Editor/assets/shaders/VoxelVertex.glsl","../../Rengine-Editor/assets/shaders/VoxelFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data_v.m_VolumeShader->Bind();
     s_data_v.VolumeVertexArray = VertexArray::Create();
@@ -518,7 +517,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformFloat3("u_rayOrigin", rayOrigin);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_top", top);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_bottom", bottom);
-    s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {0.9f, 0.1f, 0.1f});
+    s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {0.1f, 0.1f, 0.1f});
     s_data_v.m_VolumeShader->SetUniformFloat3("u_lightPosition", lightPosition);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_materialColor", {1.0f,1.0f,1.0f});
     s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", stepLength);
