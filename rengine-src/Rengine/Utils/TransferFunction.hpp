@@ -70,10 +70,15 @@ public:
 
     auto begin() {return list.begin();}
     auto end() {return list.end();}
-    auto begin()const { return list.begin(); }
+    auto begin()const { return list.begin();}
     auto end()const {return list.end();}
 
-private:
+    auto ibegin() { return init_.begin();}
+    auto iend() { return init_.end();}
+    auto ibegin() const { return init_.begin();}
+    auto iend() const { return init_.end();}
+
+  private:
     T1 first,last;
 	std::map<T1,T2> list,init_;
 };

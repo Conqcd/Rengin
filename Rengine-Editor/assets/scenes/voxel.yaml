@@ -4,8 +4,8 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [-3.0999999, -0.300000012, 0]
-      Rotate: [1.57079637, -1.57079637, 0]
+      Translation: [-1.60000002, -0.100000001, -0.100000001]
+      Rotation: [1.56905103, -1.51145506, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -23,14 +23,30 @@ Entities:
       Tag: Volume
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotate: [0, 0, 0]
+      Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    Texture3DComponent:
+      Path: E:\Volume_Rendering\raw_data\cbct_sample_z=507_y=512_x=512.raw
+    ColorTransferFunctionComponent:
+      ColorTransfer:
+        - 0
+        - [1, 0, 0]
+        - 0.5
+        - [1, 1, 1]
+        - 1
+        - [0, 0, 1]
+    OpacityTransferFunctionComponent:
+      OpacityTransfer:
+        - 0
+        - 0
+        - 1
+        - 1
   - Entity: 1234
     TagComponent:
       Tag: Square
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotate: [0, 0, 0]
+      Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [0, 1, 0, 1]

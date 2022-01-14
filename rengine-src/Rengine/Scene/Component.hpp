@@ -54,6 +54,16 @@ struct SpriteRendererComponent
         :Color(color)   {}
 };
 
+struct EmissionComponent
+{
+    glm::vec4 Color{1.0f,1.0f,1.0f,1.0f};
+    EmissionComponent() = default;
+    EmissionComponent(const EmissionComponent&) = default;
+    EmissionComponent(const glm::vec4& color)
+        :Color(color)   {}
+};
+
+
 struct OpacityTransferFunctionComponent
 {
     TransferFunction<float,float> Opacity;
