@@ -173,7 +173,7 @@ void EditorLayer::OnImGuiRender()
         if(ImGuizmo::IsUsing())
         {
             tc.Translation = glm::vec3(transform[3]);
-            glm::decompose();
+            // glm::decompose();
         }
     }
 
