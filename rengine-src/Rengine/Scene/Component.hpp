@@ -34,10 +34,10 @@ struct TransformComponent
         :Translation(translation)   {}
 
     glm::mat4 GetTransform()const{
-        // glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),Rotation.x,{1.0f,0.0f,0.0f})
-        * glm::rotate(glm::mat4(1.0f),Rotation.y,{0.0f,1.0f,0.0f})
-        * glm::rotate(glm::mat4(1.0f),Rotation.z,{0.0f,0.0f,1.0f});
+        glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+        // glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),Rotation.x,{1.0f,0.0f,0.0f})
+        // * glm::rotate(glm::mat4(1.0f),Rotation.y,{0.0f,1.0f,0.0f})
+        // * glm::rotate(glm::mat4(1.0f),Rotation.z,{0.0f,0.0f,1.0f});
         
         return glm::translate(glm::mat4(1.0f),Translation)
         *   rotation
