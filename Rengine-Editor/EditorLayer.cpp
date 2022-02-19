@@ -7,6 +7,7 @@
 #include "Rengine/Scene/SceneSerializer.hpp"
 #include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
+#include <Rengine/Math/Math.hpp>
 
 namespace Rengin
 {
@@ -147,10 +148,10 @@ void EditorLayer::OnImGuiRender()
         // m_camera_controller.OnResize(vps.x,vps.y);
     }
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
-    
+
     //Gizmos
     Entity selectedEntity = m_panel.GetSelectedEntity();
-    if (selectedEntity)
+    if (selectedEntity || m_GizmoType)
     {
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
@@ -167,17 +168,26 @@ void EditorLayer::OnImGuiRender()
         auto &tc = selectedEntity.GetComponent<TransformComponent>();
         glm::mat4 transform = tc.GetTransform();
 
-        ImGuizmo::Manipulate(glm::value_ptr(cameraView),glm::value_ptr(cameraProjection),
-                            ImGuizmo::OPERATION::TRANSLATE,ImGuizmo::LOCAL,glm::value_ptr(transform));
+        bool snap = Input::isKeyPressed(static_cast<int>(Key::LeftControl));
+        float snapValue = 0.5f;
+        if(m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+            snapValue = 45.0f;
+        float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        if(ImGuizmo::IsUsing())
-        {
-            tc.Translation = glm::vec3(transform[3]);
-            // glm::decompose();
+        ImGuizmo::Manipulate(
+            glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+            static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
+            glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+
+        if (ImGuizmo::IsUsing()) {
+          glm::vec3 translation, rotation, scale;
+          Math::DecomposeTransform(transform, translation, rotation, scale);
+          glm::vec3 deltaRotation = rotation - tc.Rotation;
+          tc.Translation = translation;
+          tc.Rotation += deltaRotation;
+          tc.Scale = scale;
         }
     }
-
-    
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -286,14 +296,25 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
     case KeyCode::O:
         if (control)
             OpenScene();
-        
         break;
     case KeyCode::S:
         if (control && shift)
             SaveSceneAs();
         break;
+    case KeyCode::Q:
+      m_GizmoType = -1;
+      break;
+    case KeyCode::W:
+      m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+      break;
+    case KeyCode::E:
+      m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+      break;
+    case KeyCode::R:
+      m_GizmoType = ImGuizmo::OPERATION::SCALE;
+      break;
     default:
-        break;
+      break;
     }
 }
 
