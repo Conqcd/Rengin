@@ -2,6 +2,7 @@
 #include "Rengine/Core/core.hpp"
 #include "OrthoGraphicsCamera.hpp"
 #include "Camera.hpp"
+#include "EditorCamera.hpp"
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
@@ -20,6 +21,7 @@ public:
 
     static void BeginScene(const Camera& camera,const glm::mat4& transform);
     static void BeginScene(const OrthoGraphicsCamera& camera); // TODO: Remove
+    static void BeginScene(const EditorCamera& camera); 
     static void EndScene();
     static void Flush();
 

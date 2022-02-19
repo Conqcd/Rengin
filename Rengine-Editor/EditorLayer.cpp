@@ -45,7 +45,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::Clear();
 
     //Update Scene
-    m_ActiveScene->OnUpdate(timestep);
+    m_ActiveScene->OnUpdateRuntime(timestep);
 
     
     m_framebuffer->Unbind();

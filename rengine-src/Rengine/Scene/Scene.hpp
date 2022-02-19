@@ -6,6 +6,7 @@
 
 namespace Rengin
 {
+class RE_API EditorCamera;
 class RE_API Entity;
 class RE_API Scene
 {
@@ -19,7 +20,8 @@ private:
 public:
     Scene(/* args */);
     ~Scene();
-    void OnUpdate(TimeStep ts);
+    void OnUpdateRuntime(TimeStep ts);
+    void OnUpdateEditor(TimeStep ts,EditorCamera& camera);
     Entity CreateEntity(const std::string name = std::string());
     void DestroyEntity(Entity entity);
 
