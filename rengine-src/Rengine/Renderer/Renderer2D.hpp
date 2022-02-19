@@ -13,6 +13,7 @@ namespace Rengin
 class Renderer2D
 {
 private:
+    static void StartBatch();
 
 public:
     static void Init();

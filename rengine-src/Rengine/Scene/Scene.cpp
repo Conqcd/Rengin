@@ -84,39 +84,17 @@ void Scene::OnComponentAdd<CameraComponent>(Entity entity,
 
 void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
 {
-    // Renderer2D::BeginScene(camera.getProjection(), CameraTransform);
+    Renderer2D::BeginScene(camera);
 
-    // auto group = m_registry.group<TransformComponent>(
-    //     entt::get<SpriteRendererComponent>);
-    // for (auto _entity : group) {
-    //   auto &&[transform, sprite] =
-    //       group.get<TransformComponent, SpriteRendererComponent>(_entity);
-    // //   Renderer2D::DrawQuad(transform.Translation,transform.Scale,sprite.Color);
-    // }
-    // Renderer2D::EndScene();
+    auto group = m_registry.group<TransformComponent>(
+        entt::get<SpriteRendererComponent>);
+    for (auto _entity : group) {
+      auto &&[transform, sprite] =
+          group.get<TransformComponent, SpriteRendererComponent>(_entity);
+      Renderer2D::DrawQuad(transform.Translation,transform.Scale,sprite.Color);
+    }
+    Renderer2D::EndScene();
 
-    // Renderer3D::BeginScene(MainCamera->getProjection(), CameraTransform);
-
-    // if(CameraType == SceneCamera::ProjectionType::Perspective)
-    // {
-    //   auto viewv = m_registry.view<TransformComponent, Texture3DComponent,OpacityTransferFunctionComponent,ColorTransferFunctionComponent>();
-    //   for (auto _entity : viewv) {
-    //     auto &&[transform, texture, transfera, transferc] =
-    //         viewv.get<TransformComponent, Texture3DComponent,
-    //                   OpacityTransferFunctionComponent,
-    //                   ColorTransferFunctionComponent>(_entity);
-
-    //     float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
-        
-    //     Renderer3D::DrawVolume(
-    //         MainCamera->getProjection(), glm::inverse(CameraTransform),
-    //         transform.GetTransform(), texture.Texture,transform.Scale,
-    //         {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
-    //         {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color);
-    //   }
-    // }
-
-    // Renderer3D::EndScene();
 }
 
 void Scene::OnUpdateRuntime(TimeStep ts) {

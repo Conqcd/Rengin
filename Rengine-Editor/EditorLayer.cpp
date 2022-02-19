@@ -31,12 +31,15 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     {
         m_framebuffer->Resize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
         m_camera_controller.OnResize(m_ViewPortSize.x,m_ViewPortSize.y);
-
+        m_EditorCamera.SetViewportSize(m_ViewPortSize.x,m_ViewPortSize.y);
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     }
 
     if (m_ViewportFocused)
+    {
         m_camera_controller.OnUpdate(timestep);
+        m_EditorCamera.OnUpdate(timestep);
+    }
 
     Renderer2D::resetStats();
 
@@ -46,6 +49,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
 
     //Update Scene
     m_ActiveScene->OnUpdateRuntime(timestep);
+    // m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
 
     
     m_framebuffer->Unbind();
@@ -151,7 +155,7 @@ void EditorLayer::OnImGuiRender()
 
     //Gizmos
     Entity selectedEntity = m_panel.GetSelectedEntity();
-    if (selectedEntity || m_GizmoType)
+    if (selectedEntity || m_GizmoType != -1)
     {
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
@@ -159,11 +163,16 @@ void EditorLayer::OnImGuiRender()
         float windowHeight = static_cast<float>(ImGui::GetWindowHeight());
         ImGuizmo::SetRect(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y,windowWidth,windowHeight);
 
+        //Camera
         auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
         const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-        
         const glm::mat4& cameraProjection = camera.getProjection();
         glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+        //EditorCamera
+        // const glm::mat4& cameraProjection = m_EditorCamera.getProjection();
+        // glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+
 
         auto &tc = selectedEntity.GetComponent<TransformComponent>();
         glm::mat4 transform = tc.GetTransform();
@@ -218,6 +227,8 @@ void EditorLayer::OnAttach()
 
     m_ActiveScene = CreateRef<Scene>();
     
+    m_EditorCamera = EditorCamera(30.0f,1.778f,0.1f,1000.0f);
+
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
@@ -275,6 +286,7 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnEvent(Event& ev)
 {
     m_camera_controller.OnEvent(ev);
+    m_EditorCamera.OnEvent(ev);
     EventDispatcher dispatcher(ev);
     dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnKeyPressed));
 }

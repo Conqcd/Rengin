@@ -2,6 +2,7 @@
 #include <rengine.hpp>
 #include <imgui.h>
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Rengine/Renderer/EditorCamera.hpp"
 
 namespace Rengin
 {
@@ -18,6 +19,8 @@ private:
     OrthoGraphicsCameraController m_camera_controller;
 
     Ref<Scene> m_ActiveScene;
+    EditorCamera m_EditorCamera;
+
     Entity m_SquareEntity;
     Entity m_Camera;
 

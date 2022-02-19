@@ -47,6 +47,13 @@ struct Renderer2DData
 
 static Renderer2DData s_data;
 
+void Renderer2D::StartBatch()
+{
+    s_data.QuadVertexBufferPtr = s_data.QuadVertexBufferBase;
+    s_data.IndicesCount = 0;
+
+    s_data.TextureSlotIndex = 1;
+}
 
 void Renderer2D::Init()
 {
@@ -148,10 +155,7 @@ void Renderer2D::BeginScene(const Camera& camera,const glm::mat4& transform)
     s_data.m_Texshader->Bind();
     s_data.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
 
-    s_data.QuadVertexBufferPtr = s_data.QuadVertexBufferBase;
-    s_data.IndicesCount = 0;
-
-    s_data.TextureSlotIndex = 1;
+    StartBatch();
 }
 
 void Renderer2D::BeginScene(const OrthoGraphicsCamera& camera)
@@ -161,10 +165,19 @@ void Renderer2D::BeginScene(const OrthoGraphicsCamera& camera)
     s_data.m_Texshader->Bind();
     s_data.m_Texshader->SetUniformMat4("u_ViewProjection",camera.GetViewProjectionMatrix());
 
-    s_data.QuadVertexBufferPtr = s_data.QuadVertexBufferBase;
-    s_data.IndicesCount = 0;
 
-    s_data.TextureSlotIndex = 1;
+    StartBatch();
+}
+
+void Renderer2D::BeginScene(const EditorCamera& camera)
+{
+    RE_PROFILE_FUNCTION();
+
+    glm::mat4 viewPro = camera.GetViewProjection();
+    s_data.m_Texshader->Bind();
+    s_data.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
+
+    StartBatch();
 }
 
 void Renderer2D::EndScene()

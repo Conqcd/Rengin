@@ -9,6 +9,7 @@ namespace Rengin
 {
     class RE_API EditorCamera : public Camera
     {
+    public:
         EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
