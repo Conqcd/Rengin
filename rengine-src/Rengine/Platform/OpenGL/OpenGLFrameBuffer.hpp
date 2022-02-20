@@ -9,14 +9,16 @@ class RE_API OpenGLFrameBuffer : public FrameBuffer
 private:
     FrameBufferSpecification m_specification;
     uint32_t m_render_id = 0;
-    uint32_t m_ColorAttachment = 0;
-    uint32_t m_DepthAttachment = 0;
+    std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecs;
+    FramebufferTextureSpecification m_DepthAttachmentSpecs = FramebufferTextureFormat::None;
+    std::vector<uint32_t> m_ColorAttachments;
+    uint32_t m_DepthAttachment;
 public:
     OpenGLFrameBuffer(const FrameBufferSpecification& spec);
     virtual ~OpenGLFrameBuffer();
     
-    virtual const FrameBufferSpecification& getSpecification()const override;
-    virtual uint32_t getColorAttachment()const override;
+    virtual const FrameBufferSpecification& getSpecification()const override {return m_specification;}
+    virtual uint32_t getColorAttachment(uint32_t index = 0)const override {RE_CORE_ASSERT(index < m_ColorAttachments.size()) return m_ColorAttachments[index];}
     
     void Invalidate();
 

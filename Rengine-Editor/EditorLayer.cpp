@@ -221,6 +221,7 @@ void EditorLayer::OnAttach()
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8 , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);

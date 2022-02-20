@@ -4,9 +4,43 @@
 
 namespace Rengin
 {
+
+enum class FramebufferTextureFormat
+{
+    None = 0,
+    
+    //Color
+    RGBA8,
+
+    //Depth,Stencil
+    DEPTH24_STENCIL8,
+
+    //Default
+    Depth = DEPTH24_STENCIL8
+};
+
+struct FramebufferTextureSpecification
+{
+    FramebufferTextureSpecification() = default;
+    FramebufferTextureSpecification(FramebufferTextureFormat format)
+        : TextureFormat(format){}
+    FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
+};
+
+struct FramebufferAttachmentSpecification
+{
+    FramebufferAttachmentSpecification() = default;
+    FramebufferAttachmentSpecification(const std::initializer_list<FramebufferTextureSpecification>& attachments)
+                : Attachments(attachments)  {}
+    std::vector<FramebufferTextureSpecification> Attachments;
+};
+
+
 struct FrameBufferSpecification
 {
     uint32_t Width, Height;
+    FramebufferAttachmentSpecification Attachments;
+
     uint32_t Samples = 1;
     bool SwapChainTargets = false;
 };
@@ -16,7 +50,7 @@ class RE_API FrameBuffer
 {
 public:
     virtual const FrameBufferSpecification& getSpecification()const = 0;
-    virtual uint32_t getColorAttachment()const = 0;
+    virtual uint32_t getColorAttachment(uint32_t index = 0)const = 0;
     static Ref<FrameBuffer> Create(const FrameBufferSpecification& spec);
     
     virtual void Bind() = 0;
