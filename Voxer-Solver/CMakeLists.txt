@@ -16,13 +16,13 @@ include_directories(../Imgui)
 include_directories(../ImGuizmo)
 include_directories(../Stb)
 include_directories(../Entt)
-add_executable(Editor
+add_executable(VoxerSolver
     main.cpp
     EditorLayer.cpp
     Panels/SceneHierarchyPanel.cpp
     )
 
-target_link_libraries(Editor
+target_link_libraries(VoxerSolver
     PRIVATE 
     rengine
     spdlog
