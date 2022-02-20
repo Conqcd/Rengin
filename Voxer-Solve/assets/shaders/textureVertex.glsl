@@ -9,10 +9,14 @@ layout(location = 4) in float a_TilingFactor;
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Transform;
 
-out vec3 v_position;
+out vec2 v_TexCoords;
+out vec4 v_Color;
+out float v_texIndex;
 
 void main()
 {
-    v_position = a_position;
+    v_Color = a_color;
+    v_texIndex = a_texIndex;
+    v_TexCoords = a_texCoords;
     gl_Position = u_ViewProjection * u_Transform * vec4(a_position,1.0);
 }

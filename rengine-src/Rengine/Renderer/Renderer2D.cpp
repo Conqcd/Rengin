@@ -71,7 +71,7 @@ void Renderer2D::Init()
     };
     s_data.QuadVertexBuffer = VertexBuffer::Create(s_data.MaxVertices * sizeof(QuadVertex));
     // auto m_verbuf = VertexBuffer::Create(SquareVertices,sizeof(SquareVertices));
-    s_data.QuadVertexBufferBase = new QuadVertex[s_data.MaxVertices]; 
+    s_data.QuadVertexBufferBase = new QuadVertex[s_data.MaxVertices];
 
     BufferLayout layout = {
         {ShadeDataType::Float3 , "a_position"},
