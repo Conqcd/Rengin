@@ -7,6 +7,7 @@ class OpenGLVertexArray : public VertexArray
 {
 private:
     std::vector<Ref<VertexBuffer>> m_vertexbuffers;
+    uint32_t m_VertexBufferIndex = 0;
     Ref<IndexBuffer> m_indexbuffers;
     uint32_t m_render_id;
 public:

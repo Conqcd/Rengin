@@ -48,8 +48,10 @@ struct RE_API BufferElement
             case ShadeDataType::Float2: return 2;
             case ShadeDataType::Float3: return 3;
             case ShadeDataType::Float4: return 4;
-            case ShadeDataType::Mat3: return 9;
-            case ShadeDataType::Mat4: return 16;
+            // case ShadeDataType::Mat3: return 9;
+            // case ShadeDataType::Mat4: return 16;
+            case ShadeDataType::Mat3: return 3;
+            case ShadeDataType::Mat4: return 4;
             case ShadeDataType::Int: return 1;
             case ShadeDataType::Int2: return 2;
             case ShadeDataType::Int3: return 3;
