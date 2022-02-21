@@ -18,7 +18,7 @@ public:
     virtual ~OpenGLFrameBuffer();
     
     virtual const FrameBufferSpecification& getSpecification()const override {return m_specification;}
-    virtual uint32_t getColorAttachment(uint32_t index = 0)const override {RE_CORE_ASSERT(index < m_ColorAttachments.size()) return m_ColorAttachments[index];}
+    virtual uint32_t getColorAttachment(uint32_t index = 0)const override {RE_CORE_ASSERT((index < m_ColorAttachments.size())) return m_ColorAttachments[index];}
     
     void Invalidate();
 
@@ -26,6 +26,7 @@ public:
     virtual void Unbind() override;
     
     virtual void Resize(uint32_t width,uint32_t height) override;
+    virtual int ReadPixel(uint32_t attachmentIndex,int x,int y)override;
 };
 
     

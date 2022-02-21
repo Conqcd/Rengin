@@ -154,49 +154,49 @@ void EditorLayer::OnImGuiRender()
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
 
     //Gizmos
-    Entity selectedEntity = m_panel.GetSelectedEntity();
-    if (selectedEntity || m_GizmoType != -1)
-    {
-        ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetDrawlist();
-        float windowWidth = static_cast<float>(ImGui::GetWindowWidth());
-        float windowHeight = static_cast<float>(ImGui::GetWindowHeight());
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y,windowWidth,windowHeight);
+    // Entity selectedEntity = m_panel.GetSelectedEntity();
+    // if (selectedEntity || m_GizmoType != -1)
+    // {
+    //     ImGuizmo::SetOrthographic(false);
+    //     ImGuizmo::SetDrawlist();
+    //     float windowWidth = static_cast<float>(ImGui::GetWindowWidth());
+    //     float windowHeight = static_cast<float>(ImGui::GetWindowHeight());
+    //     ImGuizmo::SetRect(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y,windowWidth,windowHeight);
 
-        //Camera
-        auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-        const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-        const glm::mat4& cameraProjection = camera.getProjection();
-        glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+    //     //Camera
+    //     auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+    //     const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+    //     const glm::mat4& cameraProjection = camera.getProjection();
+    //     glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
         //EditorCamera
         // const glm::mat4& cameraProjection = m_EditorCamera.getProjection();
         // glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 
-        auto &tc = selectedEntity.GetComponent<TransformComponent>();
-        glm::mat4 transform = tc.GetTransform();
+        // auto &tc = selectedEntity.GetComponent<TransformComponent>();
+        // glm::mat4 transform = tc.GetTransform();
 
-        bool snap = Input::isKeyPressed(static_cast<int>(Key::LeftControl));
-        float snapValue = 0.5f;
-        if(m_GizmoType == ImGuizmo::OPERATION::ROTATE)
-            snapValue = 45.0f;
-        float snapValues[3] = {snapValue, snapValue, snapValue};
+        // bool snap = Input::isKeyPressed(static_cast<int>(Key::LeftControl));
+        // float snapValue = 0.5f;
+        // if(m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+        //     snapValue = 45.0f;
+        // float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        ImGuizmo::Manipulate(
-            glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-            static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
-            glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+        // ImGuizmo::Manipulate(
+        //     glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+        //     static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
+        //     glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
 
-        if (ImGuizmo::IsUsing()) {
-          glm::vec3 translation, rotation, scale;
-          Math::DecomposeTransform(transform, translation, rotation, scale);
-          glm::vec3 deltaRotation = rotation - tc.Rotation;
-          tc.Translation = translation;
-          tc.Rotation += deltaRotation;
-          tc.Scale = scale;
-        }
-    }
+        // if (ImGuizmo::IsUsing()) {
+        //   glm::vec3 translation, rotation, scale;
+        //   Math::DecomposeTransform(transform, translation, rotation, scale);
+        //   glm::vec3 deltaRotation = rotation - tc.Rotation;
+        //   tc.Translation = translation;
+        //   tc.Rotation += deltaRotation;
+        //   tc.Scale = scale;
+        // }
+    // }
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -221,6 +221,7 @@ void EditorLayer::OnAttach()
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8 , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);

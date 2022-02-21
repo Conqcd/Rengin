@@ -50,8 +50,19 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     //Update Scene
     m_ActiveScene->OnUpdateRuntime(timestep);
     // m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
-
+    auto [mx,my] = ImGui::GetMousePos();
+    mx -= m_ViewPortBounds[0].x;
+    my -= m_ViewPortBounds[0].y;
+    auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0]; 
+    my = viewportSize.y - my;
+    int mouseX = static_cast<int>(mx);
+    int mouseY = static_cast<int>(my);
     
+    if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
+    {
+        int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
+        RE_CORE_WARN("pixel data {0}",pixelData);
+    }
     m_framebuffer->Unbind();
 }
 
@@ -137,6 +148,7 @@ void EditorLayer::OnImGuiRender()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");
+    auto viewportOffset = ImGui::GetCursorPos();
     uint32_t textureID = m_framebuffer->getColorAttachment();
     // textureID = std::dynamic_pointer_cast<OpenGLTexture2D>(m_texture)->getRendererID();
 
@@ -152,6 +164,17 @@ void EditorLayer::OnImGuiRender()
         // m_camera_controller.OnResize(vps.x,vps.y);
     }
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
+    auto windowSize = ImGui::GetWindowSize();
+    ImVec2 minBound = ImGui::GetWindowPos();
+    minBound.x += viewportOffset.x;
+    minBound.y += viewportOffset.y;
+
+    ImVec2 maxBound = {minBound.x + windowSize.x,minBound.y + windowSize.y};
+    m_ViewPortBounds[0] = {minBound.x,minBound.y};
+    m_ViewPortBounds[1] = {maxBound.x,maxBound.y};
+
+    RE_CORE_WARN("Min Bounds = {0} {1}",minBound.x,minBound.y);
+    RE_CORE_WARN("Max Bounds = {0} {1}",maxBound.x,maxBound.y);
 
     //Gizmos
     Entity selectedEntity = m_panel.GetSelectedEntity();
@@ -221,7 +244,7 @@ void EditorLayer::OnAttach()
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8 , FramebufferTextureFormat::Depth};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
@@ -304,7 +327,6 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
     case KeyCode::N:
         if (control)
             NewScene();
-        
         break;
     case KeyCode::O:
         if (control)
@@ -327,7 +349,7 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
       m_GizmoType = ImGuizmo::OPERATION::SCALE;
       break;
     default:
-      break;
+        break;
     }
 }
 

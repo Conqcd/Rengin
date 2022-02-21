@@ -24,15 +24,15 @@ static void BindTexture(bool multisample,uint32_t id)
     glBindTexture(TextureTarget(multisample),id);
 }
 
-static void AttachColorTexture(uint32_t id,int samples, GLenum format,uint32_t width,uint32_t height,int index)
+static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GLenum format,uint32_t width,uint32_t height,int index)
 {
     bool multisampled = samples > 1;
     if(multisampled)
     {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,format,width,height,GL_FALSE);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,width,height,GL_FALSE);
     }else
     {
-        glTexImage2D(GL_TEXTURE_2D,0,format,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,nullptr);
+        glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,GL_UNSIGNED_BYTE,nullptr);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
@@ -119,9 +119,14 @@ void OpenGLFrameBuffer::Invalidate()
             switch (m_ColorAttachmentSpecs[i].TextureFormat)
             {
             case FramebufferTextureFormat::RGBA8 :
-                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,m_specification.Width,m_specification.Height,i);
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,GL_RGBA,m_specification.Width,m_specification.Height,i);
                 break;
-            
+            case FramebufferTextureFormat::RED_INTEGER:
+              Utils::AttachColorTexture(
+                  m_ColorAttachments[i], m_specification.Samples, GL_R32I,
+                  GL_RED_INTEGER, m_specification.Width, m_specification.Height, i);
+              break;
+
             default:
                 break;
             }
@@ -142,7 +147,7 @@ void OpenGLFrameBuffer::Invalidate()
     }
     if(m_ColorAttachments.size() > 1)
     {
-        RE_CORE_ASSERT(m_ColorAttachments.size() < 4);
+        RE_CORE_ASSERT((m_ColorAttachments.size() < 4));
         GLenum buffers[4] = {GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT30};
         glDrawBuffers(m_ColorAttachments.size(),buffers);
     }else if(m_ColorAttachments.empty())
@@ -178,4 +183,13 @@ void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
     Invalidate();
 }
 
+int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
+{
+    RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
+
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+    int pixelData;
+    glReadPixels(x,y,1,1,GL_RED_INTEGER,GL_INT,&pixelData);
+    return pixelData;
+}
 } // namespace Rengin
