@@ -41,11 +41,14 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
     }
 
+    //Render    
     Renderer2D::resetStats();
-
     m_framebuffer->Bind();
     RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
+
+    //Clear framebuffer id to -1
+    m_framebuffer->ClearAttachment(1,-1);
 
     //Update Scene
     m_ActiveScene->OnUpdateRuntime(timestep);
