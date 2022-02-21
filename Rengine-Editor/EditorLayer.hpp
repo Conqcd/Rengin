@@ -22,6 +22,7 @@ private:
     EditorCamera m_EditorCamera;
 
     Entity m_SquareEntity;
+    Entity m_HoverEntity = {};
     Entity m_Camera;
 
     glm::vec2 m_ViewPortSize;
@@ -34,6 +35,7 @@ private:
     //Panels
     SceneHierarchyPanel m_panel;
 private:
+    bool OnMouseButtonPressed(MouseButtonPressEvent& e);
     bool OnKeyPressed(KeyPressEvent& e);
     void NewScene();
     void OpenScene();

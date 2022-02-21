@@ -18,6 +18,7 @@ public:
     void SetContext(const Ref<Scene>& scene);
 
     void OnImGuiRender();
+    void SetSelectedEntity(Entity entity);
     Entity GetSelectedEntity() const {return m_SelectionContext;}
 private:
     void DrawEntityNode(Entity entity);

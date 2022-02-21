@@ -7,6 +7,7 @@
 #include "Rengine/Core/Input.hpp"
 #include "Rengine/Core/MouseButtonCodes.hpp"
 #include "Rengine/Core/KeyCodes.hpp"
+#include "Rengine/Core/MouseCodes.hpp"
 #include "Rengine/Core/TimeStep.hpp"
 
 //Debug

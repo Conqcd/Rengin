@@ -65,6 +65,10 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     {
         int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
         RE_CORE_WARN("pixel data {0}",pixelData);
+        if(pixelData == -1)
+            m_HoverEntity = {};
+        else
+            m_HoverEntity = {(entt::entity)pixelData,m_ActiveScene.get()};
     }
     m_framebuffer->Unbind();
 }
@@ -316,6 +320,16 @@ void EditorLayer::OnEvent(Event& ev)
     m_EditorCamera.OnEvent(ev);
     EventDispatcher dispatcher(ev);
     dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnKeyPressed));
+    dispatcher.Dispatch<MouseButtonPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnMouseButtonPressed));
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressEvent& e) {
+    if(e.getButton() == Mouse::ButtonLeft)
+    {
+        if(m_HoverEntity && !ImGuizmo::IsOver() && !Input::isKeyPressed(static_cast<int>(Key::LeftAlt)))
+          m_panel.SetSelectedEntity(m_HoverEntity);
+    }
+    return false;
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
