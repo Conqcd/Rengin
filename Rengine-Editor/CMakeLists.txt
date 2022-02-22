@@ -20,6 +20,7 @@ add_executable(Editor
     main.cpp
     EditorLayer.cpp
     Panels/SceneHierarchyPanel.cpp
+    Panels/ContentBrowserPanel.cpp
     )
 
 target_link_libraries(Editor

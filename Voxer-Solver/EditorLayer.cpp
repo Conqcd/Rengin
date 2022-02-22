@@ -13,7 +13,7 @@ namespace Rengin
 {
     
 
-EditorLayer::EditorLayer(/* args */)
+EditorLayer::EditorLayer()
         :Layer("Editor"),m_camera_controller(1280.f/720.f,true)
 {
 }
@@ -44,13 +44,12 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     Renderer2D::resetStats();
 
     m_framebuffer->Bind();
-    RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+    RenderCommand::SetClearColor({0.8f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
     //Update Scene
     m_ActiveScene->OnUpdateRuntime(timestep);
     // m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
-
     
     m_framebuffer->Unbind();
 }
@@ -232,8 +231,8 @@ void EditorLayer::OnAttach()
 
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     
-    m_SquareEntity = m_ActiveScene->CreateEntity("Square");
-    m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
+    // m_SquareEntity = m_ActiveScene->CreateEntity("Square");
+    // m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
     Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
@@ -255,7 +254,6 @@ void EditorLayer::OnAttach()
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
     m_Camera.AddComponent<CameraComponent>();
-
 
     class CameraController :public ScriptableEntity
     {

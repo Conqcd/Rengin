@@ -56,7 +56,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     auto [mx,my] = ImGui::GetMousePos();
     mx -= m_ViewPortBounds[0].x;
     my -= m_ViewPortBounds[0].y;
-    auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0]; 
+    auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0];
     my = viewportSize.y - my;
     int mouseX = static_cast<int>(mx);
     int mouseY = static_cast<int>(my);
@@ -152,6 +152,7 @@ void EditorLayer::OnImGuiRender()
     }
 
     m_panel.OnImGuiRender();
+    m_ContentBrowserPanel.OnImGuiRender();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");

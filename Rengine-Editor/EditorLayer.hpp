@@ -2,6 +2,7 @@
 #include <rengine.hpp>
 #include <imgui.h>
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/ContentBrowserPanel.hpp"
 #include "Rengine/Renderer/EditorCamera.hpp"
 
 namespace Rengin
@@ -34,6 +35,7 @@ private:
 
     //Panels
     SceneHierarchyPanel m_panel;
+    ContentBrowserPanel m_ContentBrowserPanel;
 private:
     bool OnMouseButtonPressed(MouseButtonPressEvent& e);
     bool OnKeyPressed(KeyPressEvent& e);

@@ -1,16 +1,17 @@
 #pragma once
+#include <filesystem>
 
 namespace Rengin
 {
 class ContentBrowserPanel
 {
 private:
-    /* data */
+    std::filesystem::path m_CurrentDirectory;
 public:
-    ContentBrowserPanel(/* args */) = default;
+    ContentBrowserPanel(/* args */);
     ~ContentBrowserPanel() = default;
 
-    void ImGuiRender();
+    void OnImGuiRender();
 };
 
 
