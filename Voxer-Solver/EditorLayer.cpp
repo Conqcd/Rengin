@@ -44,7 +44,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     Renderer2D::resetStats();
 
     m_framebuffer->Bind();
-    RenderCommand::SetClearColor({0.8f,0.1f,0.1f,1});
+    RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
     //Update Scene
@@ -220,7 +220,7 @@ void EditorLayer::OnAttach()
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8 , FramebufferTextureFormat::Depth};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
