@@ -11,7 +11,7 @@
 
 namespace Rengin
 {
-    
+extern const std::filesystem::path g_AssetPath;
 
 EditorLayer::EditorLayer(/* args */)
         :Layer("Editor"),m_camera_controller(1280.f/720.f,true)
@@ -172,6 +172,17 @@ void EditorLayer::OnImGuiRender()
         // m_camera_controller.OnResize(vps.x,vps.y);
     }
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
+
+    if(ImGui::BeginDragDropTarget())
+    {
+        if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+        {
+          const wchar_t *path = (const wchar_t *)payload->Data;
+          OpenScene(std::filesystem::path(g_AssetPath) / path);
+        }
+        ImGui::EndDragDropTarget();
+    }
+
     auto windowSize = ImGui::GetWindowSize();
     ImVec2 minBound = ImGui::GetWindowPos();
     minBound.x += viewportOffset.x;
@@ -383,12 +394,18 @@ void EditorLayer::OpenScene()
     std::string filepath = FileDialogs::OpenFile("Rengine Scene (*.yaml)\0*.yaml\0");
     if (!filepath.empty())
     {
+        OpenScene(filepath);
+    }
+}
+
+void EditorLayer::OpenScene(const std::filesystem::path& path)
+{
         m_ActiveScene = CreateRef<Scene>();
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
         m_panel.SetContext(m_ActiveScene);
         SceneSerializer serializer(m_ActiveScene);
-        serializer.Deserializer(filepath);
-    }
+        serializer.Deserializer(path.string());
+
 }
 
 void EditorLayer::SaveSceneAs()

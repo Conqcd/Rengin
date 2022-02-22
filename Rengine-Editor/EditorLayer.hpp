@@ -41,6 +41,7 @@ private:
     bool OnKeyPressed(KeyPressEvent& e);
     void NewScene();
     void OpenScene();
+    void OpenScene(const std::filesystem::path& path);
     void SaveSceneAs();
 public:
     EditorLayer(/* args */);
