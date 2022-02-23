@@ -112,8 +112,7 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
       Renderer3D::DrawVolume(camera.getProjection(), Viewmatrix,
           transform.GetTransform(), texture.Texture, transform.Scale,
           {m_ViewportWidth, m_ViewportHeight}, focalLength,
-          camera.GetPosition(),
-          camera.GetPosition(),
+          camera.GetPosition(),camera.GetPosition(),
           stepLength, transfera.Opacity, transferc.Color);
       Renderer3D::EndScene();
     }
