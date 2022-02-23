@@ -211,6 +211,20 @@ void Renderer3D::BeginScene(const OrthoGraphicsCamera& camera)
     s_data_v.TextureSlotIndex = 1;
 }
 
+void Renderer3D::BeginScene(const EditorCamera& camera)
+{
+    RE_PROFILE_FUNCTION();
+
+    glm::mat4 viewPro = camera.GetViewProjection();
+    s_data_v.m_Texshader->Bind();
+    s_data_v.m_Texshader->SetUniformMat4("u_ViewProjection",viewPro);
+
+    s_data_v.CubeVertexBufferPtr = s_data_v.CubeVertexBufferBase;
+    s_data_v.IndicesCount = 0;
+
+    s_data_v.TextureSlotIndex = 1;
+}
+
 void Renderer3D::EndScene()
 {
     RE_PROFILE_FUNCTION();

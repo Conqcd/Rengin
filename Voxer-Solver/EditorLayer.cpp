@@ -57,7 +57,6 @@ void EditorLayer::OnImGuiRender()
 {
     RE_PROFILE_FUNCTION();
 
-
     static bool p_open = true;
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
@@ -287,37 +286,37 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
         return false;
     bool control = Input::isKeyPressed(static_cast<int>(KeyCode::LeftControl)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightControl));
     bool shift = Input::isKeyPressed(static_cast<int>(KeyCode::LeftShift)) || Input::isKeyPressed(static_cast<int>(KeyCode::RightShift));
-
+    auto kkk = static_cast<KeyCode>(e.getKeyValue());
     switch (static_cast<KeyCode>(e.getKeyValue()))
     {
-    case KeyCode::N:
-        if (control)
-            NewScene();
-        
-        break;
-    case KeyCode::O:
-        if (control)
-            OpenScene();
-        break;
-    case KeyCode::S:
-        if (control && shift)
-            SaveSceneAs();
-        break;
-    case KeyCode::Q:
-      m_GizmoType = -1;
-      break;
-    case KeyCode::W:
-      m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-      break;
-    case KeyCode::E:
-      m_GizmoType = ImGuizmo::OPERATION::ROTATE;
-      break;
-    case KeyCode::R:
-      m_GizmoType = ImGuizmo::OPERATION::SCALE;
-      break;
-    default:
-      break;
+        case KeyCode::N:
+            if (control)
+                NewScene();
+            break;
+        case KeyCode::O:
+            if (control)
+                OpenScene();
+            break;
+        case KeyCode::S:
+            if (control && shift)
+                SaveSceneAs();
+            break;
+        case KeyCode::Q:
+            m_GizmoType = -1;
+            break;
+        case KeyCode::W:
+            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            break;
+        case KeyCode::E:
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            break;
+        case KeyCode::R:
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            break;
+        default:
+            break;
     }
+    return false;
 }
 
 void EditorLayer::NewScene()

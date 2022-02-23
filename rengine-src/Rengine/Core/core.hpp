@@ -63,8 +63,8 @@
 #endif 
 
 #if defined(RE_ENABLE_ASSERT) && defined(_MSC_VER)
-    #define RE_CORE_ASSERT(x,...) { if(!x){ RE_CORE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
-    #define RE_ASSERT(x,...) { if(!x){ RE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
+    #define RE_CORE_ASSERT(x,...) { if(!(x)){ RE_CORE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
+    #define RE_ASSERT(x,...) { if(!(x)){ RE_ERROR("Assert fail {0}",__VA_ARGS__); __debugbreak(); } }
 #else
     #define RE_CORE_ASSERT(x,...)
     #define RE_ASSERT(x,...)

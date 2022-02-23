@@ -95,6 +95,28 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
     }
     Renderer2D::EndScene();
 
+    Renderer3D::BeginScene(camera);
+
+    auto viewv = m_registry.view<TransformComponent, Texture3DComponent,
+                                 OpacityTransferFunctionComponent,
+                                 ColorTransferFunctionComponent>();
+    for (auto _entity : viewv) {
+      auto &&[transform, texture, transfera, transferc] =
+          viewv.get<TransformComponent, Texture3DComponent,
+                    OpacityTransferFunctionComponent,
+                    ColorTransferFunctionComponent>(_entity);
+
+      float stepLength = 0.01, focalLength = 1.0 / tan(glm::radians(camera.GetFOV()) / 2.0);
+
+      auto Viewmatrix = camera.GetViewMatrix();
+      Renderer3D::DrawVolume(camera.getProjection(), Viewmatrix,
+          transform.GetTransform(), texture.Texture, transform.Scale,
+          {m_ViewportWidth, m_ViewportHeight}, focalLength,
+          camera.GetPosition(),
+          camera.GetPosition(),
+          stepLength, transfera.Opacity, transferc.Color);
+      Renderer3D::EndScene();
+    }
 }
 
 void Scene::OnUpdateRuntime(TimeStep ts) {

@@ -14,9 +14,8 @@ EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip,
                            float farClip)
     : m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClip(nearClip),
       m_FarClip(farClip),
-      Camera(
-          glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip)) {
-  UpdateView();
+      Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip)) {
+    UpdateView();
 }
 
 void EditorCamera::UpdateProjection() {
@@ -27,12 +26,11 @@ void EditorCamera::UpdateProjection() {
 
 void EditorCamera::UpdateView() {
   // m_Yaw = m_Pitch = 0.0f; // Lock the camera's rotation
-  m_Position = CalculatePosition();
+    m_Position = CalculatePosition();
 
-  glm::quat orientation = GetOrientation();
-  m_ViewMatrix =
-      glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
-  m_ViewMatrix = glm::inverse(m_ViewMatrix);
+    glm::quat orientation = GetOrientation();
+    m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+    m_ViewMatrix = glm::inverse(m_ViewMatrix);
 }
 
 std::pair<float, float> EditorCamera::PanSpeed() const {
@@ -48,11 +46,11 @@ std::pair<float, float> EditorCamera::PanSpeed() const {
 float EditorCamera::RotationSpeed() const { return 0.8f; }
 
 float EditorCamera::ZoomSpeed() const {
-  float distance = m_Distance * 0.2f;
-  distance = std::max(distance, 0.0f);
-  float speed = distance * distance;
-  speed = std::min(speed, 100.0f); // max speed = 100
-  return speed;
+    float distance = m_Distance * 0.2f;
+    distance = std::max(distance, 0.0f);
+    float speed = distance * distance;
+    speed = std::min(speed, 100.0f); // max speed = 100
+    return speed;
 }
 
 void EditorCamera::OnUpdate(TimeStep ts) {
@@ -74,8 +72,7 @@ void EditorCamera::OnUpdate(TimeStep ts) {
 
 void EditorCamera::OnEvent(Event &e) {
   EventDispatcher dispatcher(e);
-  dispatcher.Dispatch<MouseScrolledEvent>(
-      RE_BIND_FUNC_EVENT_1(EditorCamera::OnMouseScroll));
+  dispatcher.Dispatch<MouseScrolledEvent>(RE_BIND_FUNC_EVENT_1(EditorCamera::OnMouseScroll));
 }
 
 bool EditorCamera::OnMouseScroll(MouseScrolledEvent &e) {
