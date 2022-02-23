@@ -14,7 +14,6 @@ private:
     Ref<VertexBuffer> m_verbuf;
     Ref<IndexBuffer> m_indbuf;
     Ref<VertexArray> m_verarr;
-    Ref<Texture2D> m_texture;
     Ref<FrameBuffer> m_framebuffer;
     OrthoGraphicsCameraController m_camera_controller;
 

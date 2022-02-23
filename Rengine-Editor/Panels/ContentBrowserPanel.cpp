@@ -10,8 +10,8 @@ extern const std::filesystem::path g_AssetPath = "assets";
 ContentBrowserPanel::ContentBrowserPanel()
     :   m_CurrentDirectory(g_AssetPath)
 {
-    m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
-	m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
+    m_DirectoryIcon = Texture2D::Create("assets/textures/DirectoryIcon.png");
+	m_FileIcon = Texture2D::Create("assets/textures/FileIcon.png");
 }
 
 void ContentBrowserPanel::OnImGuiRender()

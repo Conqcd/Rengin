@@ -12,7 +12,6 @@
 namespace Rengin
 {
     
-
 EditorLayer::EditorLayer()
         :Layer("Editor"),m_camera_controller(1280.f/720.f,true)
 {
@@ -48,8 +47,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::Clear();
 
     //Update Scene
-    m_ActiveScene->OnUpdateRuntime(timestep);
-    // m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
+    // m_ActiveScene->OnUpdateRuntime(timestep);
+    m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
     
     m_framebuffer->Unbind();
 }
@@ -123,7 +122,6 @@ void EditorLayer::OnImGuiRender()
             {
                 SaveSceneAs();
             }
-
             if (ImGui::MenuItem("Exit"))
                 Application::getApplication().Close();
             ImGui::EndMenu();
@@ -217,8 +215,6 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_texture = Texture2D::Create("assets/textures/France.jpg");
-    
     FrameBufferSpecification FbSpec;
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8};
     m_ViewPortSize.x = FbSpec.Width = 1280;
@@ -230,17 +226,12 @@ void EditorLayer::OnAttach()
     m_EditorCamera = EditorCamera(30.0f,1.778f,0.1f,1000.0f);
 
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
-    
-    // m_SquareEntity = m_ActiveScene->CreateEntity("Square");
-    // m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
     Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
     std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,0.5f,1.0f};
     std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{1.0f,1.0f,1.0f},{0.0f,0.0f,1.0f}};
-    // std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,1.0f};
-    // std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{0.0f,0.0f,1.0f}};
     TransferFunction<float, float> t1{l1,l2};
     TransferFunction<float, glm::vec3> t2{l3,l4};
 
