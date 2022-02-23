@@ -35,11 +35,6 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     }
 
-    if (m_ViewportFocused)
-    {
-        m_camera_controller.OnUpdate(timestep);
-        m_EditorCamera.OnUpdate(timestep);
-    }
 
     //Render    
     Renderer2D::resetStats();
@@ -50,9 +45,23 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     //Clear framebuffer id to -1
     m_framebuffer->ClearAttachment(1,-1);
 
+    switch (m_SceneState)
+    {
+    case SceneState::Edit:
+        if (m_ViewportFocused) {
+            m_camera_controller.OnUpdate(timestep);
+        }
+        m_EditorCamera.OnUpdate(timestep);
+        m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
+        break;
+    case SceneState::Play:
+      m_ActiveScene->OnUpdateRuntime(timestep);
+      break;
+    default:
+        break;
+    }
+
     //Update Scene
-    m_ActiveScene->OnUpdateRuntime(timestep);
-    // m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
     auto [mx,my] = ImGui::GetMousePos();
     mx -= m_ViewPortBounds[0].x;
     my -= m_ViewPortBounds[0].y;
@@ -65,10 +74,10 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     {
         int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
         RE_CORE_WARN("pixel data {0}",pixelData);
-        if(pixelData == -1)
-            m_HoverEntity = {};
-        else
-            m_HoverEntity = {(entt::entity)pixelData,m_ActiveScene.get()};
+        // if(pixelData == -1)
+        //     m_HoverEntity = {};
+        // else
+        //     m_HoverEntity = {(entt::entity)pixelData,m_ActiveScene.get()};
     }
     m_framebuffer->Unbind();
 }
@@ -253,6 +262,8 @@ void EditorLayer::OnImGuiRender()
     ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
 
+    UI_Toolbar();
+
     ImGui::End();
 }
 
@@ -261,6 +272,8 @@ void EditorLayer::OnAttach()
     RE_PROFILE_FUNCTION();
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
+    m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
+    m_IconStop = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
@@ -416,6 +429,43 @@ void EditorLayer::SaveSceneAs()
         SceneSerializer serializer(m_ActiveScene);
         serializer.Serializer(filepath);
     }
+}
+
+void EditorLayer::OnScenePlay()
+{
+    m_SceneState = SceneState::Play;
+}
+
+void EditorLayer::OnSceneStop()
+{
+    m_SceneState = SceneState::Edit;
+}
+
+void EditorLayer::UI_Toolbar()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(0,2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(0,0));
+    ImGui::PushStyleColor(ImGuiCol_Button,ImVec4(0,0,0,0));
+    auto& color = ImGui::GetStyle().Colors;
+    const auto& buttonHovered = color[ImGuiCol_ButtonHovered];
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,ImVec4(buttonHovered.x,buttonHovered.y,buttonHovered.z,0.5f));
+    const auto& buttonActive = color[ImGuiCol_ButtonActive];
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,ImVec4(buttonActive.x,buttonActive.y,buttonActive.z,0.5f));
+
+    ImGui::Begin("##toolbar",nullptr,ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    
+    float size = ImGui::GetWindowHeight() - 4.0f;
+    auto icon = m_SceneState == SceneState::Edit? m_IconStop : m_IconPlay;
+    ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f - (size * 0.5f)));
+    if(ImGui::ImageButton((ImTextureID)icon->getRendererID(),ImVec2(size,size),ImVec2(0,0),ImVec2(1,1),0))
+    {
+        if(m_SceneState == SceneState::Edit)
+            OnScenePlay();
+        else if(m_SceneState == SceneState::Play)
+            OnSceneStop();
+    }
+
+    ImGui::End();
 }
 
 } // namespace Rengin

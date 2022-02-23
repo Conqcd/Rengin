@@ -33,9 +33,18 @@ private:
 
     int  m_GizmoType = -1;
 
+    //Editor2D
+    Ref<Texture2D> m_IconPlay,m_IconStop;
     //Panels
     SceneHierarchyPanel m_panel;
     ContentBrowserPanel m_ContentBrowserPanel;
+
+    enum class SceneState
+    {
+        Edit = 0,Play = 1
+    };
+
+    SceneState m_SceneState = SceneState::Edit;
 private:
     bool OnMouseButtonPressed(MouseButtonPressEvent& e);
     bool OnKeyPressed(KeyPressEvent& e);
@@ -43,6 +52,12 @@ private:
     void OpenScene();
     void OpenScene(const std::filesystem::path& path);
     void SaveSceneAs();
+
+    void OnScenePlay();
+    void OnSceneStop();
+
+    //UI Panels
+    void UI_Toolbar();
 public:
     EditorLayer(/* args */);
     ~EditorLayer();
