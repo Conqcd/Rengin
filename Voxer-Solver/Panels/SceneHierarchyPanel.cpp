@@ -247,7 +247,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     DrawComponent<CameraComponent>("Camera",entity,[](auto& component)
     {
         auto& camera = component.Camera;
-            
+
         ImGui::Checkbox("Primary",&component.Primary);
         
         const char* prjectionTypeStrings[] = {"Perspective","Orthographics"};
@@ -263,7 +263,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                     currentProjectionTypeString = prjectionTypeStrings[i];
                     camera.SetProjectionType(static_cast<SceneCamera::ProjectionType>(i));
                 }
-
                 if (isSelected)
                     ImGui::SetItemDefaultFocus();
             }

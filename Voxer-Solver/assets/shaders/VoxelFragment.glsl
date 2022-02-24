@@ -22,6 +22,8 @@ uniform sampler3D u_volume;
 // uniform sampler3D u_volume;
 
 uniform float u_gamma;
+layout(location = 0) out vec4 o_color;
+layout(location = 1) out vec3 o_position;
 
 struct Ray
 {
@@ -187,8 +189,8 @@ void main()
     
     color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
     color.a = 1.0;
-    gl_FragColor.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-    gl_FragColor.a = color.a;
+    o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+    o_color.a = color.a;
 
     // gl_FragColor = color;
 }

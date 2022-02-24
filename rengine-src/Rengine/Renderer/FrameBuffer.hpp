@@ -11,6 +11,7 @@ enum class FramebufferTextureFormat
     
     //Color
     RGBA8,
+    RGB8,
     RED_INTEGER,
 
     //Depth,Stencil

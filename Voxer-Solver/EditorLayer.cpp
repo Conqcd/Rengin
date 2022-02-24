@@ -215,7 +215,7 @@ void EditorLayer::OnAttach()
     RE_PROFILE_FUNCTION();
 
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGB8};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
