@@ -57,6 +57,7 @@ public:
     static Ref<FrameBuffer> Create(const FrameBufferSpecification& spec);
 
     virtual void Resize(uint32_t width,uint32_t height) = 0;
+    
     virtual int ReadPixel(uint32_t attachmentIndex,int x,int y) = 0;
 
     virtual void ClearAttachment(uint32_t attachmentIndex,int value) = 0;

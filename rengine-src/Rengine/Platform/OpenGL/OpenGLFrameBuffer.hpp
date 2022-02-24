@@ -1,6 +1,6 @@
 #pragma once
 #include "Rengine/Renderer/FrameBuffer.hpp"
-
+#include "glad/glad.h"
 
 namespace Rengin
 {
@@ -26,7 +26,8 @@ public:
     virtual void Unbind() override;
     
     virtual void Resize(uint32_t width,uint32_t height) override;
-    virtual int ReadPixel(uint32_t attachmentIndex,int x,int y)override;
+    virtual int ReadPixel(uint32_t attachmentIndex,int x,int y) override;
+
     virtual void ClearAttachment(uint32_t attachmentIndex,int value) override;
 };
 

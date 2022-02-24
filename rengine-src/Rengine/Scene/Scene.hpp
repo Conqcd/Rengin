@@ -25,6 +25,9 @@ public:
     Entity CreateEntity(const std::string name = std::string());
     void DestroyEntity(Entity entity);
 
+    void OnRuntimeStart();
+    void OnRuntimeStop();
+
     void OnViewportResize(uint32_t width,uint32_t height);
     //TEMP
     entt::registry& Reg() {return m_registry;}

@@ -220,4 +220,14 @@ Entity Scene::GetPrimaryCameraEntity() {
   return {};
 }
 
+void Scene::OnRuntimeStart()
+{
+
+}
+
+void Scene::OnRuntimeStop()
+{
+
+}
+
 } // namespace Rengin

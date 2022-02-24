@@ -37,7 +37,7 @@ private:
     void OpenScene();
     void SaveSceneAs();
 public:
-    EditorLayer(/* args */);
+    EditorLayer();
     ~EditorLayer();
     void OnUpdate(TimeStep timestep) override;
     virtual void OnImGuiRender() override;
