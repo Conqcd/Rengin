@@ -282,11 +282,11 @@ void EditorLayer::OnAttach()
     m_framebuffer = FrameBuffer::Create(FbSpec);
 
     m_ActiveScene = CreateRef<Scene>();
-    
+ 
     m_EditorCamera = EditorCamera(30.0f,1.778f,0.1f,1000.0f);
 
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
-    
+
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
