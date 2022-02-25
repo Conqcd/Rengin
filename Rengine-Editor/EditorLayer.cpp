@@ -413,12 +413,14 @@ void EditorLayer::OpenScene()
 
 void EditorLayer::OpenScene(const std::filesystem::path& path)
 {
-        m_ActiveScene = CreateRef<Scene>();
-        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
-        m_panel.SetContext(m_ActiveScene);
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.Deserializer(path.string());
-
+    if(m_SceneState == SceneState::Edit)
+        OnSceneStop();
+    
+    m_ActiveScene = CreateRef<Scene>();
+    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
+    m_panel.SetContext(m_ActiveScene);
+    SceneSerializer serializer(m_ActiveScene);
+    serializer.Deserializer(path.string());
 }
 
 void EditorLayer::SaveSceneAs()
