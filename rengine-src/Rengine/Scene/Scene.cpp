@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "Rengine/Renderer/Renderer2D.hpp"
 #include "Rengine/Renderer/Renderer3D.hpp"
+#include "ScriptableEntity.hpp"
 #include "repch.hpp"
 #include <glm/glm.hpp>
 namespace Rengin {
@@ -186,8 +187,14 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
   }
 }
 
-Entity Scene::CreateEntity(const std::string name) {
+Entity Scene::CreateEntity(const std::string& name) {
+  return CreateEntitywithUUID(UUID(),name);
+}
+
+Entity Scene::CreateEntitywithUUID(UUID uuid, const std::string& name)
+{
   Entity entity{m_registry.create(), this};
+  entity.AddComponent<IDComponent>(uuid);
   entity.AddComponent<TransformComponent>();
   auto &tag = entity.AddComponent<TagComponent>();
   tag.Tag = name.empty() ? "Entity" : name;

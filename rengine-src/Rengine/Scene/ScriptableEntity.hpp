@@ -4,6 +4,7 @@
 #include "Rengine/Core/TimeStep.hpp"
 namespace Rengin
 {
+class Entity;
 class RE_API ScriptableEntity
 {
 private:

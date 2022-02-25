@@ -2,6 +2,7 @@
 #include <entt.hpp>
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Core/TimeStep.hpp"
+#include "Rengine/Core/UUID.hpp"
 
 
 namespace Rengin
@@ -22,7 +23,8 @@ public:
     ~Scene();
     void OnUpdateRuntime(TimeStep ts);
     void OnUpdateEditor(TimeStep ts,EditorCamera& camera);
-    Entity CreateEntity(const std::string name = std::string());
+    Entity CreateEntity(const std::string& name = std::string());
+    Entity CreateEntitywithUUID(UUID uuid,const std::string& name = std::string());
     void DestroyEntity(Entity entity);
 
     void OnRuntimeStart();

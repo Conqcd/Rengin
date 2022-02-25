@@ -87,8 +87,10 @@ SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 
 static void SerializeEntity(YAML::Emitter& out,Entity entity)
 {
+    RE_ASSERT(entity.HasComponent<IDComponent>());
+
     out << YAML::BeginMap;
-    out << YAML::Key << "Entity" << YAML::Value << "1234";
+    out << YAML::Key << "Entity" << YAML::Value << entity.GetComponent<IDComponent>().ID;
 
     if (entity.HasComponent<TagComponent>())
     {

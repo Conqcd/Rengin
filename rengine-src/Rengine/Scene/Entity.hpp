@@ -1,6 +1,8 @@
 #pragma once
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Core/log.hpp"
+#include "Rengine/Core/UUID.hpp"
+#include "Component.hpp"
 #include "Scene.hpp"
 #include <entt.hpp>
 
@@ -41,6 +43,8 @@ public:
   operator bool() const { return m_EntityHandle != entt::null; }
   operator uint32_t() const { return static_cast<uint32_t>(m_EntityHandle); }
   operator entt::entity() const { return m_EntityHandle; }
+
+  UUID GetUUID() {return GetComponent<IDComponent>().ID;}
 
   bool operator==(const Entity &others) const {
     return m_EntityHandle == others.m_EntityHandle && m_scene == others.m_scene;

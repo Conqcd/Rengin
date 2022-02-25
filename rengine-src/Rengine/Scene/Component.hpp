@@ -1,8 +1,8 @@
 #pragma once
 #include "Rengine/Renderer/Camera.hpp"
 #include "SceneCamera.hpp"
-#include "ScriptableEntity.hpp"
 #include "Rengine/Core/TimeStep.hpp"
+#include "Rengine/Core/UUID.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <Rengine/Renderer/Texture.hpp>
@@ -12,7 +12,18 @@
 
 namespace Rengin
 {
-// class ScriptableEntity;
+
+struct IDComponent
+{
+    UUID ID;
+    IDComponent() = default;
+    IDComponent(const IDComponent&) = default;
+    IDComponent(uint64_t id)
+        :ID(id)   {}
+};
+
+
+class ScriptableEntity;
 struct TagComponent
 {
     std::string Tag;
