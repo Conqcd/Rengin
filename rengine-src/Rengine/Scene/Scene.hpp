@@ -21,6 +21,9 @@ private:
 public:
     Scene(/* args */);
     ~Scene();
+
+    static Ref<Scene> Copy(Ref<Scene> other);
+
     void OnUpdateRuntime(TimeStep ts);
     void OnUpdateEditor(TimeStep ts,EditorCamera& camera);
     Entity CreateEntity(const std::string& name = std::string());
@@ -29,6 +32,8 @@ public:
 
     void OnRuntimeStart();
     void OnRuntimeStop();
+
+    void DuplicateEntity(Entity entity);
 
     void OnViewportResize(uint32_t width,uint32_t height);
     //TEMP

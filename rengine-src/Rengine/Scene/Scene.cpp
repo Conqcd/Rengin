@@ -45,6 +45,58 @@ template <typename T> void Scene::OnComponentAdd(Entity entity, T &component) {
   // static_assert(false);
 }
 
+template <typename Component>
+static void CopyComponent(entt::registry& dst,entt::registry& src,const std::unordered_map<UUID,entt::entity>& enttMap)
+{
+    auto view = src.view<Component>();
+    for (auto e : view)
+    {
+        UUID uuid src.get<IDComponent>(e).ID;
+        RE_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+        entt::entity dstEnttID = enttMap.at(uuid);
+        auto &component = src.get<Component>();
+        dst.emplace_or_replace<Component>(dstEnttID, component);
+    }
+}
+
+template <typename Component>
+static void CopyComponentIfExists(Entity& dst,Entity& src)
+{
+    if(src.HasComponent<Component>())
+        dst.AddComponent<Component>();
+}
+
+Ref<Scene> Scene::Copy(Ref<Scene> other)
+{
+    auto newScene = CreateRef<Scene>();
+    newScene->m_ViewportWidth = other->m_ViewportWidth;
+    newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+    std::unordered_map<UUID,entt::entity> enttMap;
+    
+    auto& srcSceneRegistry = other->m_registry;
+    auto& dstSceneRegistry = newScene->m_registry;
+    auto idView = srcSceneRegistry.view<IDComponent>();
+
+    for (auto e : idView)
+    {
+        UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+        const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+        auto newEntity = newScene->CreateEntitywithUUID(uuid,name);
+
+        enttMap[uuid] = static_cast<entt::entity>(newEntity);
+    }
+
+    CopyComponent<TransformComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<SpriteRendererComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<CameraComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<NativeScriptComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<Texture3DComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<Texture2DComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+
+    return newScene;
+}
+
 template <>
 void Scene::OnComponentAdd<TransformComponent>(Entity entity,
                                                TransformComponent &component) {}
@@ -235,6 +287,11 @@ void Scene::OnRuntimeStart()
 void Scene::OnRuntimeStop()
 {
 
+}
+
+void Scene::DuplicateEntity(Entity entity)
+{
+    Entity newentity = CreateEntity(entity.GetName());
 }
 
 } // namespace Rengin

@@ -415,12 +415,23 @@ void EditorLayer::OpenScene(const std::filesystem::path& path)
 {
     if(m_SceneState == SceneState::Edit)
         OnSceneStop();
-    
-    m_ActiveScene = CreateRef<Scene>();
-    m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
-    m_panel.SetContext(m_ActiveScene);
+ 
+    if(path.extension() != ".yaml")
+    {
+        RE_WARN("Could not load {0} - not a scene file!",path.filename().string());
+        return;
+    }
+    Ref<Scene> newScene = CreateRef<Scene>();
     SceneSerializer serializer(m_ActiveScene);
-    serializer.Deserializer(path.string());
+
+    if(serializer.Deserializer(path.string()))
+    {
+        m_EiditorScene = newScene;
+        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
+        m_panel.SetContext(m_ActiveScene);
+
+        m_ActiveScene = m_EiditorScene;
+    }
 }
 
 void EditorLayer::SaveSceneAs()
@@ -436,13 +447,18 @@ void EditorLayer::SaveSceneAs()
 void EditorLayer::OnScenePlay()
 {
     m_SceneState = SceneState::Play;
+
+    m_ActiveScene = Scene::Copy(m_EiditorScene);
     m_ActiveScene->OnRuntimeStart();
+
 }
 
 void EditorLayer::OnSceneStop()
 {
     m_SceneState = SceneState::Edit;
     m_ActiveScene->OnRuntimeStop();
+
+    m_ActiveScene = m_EiditorScene;
 }
 
 void EditorLayer::UI_Toolbar()

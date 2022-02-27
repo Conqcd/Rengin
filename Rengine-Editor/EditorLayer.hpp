@@ -20,6 +20,7 @@ private:
     OrthoGraphicsCameraController m_camera_controller;
 
     Ref<Scene> m_ActiveScene;
+    Ref<Scene> m_EiditorScene;
     EditorCamera m_EditorCamera;
 
     Entity m_SquareEntity;
