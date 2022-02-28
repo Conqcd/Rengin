@@ -89,6 +89,7 @@ Ref<Scene> Scene::Copy(Ref<Scene> other)
 
     CopyComponent<TransformComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
     CopyComponent<SpriteRendererComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
+    CopyComponent<CircleRendererComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
     CopyComponent<CameraComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
     CopyComponent<NativeScriptComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
     CopyComponent<Texture3DComponent>(dstSceneRegistry,srcSceneRegistry,enttMap);
@@ -303,6 +304,7 @@ void Scene::DuplicateEntity(Entity entity)
     Entity newentity = CreateEntity(name);
     CopyComponentIfExists<TransformComponent>(newentity,entity);
     CopyComponentIfExists<SpriteRendererComponent>(newentity,entity);
+    CopyComponentIfExists<CircleRendererComponent>(newentity,entity);
     CopyComponentIfExists<CameraComponent>(newentity,entity);
     CopyComponentIfExists<NativeScriptComponent>(newentity,entity);
     CopyComponentIfExists<Texture3DComponent>(newentity,entity);
