@@ -47,6 +47,7 @@ public:
     static void DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size,float rotation,const Ref<SubTexture2D>& subtexture,float tile_factor = 1.0,const glm::vec4& tintColor = glm::vec4(1.0f));
 
     static void DrawCircle(const glm::mat4& transform,glm::vec4& color,float thickness = 1.0f,float fade = 0.005f,int entityId = -1);
+    static void DrawLine(const glm::vec3& p0,const glm::vec3& p1,glm::vec4& color,int entityId = -1);
     static void DrawSprite(const glm::mat4& transform,SpriteRendererComponent& src,int entityId);
 
     struct Statistic

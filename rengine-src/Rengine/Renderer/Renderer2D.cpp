@@ -33,6 +33,15 @@ struct CircleVertex
     int EntityID = 0;
 };
 
+struct LineVertex
+{
+    glm::vec3 m_position;
+    glm::vec4 m_color;
+    float m_thickness;
+
+    //attach
+    int EntityID = 0;
+};
 
 struct Renderer2DData
 {
@@ -62,6 +71,14 @@ struct Renderer2DData
     CircleVertex* CircleVertexBufferBase = nullptr;
     CircleVertex* CircleVertexBufferPtr = nullptr;
 
+    // Line
+    Ref<VertexArray> LineVertexArray;
+    Ref<VertexBuffer> LineVertexBuffer;
+    Ref<Shader> m_LineShader;
+
+    uint32_t LineIndicesCount = 0;
+    LineVertex* LineVertexBufferBase = nullptr;
+    LineVertex* LineVertexBufferPtr = nullptr;
 
     std::array<Ref<Texture>,MaxTextureSlots> TextureSolts;
     uint32_t TextureSlotIndex = 1;
@@ -80,6 +97,9 @@ void Renderer2D::StartBatch()
 
     s_data.CircleVertexBufferPtr = s_data.CircleVertexBufferBase;
     s_data.CircleIndicesCount = 0;
+
+    s_data.LineVertexBufferPtr = s_data.LineVertexBufferBase;
+    s_data.LineIndicesCount = 0;
 
     s_data.TextureSlotIndex = 1;
 }
@@ -155,6 +175,19 @@ void Renderer2D::Init()
     s_data.CircleVertexArray->SetIndexBuffer(QuadIB);
     s_data.CircleVertexArray->AddVertexBuffer(s_data.CircleVertexBuffer);
 
+    //Line
+    s_data.LineVertexArray = VertexArray::Create();
+    s_data.LineVertexBuffer = VertexBuffer::Create(s_data.MaxVertices * sizeof(CircleVertex));
+    s_data.LineVertexBufferBase = new LineVertex[s_data.MaxVertices];
+
+    BufferLayout LineLayout = {
+        {ShadeDataType::Float3 , "a_position"},
+        {ShadeDataType::Float4 , "a_color"},
+        {ShadeDataType::Int , "a_EntityID"}
+        };
+    s_data.LineVertexBuffer->SetLayout(LineLayout);
+    s_data.LineVertexArray->AddVertexBuffer(s_data.LineVertexBuffer);
+
 
     //others
     // auto m_indbuf = IndexBuffer::Create(indices,sizeof(indices) / sizeof(uint32_t));
@@ -180,6 +213,7 @@ void Renderer2D::Init()
     s_data.TextureSolts[0] = s_data.m_WhiteTexture;
 
     s_data.m_CircleShader = Shader::Create("Circle","..\\..\\SandBox\\assets\\shaders\\CircleVertex.glsl","..\\..\\SandBox\\assets\\shaders\\CircleFragment.glsl");
+    s_data.m_LineShader = Shader::Create("Circle","..\\..\\Rengine-Editor\\assets\\shaders\\LineVertex.glsl","..\\..\\Rengine-Editor\\assets\\shaders\\LineFragment.glsl");
     
     s_data.QuadVertexPosition[0] = {-0.5f,-0.5f,0.0f,1.0f};
     s_data.QuadVertexPosition[1] = {0.5f,-0.5f,0.0f,1.0f};
@@ -258,6 +292,16 @@ void Renderer2D::Flush()
 
         s_data.m_CircleShader->Bind();
         RenderCommand::DrawIndex(s_data.CircleVertexArray, s_data.CircleIndicesCount);
+        s_data.stats.DrawCall++;
+    }
+    
+    if(s_data.LineIndicesCount)
+    {
+        uint32_t dataSize = reinterpret_cast<uint8_t*>(s_data.LineVertexBufferPtr) - reinterpret_cast<uint8_t*>(s_data.LineVertexBufferBase);
+        s_data.LineVertexBuffer->SetData(s_data.LineVertexBufferBase, dataSize);
+
+        s_data.m_LineShader->Bind();
+        RenderCommand::DrawLines(s_data.LineVertexArray, s_data.LineIndicesCount);
         s_data.stats.DrawCall++;
     }
 }
@@ -702,6 +746,24 @@ void Renderer2D::DrawCircle(const glm::mat4& transform,glm::vec4& color,float th
     }
 
     s_data.CircleIndicesCount += 6;
+    // s_data.stats.CirclCount++;
+}
+
+void Renderer2D::DrawLine(const glm::vec3& p0,const glm::vec3& p1,glm::vec4& color,int entityId)
+{
+    RE_PROFILE_FUNCTION();
+
+    s_data.LineVertexBufferPtr->m_position = p0;
+    s_data.LineVertexBufferPtr->m_color = color;
+    s_data.LineVertexBufferPtr->EntityID = entityId;
+    s_data.LineVertexBufferPtr++;
+
+    s_data.LineVertexBufferPtr->m_position = p1;
+    s_data.LineVertexBufferPtr->m_color = color;
+    s_data.LineVertexBufferPtr->EntityID = entityId;
+    s_data.LineVertexBufferPtr++;
+
+    s_data.LineIndicesCount += 2;
     // s_data.stats.CirclCount++;
 }
 

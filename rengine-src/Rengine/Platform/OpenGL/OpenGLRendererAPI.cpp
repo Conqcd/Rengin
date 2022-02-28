@@ -37,4 +37,9 @@ void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray,uint32_t
     glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,nullptr);
 }
 
+void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray,uint32_t count)
+{
+    vertexArray->Bind();
+    glDrawArrays(GL_LINES,0,count);
+}
 } // namespace Rengin

@@ -1,6 +1,7 @@
 #version 330 core
 
 uniform float maxvalue;
+uniform float u_threshold;
 
 uniform mat4 u_ViewMatrix;
 uniform mat3 u_NormalMatrix;
@@ -154,7 +155,7 @@ void main()
         // color = c;
         // break;
         // cnt += 1.0f;
-        // if(intensity > 0)
+        // if(intensity > 0.0)
         // {
 
         //     vec3 L = normalize(u_lightPosition - position);

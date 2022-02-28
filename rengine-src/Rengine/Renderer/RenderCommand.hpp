@@ -33,6 +33,10 @@ public:
     {
         s_api->DrawIndexed(vertexArray,count);
     }
+    inline static void DrawLines(const Ref<VertexArray>& vertexArray,uint32_t count = 0)
+    {
+        s_api->DrawLines(vertexArray,count);
+    }
 };
 
 } // namespace Rengin
