@@ -378,6 +378,10 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
         if (control && shift)
             SaveSceneAs();
         break;
+    case KeyCode::D:
+        if (control)
+            OnDuplicateEntity();
+        break;
     case KeyCode::Q:
       m_GizmoType = -1;
       break;
@@ -459,6 +463,16 @@ void EditorLayer::OnSceneStop()
     m_ActiveScene->OnRuntimeStop();
 
     m_ActiveScene = m_EiditorScene;
+}
+
+void EditorLayer::OnDuplicateEntity()
+{
+    if(m_SceneState != SceneState::Edit)
+        return;
+
+    auto slEntity = m_panel.GetSelectedEntity();
+    if(slEntity)
+        m_EiditorScene->DuplicateEntity(slEntity);
 }
 
 void EditorLayer::UI_Toolbar()

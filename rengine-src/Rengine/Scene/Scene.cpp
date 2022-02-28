@@ -51,10 +51,10 @@ static void CopyComponent(entt::registry& dst,entt::registry& src,const std::uno
     auto view = src.view<Component>();
     for (auto e : view)
     {
-        UUID uuid src.get<IDComponent>(e).ID;
+        UUID uuid = src.get<IDComponent>(e).ID;
         RE_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
         entt::entity dstEnttID = enttMap.at(uuid);
-        auto &component = src.get<Component>();
+        auto &component = src.get<Component>(e);
         dst.emplace_or_replace<Component>(dstEnttID, component);
     }
 }
@@ -63,7 +63,7 @@ template <typename Component>
 static void CopyComponentIfExists(Entity& dst,Entity& src)
 {
     if(src.HasComponent<Component>())
-        dst.AddComponent<Component>();
+        dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
 }
 
 Ref<Scene> Scene::Copy(Ref<Scene> other)
@@ -292,6 +292,12 @@ void Scene::OnRuntimeStop()
 void Scene::DuplicateEntity(Entity entity)
 {
     Entity newentity = CreateEntity(entity.GetName());
+    CopyComponentIfExists<TransformComponent>(newentity,entity);
+    CopyComponentIfExists<SpriteRendererComponent>(newentity,entity);
+    CopyComponentIfExists<CameraComponent>(newentity,entity);
+    CopyComponentIfExists<NativeScriptComponent>(newentity,entity);
+    CopyComponentIfExists<Texture3DComponent>(newentity,entity);
+    CopyComponentIfExists<Texture2DComponent>(newentity,entity);
 }
 
 } // namespace Rengin

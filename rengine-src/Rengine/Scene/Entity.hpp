@@ -26,14 +26,19 @@ public:
     return m_scene->m_registry.get<T>(m_EntityHandle);
   }
 
-  template <typename T, typename... Args> T &AddComponent(Args &&...args) {
-    RE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
+    template <typename T, typename... Args> T &AddComponent(Args &&...args) {
+        RE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
-    T &component = m_scene->m_registry.emplace<T>(m_EntityHandle,
-                                                  std::forward<Args>(args)...);
-    m_scene->OnComponentAdd<T>(*this, component);
-    return component;
-  }
+        T &component = m_scene->m_registry.emplace<T>(m_EntityHandle,std::forward<Args>(args)...);
+        m_scene->OnComponentAdd<T>(*this, component);
+        return component;
+    }
+
+    template <typename T, typename... Args> T &AddOrReplaceComponent(Args &&...args) {
+        T &component = m_scene->m_registry.emplace_or_replace<T>(m_EntityHandle,std::forward<Args>(args)...);
+        m_scene->OnComponentAdd<T>(*this, component);
+        return component;
+    }
 
   template <typename T> void RemoveComponent() {
     RE_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
