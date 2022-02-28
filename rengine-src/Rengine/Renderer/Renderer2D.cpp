@@ -702,7 +702,7 @@ void Renderer2D::DrawCircle(const glm::mat4& transform,glm::vec4& color,float th
     }
 
     s_data.CircleIndicesCount += 6;
-    s_data.stats.CirclCount++;
+    // s_data.stats.CirclCount++;
 }
 
 void Renderer2D::DrawSprite(const glm::mat4& transform,SpriteRendererComponent& src,int entityId)

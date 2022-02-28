@@ -139,12 +139,20 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
 {
     Renderer2D::BeginScene(camera);
 
-    auto group = m_registry.group<TransformComponent>(
-        entt::get<SpriteRendererComponent>);
-    for (auto _entity : group) {
-      auto &&[transform, sprite] =
-          group.get<TransformComponent, SpriteRendererComponent>(_entity);
-      Renderer2D::DrawSprite(transform.GetTransform(),sprite,(int)_entity);
+    {
+        auto group = m_registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (auto _entity : group) {
+          auto &&[transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(_entity);
+          Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)_entity);
+        }
+    }
+
+    {
+        auto view = m_registry.view<TransformComponent,CircleRendererComponent>();
+        for (auto _entity : view) {
+          auto &&[transform, circle] = view.get<TransformComponent, CircleRendererComponent>(_entity);
+          Renderer2D::DrawCircle(transform.GetTransform(),circle.Color,circle.Thickness,circle.Fade,(int)_entity);
+        }
     }
     Renderer2D::EndScene();
 

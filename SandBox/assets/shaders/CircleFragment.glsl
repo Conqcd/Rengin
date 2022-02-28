@@ -12,14 +12,18 @@ struct VertexInput
 };
 
 layout(location = 0) in VertexInput Input;
-layout(location = 3) in flat int v_EntityID;
+layout(location = 4) in flat int v_EntityID;
 
 void main()
 {
     float distance = 1.0 - length(Input.LocalPosition);
-    vec3 color = vec3(smoothstep(0.0,Input.Fade,distance));
-    o_color *= vec3(smoothstep(Input.Thickness + Input.Fade,Input.Thickness,distance));
-    o_color *= Input.Color;
+    float circleAlpha = smoothstep(0.0,Input.Fade,distance);
+    circleAlpha *= smoothstep(Input.Thickness + Input.Fade,Input.Thickness,distance);
+    if(circleAlpha == 0.0)
+        discard;
+    
+    o_color = Input.Color;
+    o_color.a *= circleAlpha;
 
     o_EntityID = v_EntityID;
 }
