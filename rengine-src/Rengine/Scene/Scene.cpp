@@ -148,13 +148,6 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
         }
     }
 
-    {
-        auto view = m_registry.view<TransformComponent,CircleRendererComponent>();
-        for (auto _entity : view) {
-          auto &&[transform, circle] = view.get<TransformComponent, CircleRendererComponent>(_entity);
-          Renderer2D::DrawCircle(transform.GetTransform(),circle.Color,circle.Thickness,circle.Fade,(int)_entity);
-        }
-    }
     Renderer2D::EndScene();
 
     Renderer3D::BeginScene(camera);

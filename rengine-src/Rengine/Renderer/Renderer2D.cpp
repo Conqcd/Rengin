@@ -80,6 +80,9 @@ struct Renderer2DData
     LineVertex* LineVertexBufferBase = nullptr;
     LineVertex* LineVertexBufferPtr = nullptr;
 
+    float LineWidth = 2.0f;
+
+    //others
     std::array<Ref<Texture>,MaxTextureSlots> TextureSolts;
     uint32_t TextureSlotIndex = 1;
 
@@ -301,6 +304,7 @@ void Renderer2D::Flush()
         s_data.LineVertexBuffer->SetData(s_data.LineVertexBufferBase, dataSize);
 
         s_data.m_LineShader->Bind();
+        RenderCommand::SetLineWidth(s_data.LineWidth);
         RenderCommand::DrawLines(s_data.LineVertexArray, s_data.LineIndicesCount);
         s_data.stats.DrawCall++;
     }
@@ -767,12 +771,49 @@ void Renderer2D::DrawLine(const glm::vec3& p0,const glm::vec3& p1,glm::vec4& col
     // s_data.stats.CirclCount++;
 }
 
+void Renderer2D::DrawRect(const glm::vec3& position,const glm::vec2& size,glm::vec4& color,int entityId)
+{
+    glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f,position.y - size.y * 0.5f,position.z);
+    glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f,position.y - size.y * 0.5f,position.z);
+    glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f,position.y + size.y * 0.5f,position.z);
+    glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f,position.y + size.y * 0.5f,position.z);
+
+    DrawLine(p0,p1,color,entityId);
+    DrawLine(p1,p2,color,entityId);
+    DrawLine(p2,p3,color,entityId);
+    DrawLine(p3,p0,color,entityId);
+}
+
+void Renderer2D::DrawRect(const glm::mat4& transform,glm::vec4& color,int entityId)
+{
+    glm::vec3 LineVertices[4];
+    for (int i = 0; i < 4; i++)
+    {
+        LineVertices[i] = transform * s_data.QuadVertexPosition[i];
+    }
+
+    DrawLine(LineVertices[0],LineVertices[1],color,entityId);
+    DrawLine(LineVertices[1],LineVertices[2],color,entityId);
+    DrawLine(LineVertices[2],LineVertices[3],color,entityId);
+    DrawLine(LineVertices[3],LineVertices[0],color,entityId);
+}
+
 void Renderer2D::DrawSprite(const glm::mat4& transform,SpriteRendererComponent& src,int entityId)
 {
     if(src.Texture)
         DrawQuad(transform,src.Texture,src.TilingFactor,src.Color,entityId);
     else
         DrawQuad(transform, src.Color, entityId);
+}
+
+float Renderer2D::GetLineWidth()
+{
+    return s_data.LineWidth;
+}
+
+float Renderer2D::SetLineWidth(float width)
+{
+    s_data.LineWidth = width;
 }
 
 Renderer2D::Statistic Renderer2D::getStats()

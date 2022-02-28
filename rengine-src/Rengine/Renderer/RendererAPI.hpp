@@ -24,6 +24,7 @@ public:
     virtual void Clear() = 0;
     virtual void DrawIndexed(const Ref<VertexArray>& vertexArray,uint32_t count = 0) = 0;
     virtual void DrawLines(const Ref<VertexArray>& vertexArray,uint32_t count = 0) = 0;
+    virtual void SetLineThickness(float thickness) = 0;
 
     inline static API getAPI(){return s_api;}
 };

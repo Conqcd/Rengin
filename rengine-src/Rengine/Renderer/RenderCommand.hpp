@@ -37,6 +37,11 @@ public:
     {
         s_api->DrawLines(vertexArray,count);
     }
+    inline static void SetLineWidth(float width)
+    {
+        s_api->SetLineThickness(width);
+    }
+
 };
 
 } // namespace Rengin

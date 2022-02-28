@@ -48,8 +48,14 @@ public:
 
     static void DrawCircle(const glm::mat4& transform,glm::vec4& color,float thickness = 1.0f,float fade = 0.005f,int entityId = -1);
     static void DrawLine(const glm::vec3& p0,const glm::vec3& p1,glm::vec4& color,int entityId = -1);
+
+    static void DrawRect(const glm::vec3& position,const glm::vec2& size,glm::vec4& color,int entityId = -1);
+    static void DrawRect(const glm::mat4& transform,glm::vec4& color,int entityId = -1);
+
     static void DrawSprite(const glm::mat4& transform,SpriteRendererComponent& src,int entityId);
 
+    static float GetLineWidth();
+    static float SetLineWidth(float width);
     struct Statistic
     {
         uint32_t DrawCall = 0;
