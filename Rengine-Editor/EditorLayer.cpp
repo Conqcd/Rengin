@@ -327,7 +327,7 @@ void EditorLayer::OnAttach()
 
     m_Camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-    m_panel.SetContext(m_ActiveScene);
+    // m_panel.SetContext(m_ActiveScene);
 
     // SceneSerializer serializer(m_ActiveScene);
     // serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");
@@ -375,8 +375,11 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
             OpenScene();
         break;
     case KeyCode::S:
-        if (control && shift)
-            SaveSceneAs();
+        if (control)
+            if(shift)
+                SaveSceneAs();
+            else
+                SaveScene();
         break;
     case KeyCode::D:
         if (control)
@@ -404,6 +407,7 @@ void EditorLayer::NewScene()
     m_ActiveScene = CreateRef<Scene>();
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x), static_cast<uint32_t>(m_ViewPortSize.y));
     m_panel.SetContext(m_ActiveScene);
+    m_EditorScenePath = std::filesystem::path();
 }
 
 void EditorLayer::OpenScene()
@@ -430,11 +434,12 @@ void EditorLayer::OpenScene(const std::filesystem::path& path)
 
     if(serializer.Deserializer(path.string()))
     {
-        m_EiditorScene = newScene;
+        m_EditorScene = newScene;
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
-        m_panel.SetContext(m_ActiveScene);
+        m_panel.SetContext(m_EditorScene);
 
-        m_ActiveScene = m_EiditorScene;
+        m_ActiveScene = m_EditorScene;
+        m_EditorScenePath = path;
     }
 }
 
@@ -443,18 +448,31 @@ void EditorLayer::SaveSceneAs()
     std::string filepath = FileDialogs::SaveFile("Rengine Scene (*.yaml)\0*.yaml\0");
     if (!filepath.empty())
     {
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.Serializer(filepath);
+        m_EditorScenePath = filepath;
+        SerializeScene(m_ActiveScene,m_EditorScenePath);
     }
+}
+
+void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path &path)
+{
+    SceneSerializer serializer(scene);
+    serializer.Serializer(path.string());
+}
+
+void EditorLayer::SaveScene()
+{
+    if(!m_EditorScenePath.empty())
+        SerializeScene(m_ActiveScene,m_EditorScenePath);
 }
 
 void EditorLayer::OnScenePlay()
 {
     m_SceneState = SceneState::Play;
 
-    m_ActiveScene = Scene::Copy(m_EiditorScene);
+    m_ActiveScene = Scene::Copy(m_EditorScene);
     m_ActiveScene->OnRuntimeStart();
 
+    m_panel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnSceneStop()
@@ -462,7 +480,9 @@ void EditorLayer::OnSceneStop()
     m_SceneState = SceneState::Edit;
     m_ActiveScene->OnRuntimeStop();
 
-    m_ActiveScene = m_EiditorScene;
+    m_ActiveScene = m_EditorScene;
+
+    m_panel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnDuplicateEntity()
@@ -472,7 +492,7 @@ void EditorLayer::OnDuplicateEntity()
 
     auto slEntity = m_panel.GetSelectedEntity();
     if(slEntity)
-        m_EiditorScene->DuplicateEntity(slEntity);
+        m_EditorScene->DuplicateEntity(slEntity);
 }
 
 void EditorLayer::UI_Toolbar()

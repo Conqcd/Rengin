@@ -291,7 +291,8 @@ void Scene::OnRuntimeStop()
 
 void Scene::DuplicateEntity(Entity entity)
 {
-    Entity newentity = CreateEntity(entity.GetName());
+    std::string name = entity.GetName();
+    Entity newentity = CreateEntity(name);
     CopyComponentIfExists<TransformComponent>(newentity,entity);
     CopyComponentIfExists<SpriteRendererComponent>(newentity,entity);
     CopyComponentIfExists<CameraComponent>(newentity,entity);
