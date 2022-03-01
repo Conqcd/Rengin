@@ -43,7 +43,7 @@ public:
     template<typename... Component>
     auto GetAllEntitiesWidth()
     {
-        return m_registry.view<Component>();
+        return m_registry.view<Component...>();
     }
 
     friend class Entity;

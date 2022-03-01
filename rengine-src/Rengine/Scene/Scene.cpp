@@ -111,6 +111,11 @@ void Scene::OnComponentAdd<SpriteRendererComponent>(
     Entity entity, SpriteRendererComponent &component) {}
 
 template <>
+void Scene::OnComponentAdd<CircleRendererComponent>(
+    Entity entity, CircleRendererComponent &component) {}
+
+
+template <>
 void Scene::OnComponentAdd<OpacityTransferFunctionComponent>(
     Entity entity, OpacityTransferFunctionComponent &component) {}
 

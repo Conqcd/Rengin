@@ -733,7 +733,7 @@ void Renderer2D::DrawRotatedQuad(const glm::vec3& position,const glm::vec2& size
 void Renderer2D::DrawCircle(const glm::mat4& transform,glm::vec4& color,float thickness,float fade,int entityId)
 {
     RE_PROFILE_FUNCTION();
-    
+ 
     //TODO: implement for circles
     // if(s_data.IndicesCount >= Renderer2DData::MaxIndices)
     //     FlushAndReset();
