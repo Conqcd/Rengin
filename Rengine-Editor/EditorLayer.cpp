@@ -410,6 +410,12 @@ void EditorLayer::NewScene()
     m_EditorScenePath = std::filesystem::path();
 }
 
+//Render Collider Rect
+void EditorLayer::OnOverlayRender()
+{
+    auto view = m_ActiveScene->GetAllEntitiesWidth<CircleRendererComponent>();
+}
+
 void EditorLayer::OpenScene()
 {
     std::string filepath = FileDialogs::OpenFile("Rengine Scene (*.yaml)\0*.yaml\0");

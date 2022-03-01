@@ -40,6 +40,12 @@ public:
     entt::registry& Reg() {return m_registry;}
     Entity GetPrimaryCameraEntity();
 
+    template<typename... Component>
+    auto GetAllEntitiesWidth()
+    {
+        return m_registry.view<Component>();
+    }
+
     friend class Entity;
     friend class SceneSerializer;
     friend class SceneHierarchyPanel;

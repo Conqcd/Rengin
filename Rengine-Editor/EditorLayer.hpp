@@ -51,6 +51,9 @@ private:
 private:
     bool OnMouseButtonPressed(MouseButtonPressEvent& e);
     bool OnKeyPressed(KeyPressEvent& e);
+
+    void OnOverlayRender();
+
     void NewScene();
     void OpenScene();
     void OpenScene(const std::filesystem::path& path);
