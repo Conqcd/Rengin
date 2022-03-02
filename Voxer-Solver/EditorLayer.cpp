@@ -46,10 +46,29 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
+    m_framebuffer->ClearAttachment(1,-1);
+
     //Update Scene
     // m_ActiveScene->OnUpdateRuntime(timestep);
     m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
+
+    auto [mx,my] = ImGui::GetMousePos();
+    mx -= m_ViewPortBounds[0].x;
+    my -= m_ViewPortBounds[0].y;
+    auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0];
+    my = viewportSize.y - my;
+    int mouseX = static_cast<int>(mx);
+    int mouseY = static_cast<int>(my);
     
+    if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
+    {
+        int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
+        RE_CORE_WARN("pixel data {0}",pixelData);
+        // if(pixelData == -1)
+        //     m_HoverEntity = {};
+        // else
+        //     m_HoverEntity = {(entt::entity)pixelData,m_ActiveScene.get()};
+    }
     m_framebuffer->Unbind();
 }
 
@@ -133,6 +152,7 @@ void EditorLayer::OnImGuiRender()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2{0,0});
     ImGui::Begin("ViewPort");
+    auto viewportOffset = ImGui::GetCursorPos();
     uint32_t textureID = m_framebuffer->getColorAttachment();
     // textureID = std::dynamic_pointer_cast<OpenGLTexture2D>(m_texture)->getRendererID();
 
@@ -149,6 +169,14 @@ void EditorLayer::OnImGuiRender()
     }
     ImGui::Image((void*)textureID,vps,ImVec2{0,1},ImVec2{1,0});
 
+    auto windowSize = ImGui::GetWindowSize();
+    ImVec2 minBound = ImGui::GetWindowPos();
+    minBound.x += viewportOffset.x;
+    minBound.y += viewportOffset.y;
+
+    ImVec2 maxBound = {minBound.x + windowSize.x,minBound.y + windowSize.y};
+    m_ViewPortBounds[0] = {minBound.x,minBound.y};
+    m_ViewPortBounds[1] = {maxBound.x,maxBound.y};
     //Gizmos
     // Entity selectedEntity = m_panel.GetSelectedEntity();
     // if (selectedEntity || m_GizmoType != -1)

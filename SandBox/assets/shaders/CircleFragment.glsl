@@ -1,4 +1,4 @@
-#version 330
+#version 410 core
 
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out int o_EntityID;

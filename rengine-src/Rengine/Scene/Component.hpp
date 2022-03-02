@@ -109,6 +109,7 @@ struct Texture3DComponent
 {
     Ref<Texture3D> Texture;
     std::string Path;
+    float Threshold = 0.0f;
     Texture3DComponent() = default;
     Texture3DComponent(const Texture3DComponent&) = default;
     Texture3DComponent(const Ref<Texture3D> texture)

@@ -60,7 +60,8 @@ static Renderer3DData s_data_v;
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
+    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelOutfaceFragment.glsl");
+    // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data_v.m_VolumeShader->Bind();
     s_data_v.VolumeVertexArray = VertexArray::Create();
@@ -511,7 +512,7 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 
 void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
                             const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,
-                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc)
+                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold)
 {
     RE_PROFILE_FUNCTION();
 
@@ -522,7 +523,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformMat4("u_ViewMatrix", viewMatrix);
     s_data_v.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",ProjectionMatrix * viewMatrix * transforms);
     glm::mat4 normalMatrix = glm::transpose(glm::inverse(viewMatrix * transforms));
-    float threshold = 1.f, gamma = 2.2f,aspect = viewPortSize.x / viewPortSize.y;
+    float gamma = 2.2f,aspect = viewPortSize.x / viewPortSize.y;
 
     s_data_v.m_VolumeShader->SetUniformMat4("u_NormalMatrix", normalMatrix);
     s_data_v.m_VolumeShader->SetUniformFloat("u_aspectRatio", aspect);

@@ -310,6 +310,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     DrawComponent<Texture3DComponent>("Texture3D",entity,[](auto& component)
     {
         ImGui::Text(component.Path.c_str());
+        ImGui::DragFloat("threshold",&component.Threshold,0.001,0.0f,1.0f,"%.2f");
     });
 
     DrawComponent<ColorTransferFunctionComponent>(

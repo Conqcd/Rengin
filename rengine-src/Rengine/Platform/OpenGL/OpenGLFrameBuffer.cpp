@@ -76,6 +76,8 @@ static GLenum FBTextureFormat2GL(FramebufferTextureFormat format)
     {
     case FramebufferTextureFormat::RGBA8 :
         return GL_RGBA8;
+    case FramebufferTextureFormat::RGB8 :
+        return GL_RGB8;
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
     }
@@ -133,6 +135,9 @@ void OpenGLFrameBuffer::Invalidate()
             {
             case FramebufferTextureFormat::RGBA8 :
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,GL_RGBA,m_specification.Width,m_specification.Height,i);
+                break;
+            case FramebufferTextureFormat::RGB8 :
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB8,GL_RGB,m_specification.Width,m_specification.Height,i);
                 break;
             case FramebufferTextureFormat::RED_INTEGER:
               Utils::AttachColorTexture(
@@ -200,9 +205,11 @@ int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
 
+    auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixelData;
-    glReadPixels(x,y,1,1,GL_RED_INTEGER,GL_INT,&pixelData);
+    GLubyte pixels[3];
+    glReadPixels(x,y,1,1,Utils::FBTextureFormat2GL(spec.TextureFormat),GL_INT,pixels);
     return pixelData;
 }
 
@@ -211,7 +218,7 @@ void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex,int value)
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
     
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
-
+    
     glClearTexImage(m_ColorAttachments[1],0,Utils::FBTextureFormat2GL(spec.TextureFormat),GL_INT,&value);
 }
 

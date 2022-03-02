@@ -173,7 +173,7 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
           transform.GetTransform(), texture.Texture, transform.Scale,
           {m_ViewportWidth, m_ViewportHeight}, focalLength,
           camera.GetPosition(),camera.GetPosition(),
-          stepLength, transfera.Opacity, transferc.Color);
+          stepLength, transfera.Opacity, transferc.Color,texture.Threshold);
       Renderer3D::EndScene();
     }
 }
@@ -238,7 +238,7 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
             MainCamera->getProjection(), glm::inverse(CameraTransform),
             transform.GetTransform(), texture.Texture,transform.Scale,
             {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
-            {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color);
+            {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color,texture.Threshold);
       }
     }
 

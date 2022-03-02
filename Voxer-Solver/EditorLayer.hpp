@@ -24,6 +24,7 @@ private:
     Entity m_Camera;
 
     glm::vec2 m_ViewPortSize;
+    glm::vec2 m_ViewPortBounds[2];
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
 
