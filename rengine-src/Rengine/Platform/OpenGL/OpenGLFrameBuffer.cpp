@@ -84,6 +84,35 @@ static GLenum FBTextureFormat2GL(FramebufferTextureFormat format)
     RE_CORE_ASSERT(false);
     return 0;
 }
+
+static GLenum FBTextureFormat2GLFormat(FramebufferTextureFormat format)
+{
+    switch (format)
+    {
+    case FramebufferTextureFormat::RGBA8 :
+        return GL_RGBA;
+    case FramebufferTextureFormat::RGB8 :
+        return GL_RGB;
+    case FramebufferTextureFormat::RED_INTEGER :
+        return GL_RED_INTEGER;
+    }
+    RE_CORE_ASSERT(false);
+    return 0;
+}
+
+static GLenum FBTextureFormat2GLType(FramebufferTextureFormat format)
+{
+    switch (format)
+    {
+    case FramebufferTextureFormat::RGBA8 :
+    case FramebufferTextureFormat::RGB8 :
+        return GL_UNSIGNED_BYTE;
+    case FramebufferTextureFormat::RED_INTEGER :
+        return GL_INT;
+    }
+    RE_CORE_ASSERT(false);
+    return 0;
+}
 }
 
 OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
@@ -140,10 +169,9 @@ void OpenGLFrameBuffer::Invalidate()
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB8,GL_RGB,m_specification.Width,m_specification.Height,i);
                 break;
             case FramebufferTextureFormat::RED_INTEGER:
-              Utils::AttachColorTexture(
-                  m_ColorAttachments[i], m_specification.Samples, GL_R32I,
-                  GL_RED_INTEGER, m_specification.Width, m_specification.Height, i);
-              break;
+                Utils::AttachColorTexture(m_ColorAttachments[i], m_specification.Samples, GL_R32I,
+                    GL_RED_INTEGER, m_specification.Width, m_specification.Height, i);
+                break;
 
             default:
                 break;
@@ -166,7 +194,7 @@ void OpenGLFrameBuffer::Invalidate()
     if(m_ColorAttachments.size() > 1)
     {
         RE_CORE_ASSERT((m_ColorAttachments.size() < 4));
-        GLenum buffers[4] = {GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT30};
+        GLenum buffers[4] = {GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3};
         glDrawBuffers(m_ColorAttachments.size(),buffers);
     }else if(m_ColorAttachments.empty())
     {
@@ -200,7 +228,11 @@ void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
     m_specification.Height = height;
     Invalidate();
 }
-
+static void GLCheckError() {
+    while (GLenum error = glGetError()) {
+        std::cout << "OpenGL Error(" << error << ")" << std::endl;
+    }
+}
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
@@ -208,18 +240,19 @@ int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixelData;
-    GLubyte pixels[3];
-    glReadPixels(x,y,1,1,Utils::FBTextureFormat2GL(spec.TextureFormat),GL_INT,pixels);
+    GLubyte pixels[4] = {0};
+    glReadPixels(x,y,1,1,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixels);
+    GLCheckError();
     return pixelData;
 }
 
-void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex,int value)
+void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex,void* value)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
-    
+
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
-    
-    glClearTexImage(m_ColorAttachments[1],0,Utils::FBTextureFormat2GL(spec.TextureFormat),GL_INT,&value);
+
+    glClearTexImage(m_ColorAttachments[attachmentIndex],0,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),value);
 }
 
 } // namespace Rengin

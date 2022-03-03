@@ -45,8 +45,10 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     m_framebuffer->Bind();
     RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
+    
 
-    m_framebuffer->ClearAttachment(1,-1);
+    GLubyte pixels[4] = {0,0,0,0};
+    m_framebuffer->ClearAttachment(1,pixels);
 
     //Update Scene
     // m_ActiveScene->OnUpdateRuntime(timestep);

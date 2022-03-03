@@ -43,7 +43,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::Clear();
 
     //Clear framebuffer id to -1
-    m_framebuffer->ClearAttachment(1,-1);
+    int values = -1;
+    m_framebuffer->ClearAttachment(1,&values);
 
     switch (m_SceneState)
     {

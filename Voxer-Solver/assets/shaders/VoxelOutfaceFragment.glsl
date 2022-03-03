@@ -177,5 +177,6 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
-    o_position = position;
+    // o_position = position;
+    o_position.r = 1.0;
 }

@@ -60,7 +60,7 @@ public:
     
     virtual int ReadPixel(uint32_t attachmentIndex,int x,int y) = 0;
 
-    virtual void ClearAttachment(uint32_t attachmentIndex,int value) = 0;
+    virtual void ClearAttachment(uint32_t attachmentIndex,void* value) = 0;
 
     virtual void Bind() = 0;
 
