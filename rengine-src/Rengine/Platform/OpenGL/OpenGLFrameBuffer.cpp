@@ -24,24 +24,6 @@ static void BindTexture(bool multisample,uint32_t id)
     glBindTexture(TextureTarget(multisample),id);
 }
 
-static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GLenum format,uint32_t width,uint32_t height,int index)
-{
-    bool multisampled = samples > 1;
-    if(multisampled)
-    {
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,width,height,GL_FALSE);
-    }else
-    {
-        glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,GL_UNSIGNED_BYTE,nullptr);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-    }
-    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + index,TextureTarget(multisampled),id,0);
-}
-
 static void AttachDepthTexture(uint32_t id,int samples, GLenum format,GLenum attachmentType,uint32_t width,uint32_t height)
 {
     bool multisampled = samples > 1;
@@ -78,6 +60,8 @@ static GLenum FBTextureFormat2GL(FramebufferTextureFormat format)
         return GL_RGBA8;
     case FramebufferTextureFormat::RGB8 :
         return GL_RGB8;
+    case FramebufferTextureFormat::RGBI32 :
+        return GL_RGB32I;
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
     }
@@ -93,6 +77,8 @@ static GLenum FBTextureFormat2GLFormat(FramebufferTextureFormat format)
         return GL_RGBA;
     case FramebufferTextureFormat::RGB8 :
         return GL_RGB;
+    case FramebufferTextureFormat::RGBI32 :
+        return GL_RGB_INTEGER;
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
     }
@@ -107,13 +93,39 @@ static GLenum FBTextureFormat2GLType(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RGBA8 :
     case FramebufferTextureFormat::RGB8 :
         return GL_UNSIGNED_BYTE;
+    case FramebufferTextureFormat::RGBI32 :
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_INT;
     }
     RE_CORE_ASSERT(false);
     return 0;
 }
+
+static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GLenum format,GLenum type,uint32_t width,uint32_t height,int index)
+{
+    bool multisampled = samples > 1;
+    if(multisampled)
+    {
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,width,height,GL_FALSE);
+    }else
+    {
+        glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,nullptr);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    }
+    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + index,TextureTarget(multisampled),id,0);
 }
+}
+
+static void GLCheckError() {
+    while (GLenum error = glGetError()) {
+        std::cout << "OpenGL Error(" << error << ")" << std::endl;
+    }
+}
+
 
 OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
     : m_specification(spec)
@@ -163,14 +175,17 @@ void OpenGLFrameBuffer::Invalidate()
             switch (m_ColorAttachmentSpecs[i].TextureFormat)
             {
             case FramebufferTextureFormat::RGBA8 :
-                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,GL_RGBA,m_specification.Width,m_specification.Height,i);
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,GL_RGBA,GL_UNSIGNED_BYTE,m_specification.Width,m_specification.Height,i);
                 break;
             case FramebufferTextureFormat::RGB8 :
-                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB8,GL_RGB,m_specification.Width,m_specification.Height,i);
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB8,GL_RGB,GL_UNSIGNED_BYTE,m_specification.Width,m_specification.Height,i);
+                break;
+            case FramebufferTextureFormat::RGBI32 :
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB32I,GL_RGB_INTEGER,GL_INT,m_specification.Width,m_specification.Height,i);
                 break;
             case FramebufferTextureFormat::RED_INTEGER:
                 Utils::AttachColorTexture(m_ColorAttachments[i], m_specification.Samples, GL_R32I,
-                    GL_RED_INTEGER, m_specification.Width, m_specification.Height, i);
+                    GL_RED_INTEGER,GL_INT, m_specification.Width, m_specification.Height, i);
                 break;
 
             default:
@@ -229,12 +244,6 @@ void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
     Invalidate();
 }
 
-static void GLCheckError() {
-    while (GLenum error = glGetError()) {
-        std::cout << "OpenGL Error(" << error << ")" << std::endl;
-    }
-}
-
 int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
@@ -242,7 +251,8 @@ int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixelData;
-    GLubyte pixels[4] = {0};
+    // GLubyte pixels[4] = {0};
+    int pixels[4] = {0};
     glReadPixels(x,y,1,1,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixels);
     GLCheckError();
     return pixelData;
@@ -255,7 +265,8 @@ int OpenGLFrameBuffer::ReadRangePixel(uint32_t attachmentIndex,int x,int y,int w
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixelData;
-    GLubyte pixels[4] = {0};
+    int pixels[4] = {0};
+    // GLubyte pixels[4] = {0};
     glReadPixels(x,y,w,h,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixels);
     GLCheckError();
     return pixelData;

@@ -24,7 +24,7 @@ uniform sampler3D u_volume;
 
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
-layout(location = 1) out vec3 o_position;
+layout(location = 1) out ivec3 o_position;
 
 struct Ray
 {
@@ -167,7 +167,10 @@ void main()
             color.rgb = vec3(1.0);
             color.a = c.a + (1 - c.a) * color.a;
 
-            o_position = position;
+            o_position.r = int(position.r * (u_top.r - u_bottom.r) + u_bottom.r);
+            o_position.r = int(position.r + 1.0) * 10;
+            o_position.g = int(position.g * (u_top.g - u_bottom.g) + u_bottom.g);
+            o_position.b = int(position.b * (u_top.b - u_bottom.b) + u_bottom.b);
             break;
         }
 
@@ -179,5 +182,4 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
-    o_position.r = 1.0;
 }
