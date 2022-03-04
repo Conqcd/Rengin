@@ -27,6 +27,7 @@ public:
     
     virtual void Resize(uint32_t width,uint32_t height) override;
     virtual int ReadPixel(uint32_t attachmentIndex,int x,int y) override;
+    virtual int ReadRangePixel(uint32_t attachmentIndex,int x,int y,int w,int h) override;
 
     virtual void ClearAttachment(uint32_t attachmentIndex,void* value) override;
 };

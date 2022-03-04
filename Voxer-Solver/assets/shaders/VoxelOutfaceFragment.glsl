@@ -166,6 +166,8 @@ void main()
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
             color.rgb = vec3(1.0);
             color.a = c.a + (1 - c.a) * color.a;
+
+            o_position = position;
             break;
         }
 
@@ -177,6 +179,5 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
-    // o_position = position;
     o_position.r = 1.0;
 }

@@ -25,6 +25,7 @@ private:
 
     glm::vec2 m_ViewPortSize;
     glm::vec2 m_ViewPortBounds[2];
+    int m_LastMousePress[2];
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
 
@@ -34,6 +35,9 @@ private:
     SceneHierarchyPanel m_panel;
 private:
     bool OnKeyPressed(KeyPressEvent& e);
+    bool OnMouseButtonPressed(MouseButtonPressEvent& e);
+    bool OnMouseButtonReleased(MouseButtonReleaseEvent& e);
+
     void NewScene();
     void OpenScene();
     void SaveSceneAs();

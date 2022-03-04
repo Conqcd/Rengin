@@ -1,3 +1,4 @@
+#include "repch.hpp"
 #include "EditorLayer.hpp"
 #include <chrono>
 #include "Rengine/Platform/OpenGL/OpenGLTexture.hpp"
@@ -308,6 +309,46 @@ void EditorLayer::OnEvent(Event& ev)
     m_EditorCamera.OnEvent(ev);
     EventDispatcher dispatcher(ev);
     dispatcher.Dispatch<KeyPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnKeyPressed));
+    dispatcher.Dispatch<MouseButtonPressEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnMouseButtonPressed));
+    dispatcher.Dispatch<MouseButtonReleaseEvent>(RE_BIND_FUNC_EVENT_1(EditorLayer::OnMouseButtonReleased));
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressEvent& e) {
+    if (e.getButton() == Mouse::ButtonLeft) {
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewPortBounds[0].x;
+        my -= m_ViewPortBounds[0].y;
+        auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0];
+        my = viewportSize.y - my;
+        int mouseX = static_cast<int>(mx);
+        int mouseY = static_cast<int>(my);
+
+        if (mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 &&
+            mouseY < (int)viewportSize.y) {
+            m_LastMousePress[0] = mouseX;
+            m_LastMousePress[1] = mouseY;
+        }
+    }
+    return false;
+}
+
+bool EditorLayer::OnMouseButtonReleased(MouseButtonReleaseEvent& e) {
+    if (e.getButton() == Mouse::ButtonLeft) {
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewPortBounds[0].x;
+        my -= m_ViewPortBounds[0].y;
+        auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0];
+        my = viewportSize.y - my;
+        int mouseX = static_cast<int>(mx);
+        int mouseY = static_cast<int>(my);
+
+        if (mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 &&
+            mouseY < (int)viewportSize.y) {
+            int minX = std::min(mouseX,m_LastMousePress[0]),minY = std::min(mouseY,m_LastMousePress[1]),Width = std::abs(mouseX - m_LastMousePress[0]),Height = std::abs(mouseY - m_LastMousePress[1]);
+            int pixelData = m_framebuffer->ReadRangePixel(1, minX, minY,Width,Height);
+        }
+    }
+    return false;
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
