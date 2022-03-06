@@ -99,6 +99,7 @@ struct Texture2DComponent
 {
     Ref<Texture2D> Texture;
     std::string Path;
+    int width,height;
     Texture2DComponent() = default;
     Texture2DComponent(const Texture2DComponent&) = default;
     Texture2DComponent(const Ref<Texture2D> texture)
@@ -110,6 +111,7 @@ struct Texture3DComponent
     Ref<Texture3D> Texture;
     std::string Path;
     float Threshold = 0.0f;
+    int width,height,depth;
     Texture3DComponent() = default;
     Texture3DComponent(const Texture3DComponent&) = default;
     Texture3DComponent(const Ref<Texture3D> texture)
@@ -136,6 +138,33 @@ struct CameraComponent
     bool FixedAspectRatio = false;
     CameraComponent() = default;
     CameraComponent(const CameraComponent&) = default;
+    // CameraComponent(const glm::mat4& projection)
+    //     :Camera(projection)   {}
+};
+
+struct ForceComponent
+{
+    std::vector<glm::vec3> force;
+    ForceComponent() = default;
+    ForceComponent(const ForceComponent&) = default;
+    // CameraComponent(const glm::mat4& projection)
+    //     :Camera(projection)   {}
+};
+
+struct ConstraintComponent
+{
+    std::vector<glm::vec3> constraint;
+    ConstraintComponent() = default;
+    ConstraintComponent(const ConstraintComponent&) = default;
+    // CameraComponent(const glm::mat4& projection)
+    //     :Camera(projection)   {}
+};
+
+struct ObjectComponent
+{
+    //TODO
+    ObjectComponent() = default;
+    ObjectComponent(const ObjectComponent&) = default;
     // CameraComponent(const glm::mat4& projection)
     //     :Camera(projection)   {}
 };
