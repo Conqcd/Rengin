@@ -264,7 +264,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
 
-    UI_Toolbar();
+    // UI_Toolbar();
 
     ImGui::End();
 }
