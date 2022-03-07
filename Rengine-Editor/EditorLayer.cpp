@@ -73,7 +73,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     
     if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
     {
-        int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
+        int pixelData;
+        m_framebuffer->ReadPixel(1,mouseX,mouseY,&pixelData);
         RE_CORE_WARN("pixel data {0}",pixelData);
         // if(pixelData == -1)
         //     m_HoverEntity = {};

@@ -215,8 +215,8 @@ void Renderer2D::Init()
 
     s_data.TextureSolts[0] = s_data.m_WhiteTexture;
 
-    s_data.m_CircleShader = Shader::Create("Circle","..\\..\\SandBox\\assets\\shaders\\CircleVertex.glsl","..\\..\\SandBox\\assets\\shaders\\CircleFragment.glsl");
-    s_data.m_LineShader = Shader::Create("Circle","..\\..\\Rengine-Editor\\assets\\shaders\\LineVertex.glsl","..\\..\\Rengine-Editor\\assets\\shaders\\LineFragment.glsl");
+    // s_data.m_CircleShader = Shader::Create("Circle","..\\..\\SandBox\\assets\\shaders\\CircleVertex.glsl","..\\..\\SandBox\\assets\\shaders\\CircleFragment.glsl");
+    // s_data.m_LineShader = Shader::Create("Circle","..\\..\\Rengine-Editor\\assets\\shaders\\LineVertex.glsl","..\\..\\Rengine-Editor\\assets\\shaders\\LineFragment.glsl");
     
     s_data.QuadVertexPosition[0] = {-0.5f,-0.5f,0.0f,1.0f};
     s_data.QuadVertexPosition[1] = {0.5f,-0.5f,0.0f,1.0f};

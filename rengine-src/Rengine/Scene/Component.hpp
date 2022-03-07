@@ -76,7 +76,6 @@ struct EmissionComponent
         :Color(color)   {}
 };
 
-
 struct OpacityTransferFunctionComponent
 {
     TransferFunction<float,float> Opacity;

@@ -37,7 +37,7 @@ public:
 
     static void DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
                             const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,
-                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold);
+                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold,int TWidth,int THeight,int TDepth);
 
     struct Statistic
     {

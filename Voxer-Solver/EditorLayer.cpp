@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "repch.hpp"
 #include "EditorLayer.hpp"
 #include <chrono>
@@ -9,7 +10,6 @@
 #include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
 #include <Rengine/Math/Math.hpp>
-
 namespace Rengin
 {
     
@@ -49,7 +49,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     
 
     // GLubyte pixels[4] = {0,0,0,0};
-    int pixels[4] = {0,0,0,0};
+    int pixels[4] = {-1,-1,-1,-1};
     m_framebuffer->ClearAttachment(1,pixels);
 
     //Update Scene
@@ -66,12 +66,16 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     
     if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
     {
-        int pixelData = m_framebuffer->ReadPixel(1,mouseX,mouseY);
-        RE_CORE_WARN("pixel data {0}",pixelData);
-        // if(pixelData == -1)
-        //     m_HoverEntity = {};
-        // else
-        //     m_HoverEntity = {(entt::entity)pixelData,m_ActiveScene.get()};
+        int pixelData[3] = {0};
+        m_framebuffer->ReadPixel(1,mouseX,mouseY,pixelData);
+        // RE_CORE_WARN("pixel data {0}",pixelData);
+    }
+    if(m_MouseSize[0] && m_MouseSize[1])
+    {
+        int *pixelDatas = new int[m_MouseSize[0] * m_MouseSize[1]];
+        m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], pixelDatas);
+        delete[] pixelDatas;
+        m_MouseSize[0] = m_MouseSize[1] = 0;
     }
     m_framebuffer->Unbind();
 }
@@ -272,6 +276,9 @@ void EditorLayer::OnAttach()
     // m_CubeEntity.AddComponent<ColorTransferFunctionComponent>({0.0,1.0},{{1.0,0.0,0.0},{0.0,0.0,1.0}});
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
     texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
+    texCom.width = 512;
+    texCom.height = 512;
+    texCom.depth = 507;
 
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
@@ -345,8 +352,10 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleaseEvent& e) {
 
         if (mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 &&
             mouseY < (int)viewportSize.y) {
-            int minX = std::min(mouseX,m_LastMousePress[0]),minY = std::min(mouseY,m_LastMousePress[1]),Width = std::abs(mouseX - m_LastMousePress[0]),Height = std::abs(mouseY - m_LastMousePress[1]);
-            // int pixelData = m_framebuffer->ReadRangePixel(1, minX, minY,Width,Height);
+            int Width = std::abs(mouseX - m_LastMousePress[0]),Height = std::abs(mouseY - m_LastMousePress[1]);
+            m_LastMousePress[0] = std::min(mouseX,m_LastMousePress[0]),m_LastMousePress[1] = std::min(mouseY,m_LastMousePress[1]);
+            m_MouseSize[0] = Width;
+            m_MouseSize[1] = Height;
         }
     }
     return false;

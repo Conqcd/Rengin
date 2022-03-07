@@ -2,6 +2,9 @@
 
 uniform float maxvalue;
 uniform float u_threshold;
+uniform int u_TWidth;
+uniform int u_THeight;
+uniform int u_TDepth;
 
 uniform mat4 u_ViewMatrix;
 uniform mat3 u_NormalMatrix;
@@ -167,10 +170,9 @@ void main()
             color.rgb = vec3(1.0);
             color.a = c.a + (1 - c.a) * color.a;
 
-            o_position.r = int(position.r * (u_top.r - u_bottom.r) + u_bottom.r);
-            o_position.r = int(position.r + 1.0) * 10;
-            o_position.g = int(position.g * (u_top.g - u_bottom.g) + u_bottom.g);
-            o_position.b = int(position.b * (u_top.b - u_bottom.b) + u_bottom.b);
+            o_position.r = int(position.r * float(u_TWidth));
+            o_position.g = int(position.g * float(u_THeight));
+            o_position.b = int(position.b * float(u_TDepth));
             break;
         }
 

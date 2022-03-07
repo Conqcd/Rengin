@@ -244,32 +244,27 @@ void OpenGLFrameBuffer::Resize(uint32_t width,uint32_t height)
     Invalidate();
 }
 
-int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y)
+void OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y,void* pixel)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
 
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-    int pixelData;
+    // int pixelData;
     // GLubyte pixels[4] = {0};
-    int pixels[4] = {0};
-    glReadPixels(x,y,1,1,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixels);
+    // int pixels[4] = {0};
+    glReadPixels(x,y,1,1,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixel);
     GLCheckError();
-    return pixelData;
 }
 
-int OpenGLFrameBuffer::ReadRangePixel(uint32_t attachmentIndex,int x,int y,int w,int h)
+void OpenGLFrameBuffer::ReadRangePixel(uint32_t attachmentIndex,int x,int y,int w,int h,void* pixels)
 {
     RE_CORE_ASSERT((attachmentIndex < m_ColorAttachments.size()));
 
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-    int pixelData;
-    int pixels[4] = {0};
-    // GLubyte pixels[4] = {0};
     glReadPixels(x,y,w,h,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixels);
     GLCheckError();
-    return pixelData;
 }
 
 void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex,void* value)

@@ -26,6 +26,7 @@ private:
     glm::vec2 m_ViewPortSize;
     glm::vec2 m_ViewPortBounds[2];
     int m_LastMousePress[2];
+    int m_MouseSize[2] = {0};
     bool m_ViewportFocused = false;
     bool m_ViewportHovered = false;
 
