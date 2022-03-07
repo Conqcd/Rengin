@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include "repch.hpp"
 #include "EditorLayer.hpp"
 #include <chrono>
@@ -72,9 +71,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     }
     if(m_MouseSize[0] && m_MouseSize[1])
     {
-        int *pixelDatas = new int[m_MouseSize[0] * m_MouseSize[1]];
-        m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], pixelDatas);
-        delete[] pixelDatas;
+        std::vector<int> pixelDatas(m_MouseSize[0] * m_MouseSize[1] * 3);
+        m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], pixelDatas.data());
         m_MouseSize[0] = m_MouseSize[1] = 0;
     }
     m_framebuffer->Unbind();
