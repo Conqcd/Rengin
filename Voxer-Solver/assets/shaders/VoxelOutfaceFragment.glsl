@@ -190,4 +190,8 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
+    if(u_RenderMode == 1 && length(texture(u_Force, position)) != 0.0)
+        o_color = vec4(0.0,1.0,0.0,1.0);
+    else if(u_RenderMode == 2 && length(texture(u_Constraint, position)) != 0.0)
+        o_color = vec4(0.0,0.0,1.0,1.0);
 }
