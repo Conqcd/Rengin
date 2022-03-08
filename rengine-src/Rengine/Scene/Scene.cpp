@@ -165,9 +165,10 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
 
     Renderer3D::BeginScene(camera);
 
-    auto viewv = m_registry.view<TransformComponent, Texture3DComponent,
-                                 OpacityTransferFunctionComponent,
-                                 ColorTransferFunctionComponent>();
+    auto viewv =
+        m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,
+                        ConstraintComponent, OpacityTransferFunctionComponent,
+                        ColorTransferFunctionComponent>();
     for (auto _entity : viewv) {
       auto &&[transform, texture, force, constraint, transfera, transferc] =
           viewv.get<TransformComponent, Texture3DComponent, ForceComponent,
@@ -237,21 +238,25 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
 
     if(CameraType == SceneCamera::ProjectionType::Perspective)
     {
-      auto viewv = m_registry.view<TransformComponent, Texture3DComponent,OpacityTransferFunctionComponent,ColorTransferFunctionComponent>();
-      for (auto _entity : viewv) {
-        auto &&[transform, texture, transfera, transferc] =
-            viewv.get<TransformComponent, Texture3DComponent,
-                      OpacityTransferFunctionComponent,
-                      ColorTransferFunctionComponent>(_entity);
-
-        float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
-        
-        Renderer3D::DrawVolume(
-            MainCamera->getProjection(), glm::inverse(CameraTransform),
-            transform.GetTransform(), texture.Texture,transform.Scale,
-            {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
-            {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color,texture.Threshold,
-            texture.width,texture.height,texture.depth);
+        auto viewv =
+            m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,
+                            ConstraintComponent, OpacityTransferFunctionComponent,
+                            ColorTransferFunctionComponent>(); for (auto _entity : viewv) {
+            auto &&[transform, texture, force, constraint, transfera, transferc] =
+                viewv.get<TransformComponent, Texture3DComponent, ForceComponent,
+                        ConstraintComponent, OpacityTransferFunctionComponent,
+                        ColorTransferFunctionComponent>(_entity);
+            float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
+            texture.Texture->Bind(0);
+            force.Texture->Bind(1);
+            constraint.Texture->Bind(2);
+            
+            Renderer3D::DrawVolume(
+                MainCamera->getProjection(), glm::inverse(CameraTransform),
+                transform.GetTransform(), texture.Texture,transform.Scale,
+                {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
+                {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color,texture.Threshold,
+                texture.width,texture.height,texture.depth);
       }
     }
 
