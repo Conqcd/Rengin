@@ -8,6 +8,7 @@
 #include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
 #include <Rengine/Math/Math.hpp>
+#include <Rengine/Scene/ObjManager.hpp>
 
 namespace Rengin
 {
@@ -272,6 +273,8 @@ void EditorLayer::OnImGuiRender()
 void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
+
+    ObjManager objm("./assets/objects/mary/mary.obj","./assets/objects/mary");
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
