@@ -169,12 +169,15 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
                                  OpacityTransferFunctionComponent,
                                  ColorTransferFunctionComponent>();
     for (auto _entity : viewv) {
-      auto &&[transform, texture, transfera, transferc] =
-          viewv.get<TransformComponent, Texture3DComponent,
-                    OpacityTransferFunctionComponent,
+      auto &&[transform, texture, force, constraint, transfera, transferc] =
+          viewv.get<TransformComponent, Texture3DComponent, ForceComponent,
+                    ConstraintComponent, OpacityTransferFunctionComponent,
                     ColorTransferFunctionComponent>(_entity);
 
       float stepLength = 0.01, focalLength = 1.0 / tan(glm::radians(camera.GetFOV()) / 2.0);
+      texture.Texture->Bind(0);
+      force.Texture->Bind(1);
+      constraint.Texture->Bind(2);
 
       auto Viewmatrix = camera.GetViewMatrix();
       Renderer3D::DrawVolume(camera.getProjection(), Viewmatrix,

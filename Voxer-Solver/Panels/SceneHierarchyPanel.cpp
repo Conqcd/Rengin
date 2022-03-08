@@ -1,4 +1,5 @@
 #include <rengine.hpp>
+#include <cstdio>
 #include "SceneHierarchyPanel.hpp"
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -194,6 +195,31 @@ static void DrawComponent(const std::string& name,Entity entity,UIFunction funct
     }
 }
 
+void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::vector<float>& target,float x, float y, float z,int width,int height,int depth)
+{
+    int size1 = v.size(),size2 = target.size();
+    for (int i = 0; i < v.size(); i += 3)
+    {
+        int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
+        target[id * 3] += x;
+        target[id * 3 + 1] += y;
+        target[id * 3 + 2] += z;
+    }
+    v.clear();
+}
+
+void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>& target,float x, float y, float z,int width,int height,int depth)
+{
+    for (int i = 0; i < v.size(); i += 3)
+    {
+        int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
+        target[id * 3] = x;
+        target[id * 3 + 1] = y;
+        target[id * 3 + 2] = z;
+    }
+    v.clear();
+}
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
     if(entity.HasComponent<TagComponent>())
@@ -310,7 +336,83 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
     DrawComponent<Texture3DComponent>("Texture3D",entity,[](auto& component)
     {
         ImGui::Text(component.Path.c_str());
+        ImGui::Text("width: %d, height: %d, depth: %d",component.width,component.height,component.depth);
         ImGui::DragFloat("threshold",&component.Threshold,0.001,0.0f,1.0f,"%.2f");
+    });
+
+    DrawComponent<ForceComponent>("Force",entity,[this](auto& component)
+    {
+        ImGui::Text("Forces");
+        char buffer[25];
+        memset(buffer,0,sizeof(buffer));
+        static float fx = 0,fy = 0,fz = 0;
+        sprintf(buffer,"%f",fx);
+        if(ImGui::InputText("Fx",buffer,sizeof(buffer)))
+        {
+            fx = atof(buffer);
+        }
+        sprintf(buffer,"%f",fy);
+        if(ImGui::InputText("Fy",buffer,sizeof(buffer)))
+        {
+            fy = atof(buffer);
+        }
+        sprintf(buffer,"%f",fz);
+        if(ImGui::InputText("Fz",buffer,sizeof(buffer)))
+        {
+            fz = atof(buffer);
+        }
+        if(ImGui::Button("Add Force"))
+        {
+            auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
+            AddAttribute(m_PickedPixels,texComF.force,fx,fy,fz,texComF.Texture->getWidth(),texComF.Texture->getHeight(),texComF.Texture->getDepth());
+            texComF.Texture->setData(texComF.force.data(),texComF.force.size());
+            fx = fy = fz = 0;
+        }
+        if(ImGui::Button("Clear Force"))
+        {
+            auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
+            fx = fy = fz = 0;
+            ClearAttribute(m_PickedPixels,texComF.force,fx,fy,fz,texComF.Texture->getWidth(),texComF.Texture->getHeight(),texComF.Texture->getDepth());
+            texComF.Texture->setData(texComF.force.data(),texComF.force.size());
+        }
+    });
+
+    DrawComponent<ConstraintComponent>("Constraint",entity,[this](auto& component)
+    {
+        ImGui::Text("Constraint");
+        if(ImGui::Button("Add x"))
+        {
+            auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            AddAttribute(m_PickedPixels,texComC.constraint,1,0,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
+            texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Add y"))
+        {
+            auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            AddAttribute(m_PickedPixels,texComC.constraint,0,1,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
+            texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Add z"))
+        {
+            auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            AddAttribute(m_PickedPixels,texComC.constraint,0,0,1,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
+            texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Add Constraint"))
+        {
+            auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            AddAttribute(m_PickedPixels,texComC.constraint,1,1,1,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
+            texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
+        }
+        if(ImGui::Button("Clear Constraint"))
+        {
+            auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            ClearAttribute(m_PickedPixels,texComC.constraint,0,0,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
+            texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
+        }
     });
 
     DrawComponent<ColorTransferFunctionComponent>(

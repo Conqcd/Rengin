@@ -149,7 +149,7 @@ void Renderer3D::Init()
 
 
 
-    s_data_v.m_WhiteTexture = Texture3D::Create(1,1,1);
+    s_data_v.m_WhiteTexture = Texture3D::Create(1,1,1,4);
     uint32_t whiteColor = 0xffffffff;
     s_data_v.m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
 
@@ -541,7 +541,11 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_TWidth", TWidth);
     s_data_v.m_VolumeShader->SetUniformInt("u_THeight", THeight);
     s_data_v.m_VolumeShader->SetUniformInt("u_TDepth", TDepth);
+    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 0);
     s_data_v.m_VolumeShader->SetUniformUint("u_volume", 0);
+    s_data_v.m_VolumeShader->SetUniformUint("u_Force", 1);
+    s_data_v.m_VolumeShader->SetUniformUint("u_Constraint", 2);
+    s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 3);
     s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
 

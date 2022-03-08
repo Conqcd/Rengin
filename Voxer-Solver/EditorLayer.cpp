@@ -32,6 +32,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_camera_controller.OnResize(m_ViewPortSize.x,m_ViewPortSize.y);
         m_EditorCamera.SetViewportSize(m_ViewPortSize.x,m_ViewPortSize.y);
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
+        m_panel.m_PickedPixels.reserve(static_cast<uint32_t>(m_ViewPortSize.x * m_ViewPortSize.y) * 3);
     }
 
     if (m_ViewportFocused)
@@ -71,8 +72,9 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     }
     if(m_MouseSize[0] && m_MouseSize[1])
     {
-        std::vector<int> pixelDatas(m_MouseSize[0] * m_MouseSize[1] * 3);
-        m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], pixelDatas.data());
+        m_panel.m_PickedPixels.resize(m_MouseSize[0] * m_MouseSize[1] * 3);
+
+        m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], m_panel.m_PickedPixels.data());
         m_MouseSize[0] = m_MouseSize[1] = 0;
     }
     m_framebuffer->Unbind();
@@ -253,6 +255,7 @@ void EditorLayer::OnAttach()
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
+    m_panel.m_PickedPixels.reserve(m_ViewPortSize.x * m_ViewPortSize.y * 3);
 
     m_ActiveScene = CreateRef<Scene>();
  
@@ -261,6 +264,8 @@ void EditorLayer::OnAttach()
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
 
     Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
+    
+    // Entity
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
     std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,0.5f,1.0f};
@@ -283,11 +288,14 @@ void EditorLayer::OnAttach()
     texCom.depth = 507;
     texComF.force.resize(texCom.width * texCom.height * texCom.depth * 3);
     texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComF.Texture->setData(texComF.force.data(),texCom.width * texCom.height * texCom.depth);
+    texComF.Texture->setData(texComF.force.data(),texCom.width * texCom.height * texCom.depth * 3);
     texComC.constraint.resize(texCom.width * texCom.height * texCom.depth * 3);
     texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComC.Texture->setData(texComC.constraint.data(),texCom.width * texCom.height * texCom.depth);
+    texComC.Texture->setData(texComC.constraint.data(),texCom.width * texCom.height * texCom.depth * 3);
 
+    m_panel.m_VolomeEntity = m_CubeEntity;
+    
+    //Camera
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
     m_Camera.AddComponent<CameraComponent>();

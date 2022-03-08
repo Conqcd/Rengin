@@ -22,8 +22,11 @@ uniform vec3 u_lightPosition;
 
 uniform float u_stepLength;
 
+uniform int u_RenderMode;
 uniform sampler3D u_volume;
-// uniform sampler3D u_volume;
+uniform sampler3D u_Force;
+uniform sampler3D u_Constraint;
+uniform sampler3D u_ResultVolume;
 
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
@@ -171,8 +174,11 @@ void main()
             color.a = c.a + (1 - c.a) * color.a;
 
             o_position.r = int(position.r * float(u_TWidth));
+            if(ray.r <= 0.0)  o_position.r -=1;
             o_position.g = int(position.g * float(u_THeight));
+            if(ray.g <= 0.0)  o_position.g -=1;
             o_position.b = int(position.b * float(u_TDepth));
+            if(ray.b <= 0.0)  o_position.b -=1;
             break;
         }
 
