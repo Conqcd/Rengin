@@ -15,6 +15,7 @@ file(GLOB_RECURSE RENGINE_SRC *.cpp *.hpp)
 
 # message(${RENGINE_SRC})
 
+include_directories(../TinyOBJLoader)
 include_directories(../Glad/include)
 include_directories(../Imgui)
 include_directories(../ImGuizmo)
@@ -29,6 +30,7 @@ target_link_libraries(rengine
     opengl32
     glfw
     glad
+    tinyobjloader
     imgui
     imguizmo
     glm

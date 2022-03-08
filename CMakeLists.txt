@@ -17,6 +17,7 @@ elseif(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
 endif()
 
 add_subdirectory(Glad)
+add_subdirectory(TinyOBJLoader)
 add_subdirectory(Imgui)
 add_subdirectory(ImGuizmo)
 add_subdirectory(Stb)
