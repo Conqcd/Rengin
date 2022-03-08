@@ -143,7 +143,8 @@ struct CameraComponent
 
 struct ForceComponent
 {
-    std::vector<glm::vec3> force;
+    std::vector<float> force;
+    Ref<Texture3D> Texture;
     ForceComponent() = default;
     ForceComponent(const ForceComponent&) = default;
     // CameraComponent(const glm::mat4& projection)
@@ -152,11 +153,19 @@ struct ForceComponent
 
 struct ConstraintComponent
 {
-    std::vector<glm::vec3> constraint;
+    std::vector<float> constraint;
+    Ref<Texture3D> Texture;
     ConstraintComponent() = default;
     ConstraintComponent(const ConstraintComponent&) = default;
     // CameraComponent(const glm::mat4& projection)
     //     :Camera(projection)   {}
+};
+
+struct SolveComponent
+{
+    Ref<Texture3D> Texture;
+    SolveComponent() = default;
+    SolveComponent(const SolveComponent&) = default;
 };
 
 struct ObjectComponent

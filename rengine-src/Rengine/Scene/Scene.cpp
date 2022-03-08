@@ -128,6 +128,14 @@ void Scene::OnComponentAdd<Texture3DComponent>(Entity entity,
                                                Texture3DComponent &component) {}
 
 template <>
+void Scene::OnComponentAdd<ForceComponent>(Entity entity,
+                                               ForceComponent &component) {}
+
+template <>
+void Scene::OnComponentAdd<ConstraintComponent>(Entity entity,
+                                               ConstraintComponent &component) {}
+
+template <>
 void Scene::OnComponentAdd<Texture2DComponent>(Entity entity,
                                                Texture2DComponent &component) {}
 

@@ -45,7 +45,7 @@ private:
     GLenum m_interFormat;
     GLenum m_dataFormat;
 public:
-    OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth);
+    OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp);
     OpenGLTexture3D(const std::string& path);
     virtual ~OpenGLTexture3D();
     

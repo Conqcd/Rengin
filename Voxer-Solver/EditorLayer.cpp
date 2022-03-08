@@ -255,7 +255,7 @@ void EditorLayer::OnAttach()
     m_framebuffer = FrameBuffer::Create(FbSpec);
 
     m_ActiveScene = CreateRef<Scene>();
-    
+ 
     m_EditorCamera = EditorCamera(30.0f,1.778f,0.1f,1000.0f);
 
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
@@ -272,11 +272,21 @@ void EditorLayer::OnAttach()
     // m_CubeEntity.AddComponent<OpacityTransferFunctionComponent>({0.0,1.0},{0.0,1.0});
     m_CubeEntity.AddComponent<ColorTransferFunctionComponent>(t2);
     // m_CubeEntity.AddComponent<ColorTransferFunctionComponent>({0.0,1.0},{{1.0,0.0,0.0},{0.0,0.0,1.0}});
+    m_CubeEntity.AddComponent<ForceComponent>();
+    m_CubeEntity.AddComponent<ConstraintComponent>();
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
+    auto& texComF = m_CubeEntity.GetComponent<ForceComponent>();
+    auto& texComC = m_CubeEntity.GetComponent<ConstraintComponent>();
     texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
     texCom.width = 512;
     texCom.height = 512;
     texCom.depth = 507;
+    texComF.force.resize(texCom.width * texCom.height * texCom.depth * 3);
+    texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
+    texComF.Texture->setData(texComF.force.data(),texCom.width * texCom.height * texCom.depth);
+    texComC.constraint.resize(texCom.width * texCom.height * texCom.depth * 3);
+    texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
+    texComC.Texture->setData(texComC.constraint.data(),texCom.width * texCom.height * texCom.depth);
 
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));

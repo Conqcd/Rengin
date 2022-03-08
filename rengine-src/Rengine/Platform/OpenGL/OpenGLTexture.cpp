@@ -106,13 +106,21 @@ void OpenGLTexture2D::Unbind() const
 //////////////////////////////////////3D///////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
 
-OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth)
+OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp)
         :m_width(width), m_height(height), m_depth(depth)
 {
     RE_PROFILE_FUNCTION();
 
-    GLenum interFormat = GL_RGBA8 , dataFormat = GL_RGBA;
 
+    GLenum interFormat = GL_RGB32F , dataFormat = GL_RGB;
+
+    if(bpp = 1)
+    {
+        interFormat = GL_R32F,dataFormat = GL_RED;
+    }else if(bpp = 4)
+    {
+        interFormat = GL_RGBA32F, dataFormat = GL_RGBA;
+    }
     m_interFormat = interFormat;
     m_dataFormat = dataFormat;
 
@@ -200,8 +208,8 @@ OpenGLTexture3D::~OpenGLTexture3D()
 void OpenGLTexture3D::setData(void* data,uint32_t size)
 {
     RE_PROFILE_FUNCTION();
-    uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: 0); 
-    RE_CORE_ASSERT((size == m_height * m_width * bpp),"Can not match the size!");
+    uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: (m_dataFormat == GL_RED? 1 : 0)); 
+    RE_CORE_ASSERT((size == m_height * m_width * m_depth * bpp),"Can not match the size!");
     glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_UNSIGNED_BYTE,data);
 }
 

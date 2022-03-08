@@ -41,7 +41,7 @@ Ref<Texture2D> Texture2D::Create(const std::string& path)
     return nullptr;
 }
 
-Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth)
+Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp)
 {
     switch (Renderer::getRenderer())
     {
@@ -49,7 +49,7 @@ Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth)
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
     case RendererAPI::API::OpenGL :
-        return CreateRef<OpenGLTexture3D>(width,height,depth);
+        return CreateRef<OpenGLTexture3D>(width,height,depth,bpp);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         return nullptr;
