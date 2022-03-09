@@ -176,9 +176,9 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
                     ColorTransferFunctionComponent>(_entity);
 
       float stepLength = 0.01, focalLength = 1.0 / tan(glm::radians(camera.GetFOV()) / 2.0);
-      texture.Texture->Bind(0);
-      force.Texture->Bind(1);
-      constraint.Texture->Bind(2);
+      texture.Texture->Bind(1);
+      force.Texture->Bind(2);
+      constraint.Texture->Bind(3);
 
       auto Viewmatrix = camera.GetViewMatrix();
       Renderer3D::DrawVolume(camera.getProjection(), Viewmatrix,

@@ -541,11 +541,11 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_TWidth", TWidth);
     s_data_v.m_VolumeShader->SetUniformInt("u_THeight", THeight);
     s_data_v.m_VolumeShader->SetUniformInt("u_TDepth", TDepth);
-    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 0);
-    s_data_v.m_VolumeShader->SetUniformUint("u_volume", 0);
-    s_data_v.m_VolumeShader->SetUniformUint("u_Force", 1);
-    s_data_v.m_VolumeShader->SetUniformUint("u_Constraint", 2);
-    s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 3);
+    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 2);
+    s_data_v.m_VolumeShader->SetUniformInt("u_volume", 1);
+    s_data_v.m_VolumeShader->SetUniformInt("u_Force", 2);
+    s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);
+    s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 4);
     s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
 
@@ -570,7 +570,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
       sprintf(result, s2, i);
       s_data_v.m_VolumeShader->SetUniformFloat3(result, itt->second);
     }
-    texture->Bind();
+    // texture->Bind();
     s_data_v.VolumeVertexArray->Bind();
     RenderCommand::DrawIndex(s_data_v.VolumeVertexArray);
     

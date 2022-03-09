@@ -1,4 +1,4 @@
-#version 410 core
+#version 450 core
 
 uniform float maxvalue;
 uniform float u_threshold;
@@ -27,7 +27,10 @@ uniform sampler3D u_volume;
 uniform sampler3D u_Force;
 uniform sampler3D u_Constraint;
 uniform sampler3D u_ResultVolume;
-
+// layout (binding = 0) uniform sampler3D u_volume;
+// layout (binding = 1) uniform sampler3D u_Force;
+// layout (binding = 2) uniform sampler3D u_Constraint;
+// layout (binding = 3) uniform sampler3D u_ResultVolume;
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out ivec3 o_position;
@@ -190,8 +193,8 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
-    if(u_RenderMode == 1 && length(texture(u_Force, position)) != 0.0)
+    if(u_RenderMode == 1 && length(texture(u_Force, position).rgb) != 0.0)
         o_color = vec4(0.0,1.0,0.0,1.0);
-    else if(u_RenderMode == 2 && length(texture(u_Constraint, position)) != 0.0)
+    else if(u_RenderMode == 2 && length(texture(u_Constraint, position).rgb) != 0.0)
         o_color = vec4(0.0,0.0,1.0,1.0);
 }

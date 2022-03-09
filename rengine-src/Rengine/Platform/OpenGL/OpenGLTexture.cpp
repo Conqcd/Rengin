@@ -221,6 +221,9 @@ void OpenGLTexture3D::setData(void* data,uint32_t size)
 void OpenGLTexture3D::Bind(uint32_t slot) const
 {
     RE_PROFILE_FUNCTION();
+    RE_CORE_ASSERT(slot < 32,"slot can not more than 31"); 
+    // glActiveTexture(GL_TEXTURE0 + slot);
+    // glBindTexture(GL_TEXTURE_2D, m_render_id);
     glBindTextureUnit(slot,m_render_id);
 }
 
