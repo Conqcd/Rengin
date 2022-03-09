@@ -136,6 +136,10 @@ void Scene::OnComponentAdd<ConstraintComponent>(Entity entity,
                                                ConstraintComponent &component) {}
 
 template <>
+void Scene::OnComponentAdd<SolveComponent>(Entity entity,
+                                               SolveComponent &component) {}
+
+template <>
 void Scene::OnComponentAdd<Texture2DComponent>(Entity entity,
                                                Texture2DComponent &component) {}
 

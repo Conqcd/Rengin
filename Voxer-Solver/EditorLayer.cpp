@@ -279,6 +279,7 @@ void EditorLayer::OnAttach()
     // m_CubeEntity.AddComponent<ColorTransferFunctionComponent>({0.0,1.0},{{1.0,0.0,0.0},{0.0,0.0,1.0}});
     m_CubeEntity.AddComponent<ForceComponent>();
     m_CubeEntity.AddComponent<ConstraintComponent>();
+    m_CubeEntity.AddComponent<SolveComponent>();
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
     auto& texComF = m_CubeEntity.GetComponent<ForceComponent>();
     auto& texComC = m_CubeEntity.GetComponent<ConstraintComponent>();

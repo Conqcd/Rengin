@@ -26,9 +26,12 @@
 #include "Rengine/Renderer/Renderer.hpp"
 #include "Rengine/Renderer/FrameBuffer.hpp"
 #include "Rengine/Renderer/Renderer2D.hpp"
+#include "Rengine/Renderer/Renderer3D.hpp"
+#include "Rengine/Renderer/RendererObject.hpp"
 #include "Rengine/Renderer/RendererAPI.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
 #include "Rengine/Renderer/Texture.hpp"
+#include <Rengine/Scene/ObjManager.hpp>
 
 #include "Rengine/Scene/Scene.hpp"
 #include "Rengine/Scene/Component.hpp"

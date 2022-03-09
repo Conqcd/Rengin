@@ -416,7 +416,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             texComC.Texture->setData(texComC.constraint.data(),texComC.constraint.size());
         }
     });
-
+    DrawComponent<SolveComponent>("Solve!", entity, [](auto &component) {
+            if (ImGui::Button("Solve")) {
+            }
+        });
     DrawComponent<ColorTransferFunctionComponent>(
         "ColorTransferFunction", entity, [](auto &component) {
           auto &transferFun = component.Color;

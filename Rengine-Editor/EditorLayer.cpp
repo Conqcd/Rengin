@@ -4,11 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Rengine/Scene/SceneSerializer.hpp"
 #include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
 #include <Rengine/Math/Math.hpp>
-#include <Rengine/Scene/ObjManager.hpp>
 
 namespace Rengin
 {
@@ -295,23 +293,6 @@ void EditorLayer::OnAttach()
     m_SquareEntity = m_ActiveScene->CreateEntity("Square");
     m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f,1.0f,0.0f,1.0f});
 
-    Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
-    auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
-    m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
-    std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,0.5f,1.0f};
-    std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{1.0f,1.0f,1.0f},{0.0f,0.0f,1.0f}};
-    // std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,1.0f};
-    // std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{0.0f,0.0f,1.0f}};
-    TransferFunction<float, float> t1{l1,l2};
-    TransferFunction<float, glm::vec3> t2{l3,l4};
-
-    m_CubeEntity.AddComponent<OpacityTransferFunctionComponent>(t1);
-    // m_CubeEntity.AddComponent<OpacityTransferFunctionComponent>({0.0,1.0},{0.0,1.0});
-    m_CubeEntity.AddComponent<ColorTransferFunctionComponent>(t2);
-    // m_CubeEntity.AddComponent<ColorTransferFunctionComponent>({0.0,1.0},{{1.0,0.0,0.0},{0.0,0.0,1.0}});
-    auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
-    texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
-
     m_Camera = m_ActiveScene->CreateEntity("Camera");
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
     m_Camera.AddComponent<CameraComponent>();
@@ -332,7 +313,7 @@ void EditorLayer::OnAttach()
 
     m_Camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-    // m_panel.SetContext(m_ActiveScene);
+    m_panel.SetContext(m_ActiveScene);
 
     // SceneSerializer serializer(m_ActiveScene);
     // serializer.Serializer("../../../Rengine-Editor/assets/scenes/Example.yaml");

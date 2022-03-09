@@ -45,5 +45,4 @@ ObjManager::~ObjManager()
 {
 }
 
-
 } // namespace Rengin
