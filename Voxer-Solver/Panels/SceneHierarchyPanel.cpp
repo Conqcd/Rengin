@@ -200,6 +200,7 @@ void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::vector<float>& t
     int size1 = v.size(),size2 = target.size();
     for (int i = 0; i < v.size(); i += 3)
     {
+        if(v[i] == -1)  continue;
         int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
         target[id * 3] += x;
         target[id * 3 + 1] += y;
@@ -212,6 +213,7 @@ void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>&
 {
     for (int i = 0; i < v.size(); i += 3)
     {
+        if(v[i] == -1)  continue;
         int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
         target[id * 3] = x;
         target[id * 3 + 1] = y;
