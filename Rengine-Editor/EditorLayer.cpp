@@ -34,11 +34,10 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
     }
 
-
     //Render    
     Renderer2D::resetStats();
     m_framebuffer->Bind();
-    RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
+    RenderCommand::SetClearColor({1.0f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
     //Clear framebuffer id to -1
@@ -53,6 +52,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
+        m_RenderObj->DrawObject(0, m_shader,m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -86,7 +86,6 @@ void EditorLayer::OnUpdate(TimeStep timestep)
 void EditorLayer::OnImGuiRender()
 {
     RE_PROFILE_FUNCTION();
-
 
     static bool p_open = true;
     static bool opt_fullscreen = true;
@@ -272,7 +271,9 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    ObjManager objm("./assets/objects/mary/mary.obj","./assets/objects/mary");
+    m_shader = Shader::Create("../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
+    m_RenderObj = CreateRef<RendererObject>();
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
@@ -386,6 +387,7 @@ bool EditorLayer::OnKeyPressed(KeyPressEvent& e)
     default:
         break;
     }
+    return false;
 }
 
 void EditorLayer::NewScene()

@@ -2,7 +2,8 @@
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Scene/Component.hpp"
 #include "Rengine/Scene/ObjManager.hpp"
-#include "Rengine/Renderer/Shader.hpp"
+#include "Shader.hpp"
+#include "EditorCamera.hpp"
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -19,7 +20,7 @@ private:
 public:
     RendererObject(/* args */) = default;
     ~RendererObject() = default;
-    void DrawObject(uint32_t id,Ref<Shader> shader);
+    void DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera);
     void AddObj(const ObjManager& obj);
 };
 
