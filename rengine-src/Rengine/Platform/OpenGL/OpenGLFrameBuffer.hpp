@@ -20,7 +20,7 @@ public:
     virtual ~OpenGLFrameBuffer();
     
     virtual const FrameBufferSpecification& getSpecification()const override {return m_specification;}
-    virtual uint32_t getColorAttachment(uint32_t index = 0)const override {RE_CORE_ASSERT((index < m_ColorAttachments.size())) return m_ColorAttachments[index];}
+    virtual uint32_t getColorAttachment(uint32_t index = 0)const override {RE_CORE_ASSERT(index < m_ColorAttachments.size()) return m_ColorAttachments[index];}
     
     void Invalidate();
 

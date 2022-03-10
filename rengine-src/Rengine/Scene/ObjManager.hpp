@@ -1,6 +1,6 @@
 #pragma once
-#include "Rengine/Core/core.hpp"
 #include <string>
+#include "Rengine/Core/core.hpp"
 #include "Rengine/Renderer/VertexArray.hpp"
 
 namespace Rengin

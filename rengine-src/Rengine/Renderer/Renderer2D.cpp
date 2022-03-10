@@ -811,7 +811,7 @@ float Renderer2D::GetLineWidth()
     return s_data.LineWidth;
 }
 
-float Renderer2D::SetLineWidth(float width)
+void Renderer2D::SetLineWidth(float width)
 {
     s_data.LineWidth = width;
 }

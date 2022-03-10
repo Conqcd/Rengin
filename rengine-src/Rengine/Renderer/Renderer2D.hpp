@@ -55,7 +55,7 @@ public:
     static void DrawSprite(const glm::mat4& transform,SpriteRendererComponent& src,int entityId);
 
     static float GetLineWidth();
-    static float SetLineWidth(float width);
+    static void SetLineWidth(float width);
     struct Statistic
     {
         uint32_t DrawCall = 0;
