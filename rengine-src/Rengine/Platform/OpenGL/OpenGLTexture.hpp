@@ -44,6 +44,7 @@ private:
     uint32_t m_render_id;
     GLenum m_interFormat;
     GLenum m_dataFormat;
+    std::vector<float> m_tex;
 public:
     OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp);
     OpenGLTexture3D(const std::string& path);
@@ -52,6 +53,7 @@ public:
     inline virtual uint32_t getWidth() const override {return m_width;}
     inline virtual uint32_t getHeight() const override {return m_height;}
     inline virtual uint32_t getDepth() const override {return m_depth;}
+    inline virtual std::vector<float>& getTexture() override {return m_tex;}
     
     virtual uint32_t getRendererID() const override {return m_render_id;}
     virtual void setData(void* data,uint32_t size) override;

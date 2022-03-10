@@ -37,6 +37,7 @@ public:
     static Ref<Texture3D> Create(const std::string& path);
 
     virtual uint32_t getDepth() const = 0;
+    virtual std::vector<float>& getTexture() = 0;
 };
 
 } // namespace Rengin

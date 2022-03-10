@@ -12,6 +12,9 @@ class EditorLayer : public Layer
 private:
     ShaderLibrary m_shader_lib;
     Ref<Shader> m_shader;
+    // Ref<ObjManager> m_Obj;
+    Ref<RendererObject> m_RenderObj;
+
     Ref<VertexBuffer> m_verbuf;
     Ref<IndexBuffer> m_indbuf;
     Ref<VertexArray> m_verarr;

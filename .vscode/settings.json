@@ -87,6 +87,8 @@
         "random": "cpp",
         "regex": "cpp",
         "stack": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "codecvt": "cpp",
+        "filesystem": "cpp"
     }
 }
