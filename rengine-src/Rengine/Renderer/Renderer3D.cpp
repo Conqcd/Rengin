@@ -541,7 +541,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_TWidth", TWidth);
     s_data_v.m_VolumeShader->SetUniformInt("u_THeight", THeight);
     s_data_v.m_VolumeShader->SetUniformInt("u_TDepth", TDepth);
-    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 2);
+    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 1);
     s_data_v.m_VolumeShader->SetUniformInt("u_volume", 1);
     s_data_v.m_VolumeShader->SetUniformInt("u_Force", 2);
     s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);

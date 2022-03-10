@@ -135,6 +135,7 @@ OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,u
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_REPEAT);
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_REPEAT);
 
+    m_tex.resize(width * height * depth * bpp);
 }
 
 OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
@@ -142,19 +143,18 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
 {
     RE_PROFILE_FUNCTION();
     int width = 512,height = 512,depth = 507;
-    float *data = nullptr;
     
     FILE* f = fopen(path.c_str(), "rb");
     RE_ASSERT(f,"Can't Open the Texture file");
     
-    int wd = height * depth;
-    data = new float[wd * width];
+    int hw = height * width;
+    m_tex.resize(hw * depth);
     unsigned short *s = new unsigned short[width];
     float maxval = 0.0f;
     
-    for (int k = 0; k < height; k++)
+    for (int k = 0; k < depth; k++)
     {
-        for (int j = 0; j < depth; j++)
+        for (int j = 0; j < height; j++)
         {
             fread(s, sizeof(unsigned short), width, f);
             for (int i = 0; i < width; i++)
@@ -162,16 +162,16 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
                 float vv = s[i];
                 if(s[i] > 0)
                     vv = s[i];
-                data[k * wd + j * width + i] = s[i];
+                m_tex[k * hw + j * width + i] = s[i];
                 // if (s[i] > max_number)
-                maxval = std::max(maxval,data[k * wd + j * width + i]);
+                maxval = std::max(maxval,m_tex[k * hw + j * width + i]);
                 //     max_number = s[i];
             }
         }
     }
     delete[] s;
 
-    RE_CORE_ASSERT(data,"fail to load image!");
+    // RE_CORE_ASSERT(data,"fail to load image!");
     m_width = static_cast<uint32_t>(width);
     m_height = static_cast<uint32_t>(height);
     m_depth = static_cast<uint32_t>(depth);
@@ -194,9 +194,8 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
 
-    glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_FLOAT,data);
+    glTextureSubImage3D(m_render_id,0,0,0,0,m_width,m_height,m_depth,m_dataFormat,GL_FLOAT,m_tex.data());
 
-    delete[] data;
 }
 
 OpenGLTexture3D::~OpenGLTexture3D()

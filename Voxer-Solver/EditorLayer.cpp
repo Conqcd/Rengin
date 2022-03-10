@@ -287,12 +287,10 @@ void EditorLayer::OnAttach()
     texCom.width = 512;
     texCom.height = 512;
     texCom.depth = 507;
-    texComF.force.resize(texCom.width * texCom.height * texCom.depth * 3);
     texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComF.Texture->setData(texComF.force.data(),texCom.width * texCom.height * texCom.depth * 3);
-    texComC.constraint.resize(texCom.width * texCom.height * texCom.depth * 3);
+    texComF.Texture->setData(texComF.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
     texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComC.Texture->setData(texComC.constraint.data(),texCom.width * texCom.height * texCom.depth * 3);
+    texComC.Texture->setData(texComC.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
 
     m_panel.m_VolomeEntity = m_CubeEntity;
     
