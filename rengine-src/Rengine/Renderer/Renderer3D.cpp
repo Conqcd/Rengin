@@ -552,12 +552,12 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     auto it = transfera.begin();
     char result[25];
     for (int i = 0; it != transfera.end(); it++, i++) {
-      const char s1[] = "u_mapa[%d].data";
-      const char s2[] = "u_mapa[%d].opacity";
-      sprintf(result, s1, i);
-      s_data_v.m_VolumeShader->SetUniformFloat(result, it->first);
-      sprintf(result, s2, i);
-      s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
+        const char s1[] = "u_mapa[%d].data";
+        const char s2[] = "u_mapa[%d].opacity";
+        sprintf(result, s1, i);
+        s_data_v.m_VolumeShader->SetUniformFloat(result, it->first);
+        sprintf(result, s2, i);
+        s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
     }
 
     s_data_v.m_VolumeShader->SetUniformInt("u_nodecNum", transferc.Size());

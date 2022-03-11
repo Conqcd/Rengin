@@ -37,12 +37,12 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     //Render    
     Renderer2D::resetStats();
     m_framebuffer->Bind();
-    RenderCommand::SetClearColor({1.0f,0.1f,0.1f,1});
+    RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
 
     //Clear framebuffer id to -1
     int values = -1;
-    m_framebuffer->ClearAttachment(1,&values);
+    // m_framebuffer->ClearAttachment(1,&values);
 
     switch (m_SceneState)
     {
@@ -253,18 +253,18 @@ void EditorLayer::OnImGuiRender()
     ImGui::End();
     ImGui::End();
 
-    ImGui::Begin("Settings");
+    // ImGui::Begin("Settings");
 
-    auto stats = Rengin::Renderer2D::getStats();
-    ImGui::Text("Renderer2D Stats:");
-    ImGui::Text("Call Draw: %d",stats.DrawCall);
-    ImGui::Text("Quads: %d",stats.QuadCount);
-    ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
-    ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
+    // auto stats = Rengin::Renderer2D::getStats();
+    // ImGui::Text("Renderer2D Stats:");
+    // ImGui::Text("Call Draw: %d",stats.DrawCall);
+    // ImGui::Text("Quads: %d",stats.QuadCount);
+    // ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
+    // ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
 
     // UI_Toolbar();
 
-    ImGui::End();
+    // ImGui::End();
 }
 
 void EditorLayer::OnAttach()
@@ -274,12 +274,16 @@ void EditorLayer::OnAttach()
     m_shader = Shader::Create("../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
     m_RenderObj = CreateRef<RendererObject>();
     m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
     m_IconStop = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
+    // FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER};
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
