@@ -60,7 +60,7 @@ static Renderer3DData s_data_v;
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelOutfaceFragment.glsl");
+    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../../Voxer-Solver/assets/shaders/VoxelOutfaceFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data_v.m_VolumeShader->Bind();
@@ -106,7 +106,7 @@ void Renderer3D::Init()
     s_data_v.VolumeVertexArray->SetIndexBuffer(m_indbuf);
     s_data_v.VolumeVertexArray->AddVertexBuffer(VolumeVertexBuffer);
 
-    s_data_v.m_Texshader = Shader::Create("litle","../../SandBox/assets/shaders/textureVertex.glsl","../../SandBox/assets/shaders/textureFragment.glsl");
+    s_data_v.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
     // s_data_v.m_Texshader = Shader::Create("litle","../../../SandBox/assets/shaders/textureVertex.glsl","../../../SandBox/assets/shaders/textureFragment.glsl");
     s_data_v.m_Texshader->Bind();
     s_data_v.vertexArray = VertexArray::Create();
@@ -552,12 +552,12 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     auto it = transfera.begin();
     char result[25];
     for (int i = 0; it != transfera.end(); it++, i++) {
-      const char s1[] = "u_mapa[%d].data";
-      const char s2[] = "u_mapa[%d].opacity";
-      sprintf(result, s1, i);
-      s_data_v.m_VolumeShader->SetUniformFloat(result, it->first);
-      sprintf(result, s2, i);
-      s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
+        const char s1[] = "u_mapa[%d].data";
+        const char s2[] = "u_mapa[%d].opacity";
+        sprintf(result, s1, i);
+        s_data_v.m_VolumeShader->SetUniformFloat(result, it->first);
+        sprintf(result, s2, i);
+        s_data_v.m_VolumeShader->SetUniformFloat(result, it->second);
     }
 
     s_data_v.m_VolumeShader->SetUniformInt("u_nodecNum", transferc.Size());

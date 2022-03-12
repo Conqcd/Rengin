@@ -202,7 +202,7 @@ void Renderer2D::Init()
     s_data.m_WhiteTexture->setData(&whiteColor,sizeof(whiteColor));
 
     // s_data.m_shader = Shader::Create("litle","../../../SandBox/assets/shaders/FlatColorVertex.glsl","../../../SandBox/assets/shaders/FlatColorFragment.glsl");
-    s_data.m_Texshader = Shader::Create("litle","..\\..\\SandBox\\assets\\shaders\\textureVertex.glsl","..\\..\\SandBox\\assets\\shaders\\textureFragment.glsl");
+    s_data.m_Texshader = Shader::Create("litle","..\\..\\..\\SandBox\\assets\\shaders\\textureVertex.glsl","..\\..\\..\\SandBox\\assets\\shaders\\textureFragment.glsl");
     // s_data.m_Texshader = Shader::Create("litle","..\\..\\..\\SandBox\\assets\\shaders\\textureVertex.glsl","..\\..\\..\\SandBox\\assets\\shaders\\textureFragment.glsl");
     s_data.m_Texshader->Bind();
 
