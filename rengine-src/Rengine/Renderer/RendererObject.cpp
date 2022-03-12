@@ -20,7 +20,10 @@ void RendererObject::DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamer
     shader->SetUniformMat4("u_Projection", camera.getProjection());
     shader->SetUniformInt("u_Entity",id);
     shader->SetUniformInt("u_texture",0);
-    RenderCommand::DrawIndex(ObjLists[id].GetVertexArray());
+    for (size_t i = 0; i < ObjLists[id].GetVertexArraySize(); i++)
+    {
+        RenderCommand::DrawIndex(ObjLists[id].GetVertexArray(i));
+    }
 }
 
 } // namespace Rengin

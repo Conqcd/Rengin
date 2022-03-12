@@ -62,7 +62,6 @@ void Renderer3D::Init()
     RE_PROFILE_FUNCTION();
     s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../../Voxer-Solver/assets/shaders/VoxelOutfaceFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
-    // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Rengine-Editor/assets/shaders/VoxelVertex copy.glsl","../../../Rengine-Editor/assets/shaders/VoxelFragment copy.glsl");
     s_data_v.m_VolumeShader->Bind();
     s_data_v.VolumeVertexArray = VertexArray::Create();
 
