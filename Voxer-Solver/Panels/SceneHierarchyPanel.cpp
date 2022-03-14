@@ -224,8 +224,7 @@ void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>&
 }
 
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force,
-                Ref<Texture3D> constraint, int width, int height,
-                int depth) 
+                Ref<Texture3D> constraint, int width, int height,int depth)
 {
     std::string path = "./temp/";
 
@@ -241,10 +240,10 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
     // model
     f = fopen((path + "model.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
-    
+
     auto tex = model->getTexture();
-	int idx=0;
-    int nums=0;
+	int idx = 0;
+    int nums = 0;
     for (int k = 0; k < depth; k++)
 	{
 		for (int j = 0; j < height; j++)
@@ -307,14 +306,14 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             tag = std::string(buffer);
         }
     }
-    
+
     ImGui::SameLine();
     ImGui::PushItemWidth(-1);
 
-    
+
     if (ImGui::Button("Add Component"))
         ImGui::OpenPopup("AddComponent");
-    
+
     if (ImGui::BeginPopup("AddComponent"))
     {
         if (ImGui::MenuItem("Camera"))
@@ -342,13 +341,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         component.Rotation = glm::radians(rotation);
         DrawVec3Control("Scale",component.Scale,1.0f);
     });
-    
+
     DrawComponent<CameraComponent>("Camera",entity,[](auto& component)
     {
         auto& camera = component.Camera;
 
         ImGui::Checkbox("Primary",&component.Primary);
-        
+
         const char* prjectionTypeStrings[] = {"Perspective","Orthographics"};
         const char* currentProjectionTypeString = prjectionTypeStrings[(int)camera.GetProjectionType()];
 
