@@ -7,7 +7,7 @@ namespace Rengin
  
 ObjManager::ObjManager(const std::string& path,const std::string& material_path)
 {
-    std::string texName = material_path + "/MC003_Kozakura_Mari.png";
+    // std::string texName = material_path + "/MC003_Kozakura_Mari.png";
     // m_Textures.push_back(Texture2D::Create(texName));
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
@@ -39,9 +39,13 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path)
         materiall.Ni = (*material)[i].ior;
         m_Materials.emplace_back(std::move(materiall));
         if((*material)[i].diffuse_texname != "")
-            m_Textures.push_back(Texture2D::Create((*material)[i].diffuse_texname));
+            m_Textures.push_back(Texture2D::Create(material_path + "/" + (*material)[i].diffuse_texname));
         else
-            m_Textures.push_back(Texture2D::Create(texName));
+        {
+            m_Textures.push_back(Texture2D::Create(1,1));
+            uint32_t whiteColor = 0xffffffff;
+            m_Textures.back()->setData(&whiteColor, sizeof(whiteColor));
+        }
     }
 
     BufferLayout layout_v = {
