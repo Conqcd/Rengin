@@ -195,7 +195,7 @@ void OpenGLFrameBuffer::Invalidate()
     }
     if(m_DepthAttachmentSpecs.TextureFormat != FramebufferTextureFormat::None)
     {
-        Utils::CreateTexture(multiSamples,m_ColorAttachments.data(),1);
+        Utils::CreateTexture(multiSamples,&m_DepthAttachment,1);
         Utils::BindTexture(multiSamples,m_DepthAttachment);
         switch (m_DepthAttachmentSpecs.TextureFormat)
         {

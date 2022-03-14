@@ -18,7 +18,7 @@ private:
     std::vector<ObjManager> ObjLists;
     std::unordered_map<std::string,std::function<void()>> m_Methods;
 public:
-    RendererObject(/* args */) = default;
+    RendererObject() = default;
     ~RendererObject() = default;
     void DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera);
     void AddObj(const ObjManager& obj);

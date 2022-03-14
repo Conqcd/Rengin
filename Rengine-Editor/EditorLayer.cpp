@@ -53,6 +53,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_RenderObj->DrawObject(0, m_shader,m_EditorCamera);
+        m_RenderObj->DrawObject(1, m_shader,m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -271,12 +272,12 @@ void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
 
-    m_shader = Shader::Create("../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
+    m_shader = Shader::Create("../../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
     m_RenderObj = CreateRef<RendererObject>();
     m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
-    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
-    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
-    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/floor/floor.obj","./assets/objects/floor"));
+    // m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    // m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");

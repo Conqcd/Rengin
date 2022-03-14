@@ -14,5 +14,6 @@ uniform sampler2D m_texture;
 void main()
 {
     o_color = texture2D(m_texture,v_texCoords);
+    // o_color = vec4(1.0);
     o_Entity = u_Entity;
 }
