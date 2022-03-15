@@ -54,6 +54,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_RenderObj->DrawObject(0, m_shader,m_EditorCamera);
         m_RenderObj->DrawObject(1, m_shader,m_EditorCamera);
+        m_RenderObj->DrawObject(2, m_shader,m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -274,17 +275,23 @@ void EditorLayer::OnAttach()
 
     m_shader = Shader::Create("../../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
     m_RenderObj = CreateRef<RendererObject>();
-    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
-    m_RenderObj->AddObj(ObjManager("./assets/objects/floor/floor.obj","./assets/objects/floor"));
-    // m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
-    // m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary"));
+    glm::mat4 transform1(1.0f);
+    transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    glm::mat4 transform2(1.0f);
+    transform2 = glm::translate(transform2,glm::vec3(40.f,0.f,-40.f));
+    transform2 = glm::scale(transform2,glm::vec3(10.f,10.f,10.f));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
+    glm::mat4 transform3(1.0f);
+    transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
+    transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
+    m_RenderObj->AddObj(ObjManager("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
     m_IconStop = Texture2D::Create("assets/textures/France.jpg");
     
     FrameBufferSpecification FbSpec;
-    // FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER};
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;

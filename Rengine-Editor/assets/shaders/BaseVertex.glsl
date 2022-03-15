@@ -13,9 +13,9 @@ out vec3 v_normal;
 out vec2 v_texCoords;
 
 void main()
-{
-    v_position = a_position;
-    v_normal = a_normal;
+{  
+    v_position = (u_Transform * vec4(a_position, 1.0)).xyz;
+    v_normal = (u_Transform * vec4(a_normal, 1.0)).xyz;
     v_texCoords = a_texCoords;
     gl_Position = u_Projection * u_View * u_Transform * vec4(a_position,1.0);
 }

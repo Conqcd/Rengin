@@ -6,8 +6,8 @@
     // "cmake.generator": "MinGW Makefiles",
     // "cmake.generator": "Ninja",
     // "cmake.buildArgs": [],
-    // "cmake.generator": "Visual Studio 17 2022",
-    "cmake.generator": "Visual Studio 16 2019",
+    "cmake.generator": "Visual Studio 17 2022",
+    // "cmake.generator": "Visual Studio 16 2019",
     "files.associations": {
         "cmath": "cpp",
         "memory": "cpp",

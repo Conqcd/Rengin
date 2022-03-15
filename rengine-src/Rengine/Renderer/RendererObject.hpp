@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <glm/glm.hpp>
 
 namespace Rengin
 {
@@ -17,8 +18,9 @@ class RendererObject
 private:
     std::vector<ObjManager> ObjLists;
     std::unordered_map<std::string,std::function<void()>> m_Methods;
+    glm::vec3 LightPos,LightIntensity;
 public:
-    RendererObject() = default;
+    RendererObject();
     ~RendererObject() = default;
     void DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera);
     void AddObj(const ObjManager& obj);
