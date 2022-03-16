@@ -6,6 +6,7 @@
 #include <imgui_internal.h>
 #include "Rengine/Scene/Component.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include "Rengine/Utils/ExternalExe.hpp"
 
 namespace Rengin
 {
@@ -290,6 +291,10 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
     RE_CORE_ASSERT(f, "Cant Open the file");
     fprintf(f,"SET_SCRIPT_VERSION 2\nSET_VOXEL_SIZE %f %f %f %f\nLOAD_MATERIALS material.txt\nLOAD_MODEL %d %d %d %d model.txt\nSET_TOLERANCE 1e-9\nSET_MAX_ITER 2000\nSET_ALGORITHM_FEA 1 1\nSELECTION_OF_NODES\nLOAD_CONSTRAINTS constraint.txt\nSELECT_NODE_3D\nPRESERVE_NODE_3D\nCOMPUTE_SED\nSOLVE\nPRINT_DISPLACEMENTS displacements.txt\nFINISH",0.3,0.3,0.3,1.0,width,height,depth,nums);
     fclose(f);
+    auto wpro = ExternalExe::Create();
+    wpro->CreateProcess("");
+    wpro->WaitProcess();
+    wpro->Terminate();
 }
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
@@ -491,9 +496,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 auto& texCom = m_VolomeEntity.GetComponent<Texture3DComponent>();
                 auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
                 auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
-                std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
+                // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 // SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
-                t.detach();
+                // t.detach();
+                auto wpro = ExternalExe::Create();
+                wpro->CreateProcess("");
+                wpro->WaitProcess();
+                // wpro->Terminate();
             }
         });
     DrawComponent<ColorTransferFunctionComponent>(
