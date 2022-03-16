@@ -36,7 +36,7 @@ vec3 BlinnPhong()
     vec3 normal = normalize(v_normal);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 light_atten_coff = u_LightIntensity / pow(length(u_LightPos - v_position), 2.0);
-    vec3 diffuse = u_Kd * diff * light_atten_coff * color;
+    vec3 diffuse = diff * light_atten_coff * color;
 
     vec3 viewDir = normalize(u_CameraPos - v_position);
     vec3 halfDir = normalize((lightDir + viewDir));
@@ -44,8 +44,8 @@ vec3 BlinnPhong()
     vec3 specular = u_Ks * light_atten_coff * spec;
 
     // vec3 radiance = (ambient + diffuse + specular);
-    // vec3 radiance = ambient + u_Ks * light_atten_coff;
-    vec3 radiance = specular;
+    vec3 radiance = ambient + diffuse;
+    // vec3 radiance = diffuse;
     vec3 phongColor = pow(radiance, vec3(1.0 / 2.2));
     return phongColor;
 }
