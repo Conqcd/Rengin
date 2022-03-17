@@ -4,7 +4,6 @@ in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texCoords;
 
-
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out int o_Entity;
 
@@ -40,19 +39,17 @@ vec3 BlinnPhong()
 
     vec3 viewDir = normalize(u_CameraPos - v_position);
     vec3 halfDir = normalize((lightDir + viewDir));
-    float spec = pow(max(dot(halfDir, normal), 0.0), 32.0);
+    float spec = pow(max(dot(halfDir, normal), 0.0), u_Ns);
     vec3 specular = u_Ks * light_atten_coff * spec;
 
-    // vec3 radiance = (ambient + diffuse + specular);
-    vec3 radiance = ambient + diffuse;
-    // vec3 radiance = diffuse;
+    vec3 radiance = (ambient + diffuse + specular);
+    
     vec3 phongColor = pow(radiance, vec3(1.0 / 2.2));
     return phongColor;
 }
 
 void main()
 {
-    // o_color = texture2D(m_texture,v_texCoords);
     o_color = vec4(BlinnPhong(),1.0);
     o_Entity = u_Entity;
 }

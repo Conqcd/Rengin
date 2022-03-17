@@ -16,13 +16,15 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
     tinyobj::LoadObj(attrib, shapes, material, warn, err, path.c_str(), material_path.c_str());
  
     tinyobj::real_t* vertices = new tinyobj::real_t[attrib->vertices.size() / 3 * 8];
+    memset(vertices,0,sizeof(tinyobj::real_t) * attrib->vertices.size() / 3 * 8);
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays.push_back(VertexArray::Create());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j ++) {
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 3] += attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 4] += attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 5] += attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
+            int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
+            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 3] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
+            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
+            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
         }
         Material materiall;
         materiall.Ka.r = (*material)[i].ambient[0];
