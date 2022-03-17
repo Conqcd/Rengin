@@ -14,7 +14,7 @@ public:
     WindowExternalExe();
     virtual ~WindowExternalExe();
 
-    virtual void CreateProcess(const std::string& path) override;
+    virtual void CreateProcess(const std::string& exePath,const std::string& Args) override;
     virtual void WaitProcess() override;
     virtual void Terminate() override;
 };
