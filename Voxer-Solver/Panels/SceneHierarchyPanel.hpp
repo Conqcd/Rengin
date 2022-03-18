@@ -2,6 +2,7 @@
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Scene/Scene.hpp"
 #include "Rengine/Scene/Entity.hpp"
+#include "Rengine/Utils/ExternalExe.hpp"
 #include <vector>
 namespace Rengin
 {
@@ -9,6 +10,7 @@ class SceneHierarchyPanel
 {
 private:
     Ref<Scene> m_Context;
+    Ref<ExternalExe> m_ExternalProcess = ExternalExe::Create();
     Entity m_VolomeEntity,m_SelectionContext;
     std::vector<int> m_PickedPixels;
 public:
