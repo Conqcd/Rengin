@@ -10,12 +10,14 @@ class ShadowMapMethod : public RenderMethod
 {
 private:
     Ref<FrameBuffer> m_ShadowMap;
+    Ref<Shader> m_ShadowShader;
 public:
     ShadowMapMethod();
     virtual ~ShadowMapMethod();
 
     virtual void Render() override;
 
+    friend RenderMethod;
 };
 
 } // namespace Rengin

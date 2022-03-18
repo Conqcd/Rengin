@@ -19,14 +19,20 @@ void ShadowMapMethod::Render()
 
 }
 
-template <> 
-void ShadowMapMethod::AddResource<Shader>(const Shader &resource) {
-
+template <typename... Args>
+void ShadowMapMethod::AddResource(const Args&... resource) {
+    static_assert(false);
 }
 
 template <> 
-void ShadowMapMethod::AddResource<FrameBuffer>(const FrameBuffer &resource) {
+void ShadowMapMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& shadow) {
+    m_BaseShader = base;
+    dynamic_cast<ShadowMapMethod*>(this)->m_ShadowShader = shadow;
+}
 
+template <> 
+void ShadowMapMethod::AddResource<Ref<FrameBuffer>>(const Ref<FrameBuffer>& resource) {
+    dynamic_cast<ShadowMapMethod*>(this)->m_ShadowMap = resource;
 }
 
 } // namespace Rengin

@@ -14,8 +14,8 @@ public:
 
     virtual void Render() = 0; 
 
-    template<typename T>
-    void AddResource(const T& resource);
+    template<typename ...Args>
+    void AddResource(const Args&... resource);
     // {
     //     static_assert(false);
     // }
