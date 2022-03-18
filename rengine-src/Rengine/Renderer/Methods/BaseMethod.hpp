@@ -1,6 +1,9 @@
 #pragma once
 #include "Rengine/Core/core.hpp"
 #include "../Shader.hpp"
+#include "Rengine/Scene/ObjManager.hpp"
+#include "Rengine/Scene/Lights.hpp"
+#include "Rengine/Renderer/EditorCamera.hpp"
 
 namespace Rengin
 {
@@ -12,10 +15,10 @@ protected:
 public:
     virtual ~RenderMethod() = default;
 
-    virtual void Render() = 0; 
+    virtual void Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights) = 0; 
 
-    template<typename ...Args>
-    void AddResource(const Args&... resource);
+    // template<typename ...Args>
+    // void AddResource(const Args&... resource);
     // {
     //     static_assert(false);
     // }

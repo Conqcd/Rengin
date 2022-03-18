@@ -14,7 +14,7 @@ ShadowMapMethod::~ShadowMapMethod()
 
 }
 
-void ShadowMapMethod::Render()
+void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
 
 }
@@ -27,12 +27,13 @@ void ShadowMapMethod::AddResource(const Args&... resource) {
 template <> 
 void ShadowMapMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& shadow) {
     m_BaseShader = base;
-    dynamic_cast<ShadowMapMethod*>(this)->m_ShadowShader = shadow;
+    m_ShadowShader = shadow;
 }
+
 
 template <> 
 void ShadowMapMethod::AddResource<Ref<FrameBuffer>>(const Ref<FrameBuffer>& resource) {
-    dynamic_cast<ShadowMapMethod*>(this)->m_ShadowMap = resource;
+    m_ShadowMap = resource;
 }
 
 } // namespace Rengin

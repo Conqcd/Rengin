@@ -1,7 +1,6 @@
 #pragma once
 #include "Rengine/Core/core.hpp"
 #include "BaseMethod.hpp"
-#include "Rengine/Scene/ObjManager.hpp"
 
 namespace Rengin
 {
@@ -13,6 +12,9 @@ public:
     PhongMethod();
     virtual ~PhongMethod();
 
-    virtual void Render() override; 
+    virtual void Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights) override;
+
+    template<typename ...Args>
+    void AddResource(const Args&... resource); 
 };
 } // namespace Rengin

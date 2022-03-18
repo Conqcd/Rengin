@@ -105,7 +105,7 @@ ObjManager::~ObjManager()
 {
 }
 
-void ObjManager::BindTexture(int slot)
+void ObjManager::BindTexture(int slot) const
 {
     m_Textures[slot]->Bind(slot % 32);
 }

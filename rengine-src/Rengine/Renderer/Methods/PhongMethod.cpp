@@ -1,6 +1,5 @@
 #include "repch.hpp"
 #include "PhongMethod.hpp"
-#include "Rengine/Renderer/EditorCamera.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
 
 namespace Rengin
@@ -16,18 +15,18 @@ PhongMethod::~PhongMethod()
 
 }
 
-void PhongMethod::Render(const std::vector<int> ids,const std::vector<ObjManager> ObjLists,const EditorCamera& camera)
+void PhongMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
     m_BaseShader->Bind();
-    m_BaseShader->SetUniformFloat3("u_LightPos", LightPos);
+    m_BaseShader->SetUniformFloat3("u_LightPos", lights.LightPos);
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
-    m_BaseShader->SetUniformFloat3("u_LightIntensity", LightIntensity);
+    m_BaseShader->SetUniformFloat3("u_LightIntensity", lights.LightIntensity);
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
-        for (size_t j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
+        for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
         {
             ObjLists[ids[i]].BindTexture(j);
             m_BaseShader->SetUniformInt("u_texture", j % 32);

@@ -15,9 +15,10 @@ public:
     ShadowMapMethod();
     virtual ~ShadowMapMethod();
 
-    virtual void Render() override;
+    virtual void Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights) override;
 
-    friend RenderMethod;
+    template<typename ...Args>
+    void AddResource(const Args&... resource); 
 };
 
 } // namespace Rengin

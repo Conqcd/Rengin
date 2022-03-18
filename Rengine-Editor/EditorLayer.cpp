@@ -54,9 +54,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
-        m_RenderObj->DrawObject(0, m_shader,m_EditorCamera);
-        m_RenderObj->DrawObject(1, m_shader,m_EditorCamera);
-        m_RenderObj->DrawObject(2, m_shader,m_EditorCamera);
+        m_RenderObj->DrawObject("BlinnPhong",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -294,6 +292,7 @@ void EditorLayer::OnAttach()
     auto shadowMapMethod = CreateRef<ShadowMapMethod>();
     shadowMapMethod->AddResource(m_shader,m_shader);
     m_RenderObj->AddMethod("BlinnPhong",phongMethod);
+    m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");

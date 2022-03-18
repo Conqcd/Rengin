@@ -20,9 +20,9 @@ public:
     ObjManager(const std::string& path,const std::string& materialpath,const glm::mat4& transform);
     const Ref<VertexArray> GetVertexArray(int i) const {return m_VertexArrays[i];}
     size_t GetVertexArraySize() const {return m_VertexArrays.size();}
-    Material& GetMaterial(int i) {return m_Materials[i];}
+    const Material& GetMaterial(int i) const {return m_Materials[i];}
     const glm::mat4& GetTransform() const {return m_transform;}
-    void BindTexture(int slot = 0);
+    void BindTexture(int slot = 0) const;
     ~ObjManager();
 };
 } // namespace Rengin

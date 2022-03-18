@@ -2,6 +2,7 @@
 #include "Rengine/Core/core.hpp"
 #include "Rengine/Scene/Component.hpp"
 #include "Rengine/Scene/ObjManager.hpp"
+#include "Rengine/Scene/Lights.hpp"
 #include "Methods/BaseMethod.hpp"
 #include "Shader.hpp"
 #include "EditorCamera.hpp"
@@ -20,11 +21,11 @@ private:
     std::vector<ObjManager> ObjLists;
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
 
-    glm::vec3 LightPos,LightIntensity;
+    Lights lights;
 public:
     RendererObject();
     ~RendererObject() = default;
-    void DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera);
+    void DrawObject(const std::string& methodName,const std::vector<int>& ids,const EditorCamera& camera);
     void AddMethod(const std::string& name,Ref<RenderMethod> method);
     void AddObj(const ObjManager& obj);
 };
