@@ -23,6 +23,7 @@ public:
     RendererObject();
     ~RendererObject() = default;
     void DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera);
+    void AddMethod(const std::string& name);
     void AddObj(const ObjManager& obj);
 };
 
