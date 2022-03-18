@@ -17,6 +17,12 @@ void RendererObject::AddObj(const ObjManager& obj)
     ObjLists.push_back(obj);
 }
 
+void RendererObject::AddMethod(const std::string &name, Ref<RenderMethod> method)
+{
+    if(m_Methods.find(name) != m_Methods.end())   return;
+    m_Methods[name] = method;
+}
+
 void RendererObject::DrawObject(uint32_t id,Ref<Shader> shader,const EditorCamera& camera)
 {
     shader->Bind();

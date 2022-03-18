@@ -512,8 +512,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
           ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to
           glm::vec2 clip_board{canvas_sz.x, 10};
           canvas_sz.y = clip_board.y;
-          ImVec2 canvas_p1 =
-              ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+          ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
           ImGuiIO &io = ImGui::GetIO();
           ImDrawList *draw_list = ImGui::GetWindowDrawList();
           draw_list->AddRectFilled(canvas_p0, canvas_p1,

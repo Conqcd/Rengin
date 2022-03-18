@@ -7,6 +7,8 @@
 #include "Rengine/Utils/PlatformUtils.hpp"
 #include <ImGuizmo.h>
 #include <Rengine/Math/Math.hpp>
+#include "Rengine/Renderer/Methods/PhongMethod.hpp";
+#include "Rengine/Renderer/Methods/ShadowMapMethod.hpp";
 
 namespace Rengin
 {
@@ -286,6 +288,12 @@ void EditorLayer::OnAttach()
     transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
     transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
     m_RenderObj->AddObj(ObjManager("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+
+    auto phongMethod = CreateRef<PhongMethod>();
+    phongMethod->AddResource(m_shader);
+    auto shadowMapMethod = CreateRef<ShadowMapMethod>();
+    shadowMapMethod->AddResource(m_shader,m_shader);
+    m_RenderObj->AddMethod("BlinnPhong",phongMethod);
 
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
