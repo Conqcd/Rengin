@@ -66,6 +66,7 @@ public:
     virtual void ClearAttachment(uint32_t attachmentIndex,void* value) = 0;
 
     virtual void Bind() = 0;
+    virtual void BindTexture(int id = 0,int slot = 0) = 0;
 
     virtual void Unbind() = 0;
 };

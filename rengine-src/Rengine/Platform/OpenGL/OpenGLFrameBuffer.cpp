@@ -227,6 +227,12 @@ void OpenGLFrameBuffer::Bind()
     glViewport(0, 0, m_specification.Width, m_specification.Height);
 }
 
+void OpenGLFrameBuffer::BindTexture(int id, int slot)
+{
+    RE_PROFILE_FUNCTION();
+    glBindTextureUnit(slot,m_ColorAttachments[id]);
+}
+
 void OpenGLFrameBuffer::Unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER,0);

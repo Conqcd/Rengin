@@ -10,6 +10,7 @@ class ShadowMapMethod : public RenderMethod
 {
 private:
     Ref<FrameBuffer> m_ShadowMap;
+    Ref<FrameBuffer> m_MainFrame;
     Ref<Shader> m_ShadowShader;
 public:
     ShadowMapMethod();

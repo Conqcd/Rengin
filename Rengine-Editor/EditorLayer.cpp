@@ -54,7 +54,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
-        m_RenderObj->DrawObject("BlinnPhong",{0,1,2},m_EditorCamera);
+        m_RenderObj->DrawObject("ShadowMap",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -289,15 +289,14 @@ void EditorLayer::OnAttach()
 
     auto phongMethod = CreateRef<PhongMethod>();
     phongMethod->AddResource(m_shader);
-    auto shadowMapMethod = CreateRef<ShadowMapMethod>();
-    shadowMapMethod->AddResource(m_shader,m_shader);
     m_RenderObj->AddMethod("BlinnPhong",phongMethod);
-    m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
 
+    //Texture
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
     m_IconStop = Texture2D::Create("assets/textures/France.jpg");
     
+    //FrameBuffer
     FrameBufferSpecification FbSpec;
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
@@ -317,6 +316,20 @@ void EditorLayer::OnAttach()
     // m_Camera.AddComponent<CameraComponent>(glm::ortho(-16.0f,16.0f,-9.0f,9.0f,-1.0f,1.0f));
     m_Camera.AddComponent<CameraComponent>();
 
+
+    // Render 
+    FrameBufferSpecification FbSpecShadow;
+    FbSpecShadow.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
+    FbSpecShadow.Width = 1280;
+    FbSpecShadow.Height = 720;
+    auto ShadowFrame = FrameBuffer::Create(FbSpecShadow);
+
+    auto shadowMapMethod = CreateRef<ShadowMapMethod>();
+    auto shadowShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ShadowMapV.glsl","../../../Rengine-Editor/assets/shaders/ShadowMapF.glsl");
+    auto shadowPhongShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ShadowPhongV.glsl","../../../Rengine-Editor/assets/shaders/ShadowPhongF.glsl");
+    shadowMapMethod->AddResource(shadowPhongShader,shadowShader);
+    shadowMapMethod->AddResource(ShadowFrame,m_framebuffer);
+    m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
 
     class CameraController :public ScriptableEntity
     {
