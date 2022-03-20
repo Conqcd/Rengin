@@ -49,48 +49,48 @@ float unpack(vec4 rgbaDepth)
     return dot(rgbaDepth, bitShift);
 }
 
-float rand_1to1(highp float x ) 
+float rand_1to1(highp float x) 
 {
-    return fract(sin(x)*10000.0);
+    return fract(sin(x) * 10000.0);
 }
 
-float rand_2to1(vec2 uv ) 
+float rand_2to1(vec2 uv)
 {
 	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
-	highp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );
+	highp float dt = dot(uv.xy, vec2(a,b)), sn = mod(dt,PI);
 	return fract(sin(sn) * c);
 }
 
-void poissonDiskSamples( const in vec2 randomSeed ) 
+void poissonDiskSamples(const in vec2 randomSeed)
 {
-    float ANGLE_STEP = PI2 * float( NUM_RINGS ) / float( NUM_SAMPLES );
-    float INV_NUM_SAMPLES = 1.0 / float( NUM_SAMPLES );
+    float ANGLE_STEP = PI2 * float(NUM_RINGS) / float(NUM_SAMPLES);
+    float INV_NUM_SAMPLES = 1.0 / float(NUM_SAMPLES);
 
-    float angle = rand_2to1( randomSeed ) * PI2;
+    float angle = rand_2to1(randomSeed) * PI2;
     float radius = INV_NUM_SAMPLES;
     float radiusStep = radius;
 
     for( int i = 0; i < NUM_SAMPLES; i ++ ) {
-        poissonDisk[i] = vec2( cos( angle ), sin( angle ) ) * pow( radius, 0.75 );
+        poissonDisk[i] = vec2(cos(angle), sin(angle)) * pow(radius,0.75);
         radius += radiusStep;
         angle += ANGLE_STEP;
     }
 }
 
-void uniformDiskSamples( const in vec2 randomSeed ) 
+void uniformDiskSamples(const in vec2 randomSeed) 
 {
     float randNum = rand_2to1(randomSeed);
-    float sampleX = rand_1to1( randNum ) ;
-    float sampleY = rand_1to1( sampleX ) ;
+    float sampleX = rand_1to1(randNum);
+    float sampleY = rand_1to1(sampleX);
 
     float angle = sampleX * PI2;
     float radius = sqrt(sampleY);
 
     for( int i = 0; i < NUM_SAMPLES; i ++ ) {
-        poissonDisk[i] = vec2( radius * cos(angle) , radius * sin(angle)  );
+        poissonDisk[i] = vec2(radius * cos(angle),radius * sin(angle));
 
-        sampleX = rand_1to1( sampleY ) ;
-        sampleY = rand_1to1( sampleX ) ;
+        sampleX = rand_1to1(sampleY);
+        sampleY = rand_1to1(sampleX);
 
         angle = sampleX * PI2;
         radius = sqrt(sampleY);
@@ -99,25 +99,25 @@ void uniformDiskSamples( const in vec2 randomSeed )
 
 float findBlocker(sampler2D shadowMap,vec2 uv,float zReceiver) 
 {
-    float avgdep = 0.0;
+    float avgdep = 0.0,addnum = 0.0;
     for(int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++) 
     {
         float depth = unpack(texture2D(shadowMap, uv + poissonDisk[i] * 0.005));
         if(depth < zReceiver - EPS)
-            avgdep += depth;
+            avgdep += depth,addnum += 1.0;
     }
-    avgdep = avgdep / float(BLOCKER_SEARCH_NUM_SAMPLES);
+    avgdep = avgdep / addnum;
     return avgdep;
 }
 
-float PCF(sampler2D shadowMap, vec4 coords) 
+float PCF(sampler2D shadowMap, vec4 coords)
 {
-    vec3 position = vec3((coords.x + 1.0) * 0.5, (coords.y + 1.0) * 0.5,(coords.z + 1.0) * 0.5);
+    vec3 position = vec3((coords.x + 1.0) * 0.5,(coords.y + 1.0) * 0.5,(coords.z + 1.0) * 0.5);
     poissonDiskSamples(position.xy);
     // uniformDiskSamples(position.xy);
 
     float ans = 0.0;
-    for(int i = 0; i < PCF_NUM_SAMPLES; i++) 
+    for(int i = 0; i < PCF_NUM_SAMPLES; i++)
     {
         float close = unpack(texture2D(shadowMap, position.xy + poissonDisk[i] * 0.005));
         ans += close == 0.0 ? 1.0 : (position.z - EPS) < close? 1.0 : 0.0;
