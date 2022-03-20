@@ -41,16 +41,10 @@ void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjMa
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
     m_BaseShader->SetUniformFloat3("u_LightIntensity", lights.LightIntensity);
     int tidx = 0;
-    // char textureStr[20] = "u_texture[%d]",textureidStr[20]; 
-    // for (int i = 0; i < ids.size(); i++)
-        // for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++) {
-            // ObjLists[ids[i]].BindTexture(j, tidx++);
-            // sprintf(textureidStr,"u_texture[%d]",tidx);
-            // m_BaseShader->SetUniformInt(textureidStr,tidx++);
-        // }
 
     m_ShadowMap->BindTexture(0,31);
     m_BaseShader->SetUniformInt("u_ShadowMap", 31);
+    m_BaseShader->SetUniformInt("u_RenderType", 2);
 
     tidx = 0;
     for (int i = 0; i < ids.size(); i++)
@@ -63,7 +57,7 @@ void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjMa
             m_BaseShader->SetUniformInt("u_TextureID", tidx);
             ObjLists[ids[i]].BindTexture(j, tidx);
             m_BaseShader->SetUniformInt("u_texture", tidx++);
-
+            tidx %= 31;
             m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]].GetMaterial(j).Ka);
             m_BaseShader->SetUniformFloat3("u_Ks", ObjLists[ids[i]].GetMaterial(j).Ks);
             m_BaseShader->SetUniformFloat3("u_Kd", ObjLists[ids[i]].GetMaterial(j).Kd);
