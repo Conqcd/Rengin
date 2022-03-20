@@ -8,5 +8,5 @@ uniform mat4 u_LightMVP;
 
 void main(void) {
 
-  gl_Position = u_LightMVP * vec4(a_position, 1.0);
+    gl_Position = u_LightMVP * vec4(a_position, 1.0);
 }

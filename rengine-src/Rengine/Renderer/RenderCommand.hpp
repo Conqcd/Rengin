@@ -17,6 +17,14 @@ public:
     {
         s_api->SetViewPort(x,y,width,height);
     }
+    inline static void EnableAlpha()
+    {
+        s_api->EnableAlpha();
+    }
+    inline static void DisableAlpha()
+    {
+        s_api->DisableAlpha();
+    }
     inline static void Init()
     {
         s_api->Init();

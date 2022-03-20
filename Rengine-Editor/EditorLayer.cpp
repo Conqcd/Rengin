@@ -53,7 +53,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
             m_camera_controller.OnUpdate(timestep);
         }
         m_EditorCamera.OnUpdate(timestep);
-        m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
+        // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_RenderObj->DrawObject("ShadowMap",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
@@ -320,8 +320,8 @@ void EditorLayer::OnAttach()
     // Render 
     FrameBufferSpecification FbSpecShadow;
     FbSpecShadow.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
-    FbSpecShadow.Width = 1280;
-    FbSpecShadow.Height = 720;
+    FbSpecShadow.Width = 12800;
+    FbSpecShadow.Height = 7200;
     auto ShadowFrame = FrameBuffer::Create(FbSpecShadow);
 
     auto shadowMapMethod = CreateRef<ShadowMapMethod>();

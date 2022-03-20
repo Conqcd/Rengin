@@ -1,6 +1,8 @@
 #include "repch.hpp"
 #include "ShadowMapMethod.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+#include <glad/glad.h>
+#include <cstdio>
 
 namespace Rengin
 {
@@ -18,35 +20,50 @@ ShadowMapMethod::~ShadowMapMethod()
 void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
     m_ShadowMap->Bind();
+    RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
+    RenderCommand::Clear();
+    RenderCommand::DisableAlpha();
     m_ShadowShader->Bind();
     auto LightVP = lights.GetViewProjection();
     for (int i = 0; i < ids.size(); i++)
         for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++) {
-            m_BaseShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]].GetTransform());
+            m_ShadowShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]].GetTransform());
             RenderCommand::DrawIndex(ObjLists[ids[i]].GetVertexArray(j));
         }
 
     //          Phong
     m_MainFrame->Bind();
+    RenderCommand::EnableAlpha();
     m_BaseShader->Bind();
     m_BaseShader->SetUniformFloat3("u_LightPos", lights.LightPos);
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
     m_BaseShader->SetUniformFloat3("u_LightIntensity", lights.LightIntensity);
+    int tidx = 0;
+    // char textureStr[20] = "u_texture[%d]",textureidStr[20]; 
+    // for (int i = 0; i < ids.size(); i++)
+        // for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++) {
+            // ObjLists[ids[i]].BindTexture(j, tidx++);
+            // sprintf(textureidStr,"u_texture[%d]",tidx);
+            // m_BaseShader->SetUniformInt(textureidStr,tidx++);
+        // }
+
+    m_ShadowMap->BindTexture(0,31);
+    m_BaseShader->SetUniformInt("u_ShadowMap", 31);
+
+    tidx = 0;
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
+        m_BaseShader->SetUniformMat4("u_LightMVP",LightVP * ObjLists[ids[i]].GetTransform());
+        m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
         for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
         {
-            ObjLists[ids[i]].BindTexture(j);
-            m_BaseShader->SetUniformInt("u_texture", j % 32);
+            m_BaseShader->SetUniformInt("u_TextureID", tidx);
+            ObjLists[ids[i]].BindTexture(j, tidx);
+            m_BaseShader->SetUniformInt("u_texture", tidx++);
 
-            m_ShadowMap->BindTexture(0,(j + 1) % 32);
-            m_BaseShader->SetUniformInt("u_ShadowMap", (j + 1) % 32);
-
-            m_BaseShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]].GetTransform());
-            m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
             m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]].GetMaterial(j).Ka);
             m_BaseShader->SetUniformFloat3("u_Ks", ObjLists[ids[i]].GetMaterial(j).Ks);
             m_BaseShader->SetUniformFloat3("u_Kd", ObjLists[ids[i]].GetMaterial(j).Kd);

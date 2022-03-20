@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "ObjManager.hpp"
 #include "tiny_obj_loader.hpp"
+#include <cstring>
 
 namespace Rengin
 {
@@ -39,8 +40,15 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         materiall.Ns = (*material)[i].shininess;
         materiall.Ni = (*material)[i].ior;
         m_Materials.emplace_back(std::move(materiall));
-        if((*material)[i].diffuse_texname != "")
-            m_Textures.push_back(Texture2D::Create(material_path + "/" + (*material)[i].diffuse_texname));
+        int maId = 0;
+        for (; maId < material->size(); maId++)
+        {
+            if(strcmp((*material)[maId].name.c_str(),(*shapes)[i].name.c_str()) == 0)
+                break;
+        }
+            
+        if(maId < material->size() && (*material)[maId].diffuse_texname != "")
+            m_Textures.push_back(Texture2D::Create(material_path + "/" + (*material)[maId].diffuse_texname));
         else
         {
             m_Textures.push_back(Texture2D::Create(1,1));
@@ -105,9 +113,9 @@ ObjManager::~ObjManager()
 {
 }
 
-void ObjManager::BindTexture(int slot) const
+void ObjManager::BindTexture(int id,int slot) const
 {
-    m_Textures[slot]->Bind(slot % 32);
+    m_Textures[id]->Bind(slot % 32);
 }
 
 } // namespace Rengin

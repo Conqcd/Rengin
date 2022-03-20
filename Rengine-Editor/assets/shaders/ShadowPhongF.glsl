@@ -1,16 +1,22 @@
 #version 330
 
+#define EPS 1e-2
+
+// In 
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texCoords;
 in vec4 v_PositionFromLight;
 
+// Out
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out int o_Entity;
 
 uniform int u_Entity;
-uniform sampler2D m_texture;
+// uniform sampler2D u_texture[31];
+uniform sampler2D u_texture;
 uniform sampler2D u_ShadowMap;
+uniform int u_TextureID;
 
 //Camera
 uniform vec3 u_CameraPos;
@@ -26,9 +32,14 @@ uniform vec3 u_Ka;
 uniform float u_Ns;
 uniform float u_Ni;
 
-vec3 BlinnPhong()
+float unpack(vec4 rgbaDepth) {
+    const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0 * 256.0), 1.0/(256.0 * 256.0 * 256.0));
+    return dot(rgbaDepth, bitShift);
+}
+
+vec3 BlinnPhong(sampler2D texture)
 {
-    vec3 color = texture2D(m_texture,v_texCoords).rgb;
+    vec3 color = texture2D(texture,v_texCoords).rgb;
     color = pow(color, vec3(2.2));
 
     vec3 ambient = 0.05 * color;
@@ -50,10 +61,18 @@ vec3 BlinnPhong()
     return phongColor;
 }
 
+float useShadowMap(sampler2D shadowMap, vec4 shadowCoord){
+    float close = unpack(texture2D(shadowMap, vec2((shadowCoord.x + 1.0) * 0.5, (shadowCoord.y + 1.0) * 0.5)));
+    float vis = ((shadowCoord.z + 1.0) * 0.5 - EPS) < close ? 1.0 : 0.0;
+    return vis;
+}
+
 void main()
 {    
     float visibility;
-    // visibility = useShadowMap(u_ShadowMap, v_PositionFromLight);
-    o_color = vec4(BlinnPhong(),1.0);
+    visibility = useShadowMap(u_ShadowMap, v_PositionFromLight);
+    // o_color = vec4(visibility,visibility,visibility,1);
+    o_color = vec4(BlinnPhong(u_texture) * visibility,1.0);
+    // o_color = vec4(BlinnPhong(),1.0);
     o_Entity = u_Entity;
 }

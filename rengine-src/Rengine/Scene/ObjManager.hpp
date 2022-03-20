@@ -22,7 +22,7 @@ public:
     size_t GetVertexArraySize() const {return m_VertexArrays.size();}
     const Material& GetMaterial(int i) const {return m_Materials[i];}
     const glm::mat4& GetTransform() const {return m_transform;}
-    void BindTexture(int slot = 0) const;
+    void BindTexture(int id,int slot = 0) const;
     ~ObjManager();
 };
 } // namespace Rengin

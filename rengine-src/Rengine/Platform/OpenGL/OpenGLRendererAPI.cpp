@@ -16,6 +16,16 @@ void OpenGLRendererAPI::Init()
     glEnable(GL_LINE_SMOOTH);
 }
 
+void OpenGLRendererAPI::EnableAlpha()
+{
+    glEnable(GL_BLEND);
+}
+
+void OpenGLRendererAPI::DisableAlpha()
+{
+    glDisable(GL_BLEND);
+}
+
 void OpenGLRendererAPI::SetViewPort(uint32_t x,uint32_t y,uint32_t width,uint32_t height)
 {
     glViewport(x,y,width,height);

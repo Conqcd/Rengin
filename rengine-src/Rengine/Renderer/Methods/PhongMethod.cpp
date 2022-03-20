@@ -28,7 +28,7 @@ void PhongMethod::Render(const std::vector<int>& ids,const std::vector<ObjManage
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
         for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
         {
-            ObjLists[ids[i]].BindTexture(j);
+            ObjLists[ids[i]].BindTexture(j,j);
             m_BaseShader->SetUniformInt("u_texture", j % 32);
             m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
             m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]].GetMaterial(j).Ka);
