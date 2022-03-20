@@ -102,7 +102,9 @@ float findBlocker(sampler2D shadowMap,vec2 uv,float zReceiver)
     float avgdep = 0.0;
     for(int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++) 
     {
-        avgdep += unpack(texture2D(shadowMap, uv + poissonDisk[i] * 0.005));
+        float depth = unpack(texture2D(shadowMap, uv + poissonDisk[i] * 0.005));
+        if(depth < zReceiver - EPS)
+            avgdep += depth;
     }
     avgdep = avgdep / float(BLOCKER_SEARCH_NUM_SAMPLES);
     return avgdep;
@@ -115,7 +117,8 @@ float PCF(sampler2D shadowMap, vec4 coords)
     // uniformDiskSamples(position.xy);
 
     float ans = 0.0;
-    for(int i = 0; i < PCF_NUM_SAMPLES; i++) {
+    for(int i = 0; i < PCF_NUM_SAMPLES; i++) 
+    {
         float close = unpack(texture2D(shadowMap, position.xy + poissonDisk[i] * 0.005));
         ans += close == 0.0 ? 1.0 : (position.z - EPS) < close? 1.0 : 0.0;
     }
