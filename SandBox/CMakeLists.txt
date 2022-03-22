@@ -4,6 +4,7 @@ endif()
 
 add_definitions(-DRE_ENABLE_ASSERT)
 
+include_directories(../TinyOBJLoader)
 include_directories(../rengine-src)
 include_directories(../Imgui)
 include_directories(../Stb)

@@ -59,59 +59,59 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexbuffer)
     const auto& layout = vertexbuffer->getLayout();
     for (const auto& element : layout)
     {	
-            switch (element.Type)
-			{
-				case ShadeDataType::Float:
-				case ShadeDataType::Float2:
-				case ShadeDataType::Float3:
-				case ShadeDataType::Float4:
-				{
-					glEnableVertexAttribArray(m_VertexBufferIndex);
-					glVertexAttribPointer(m_VertexBufferIndex,
-						element.getComponentCount(),
-						ShadeDataType2OpenGLType(element.Type),
-						element.m_normalized ? GL_TRUE : GL_FALSE,
-						layout.getStride(),
-						(const void*)element.Offset);
-					m_VertexBufferIndex++;
-					break;
-				}
-				case ShadeDataType::Int:
-				case ShadeDataType::Int2:
-				case ShadeDataType::Int3:
-				case ShadeDataType::Int4:
-				case ShadeDataType::Bool:
-				{
-					glEnableVertexAttribArray(m_VertexBufferIndex);
-					glVertexAttribIPointer(m_VertexBufferIndex,
-						element.getComponentCount(),
-						ShadeDataType2OpenGLType(element.Type),
-						layout.getStride(),
-						(const void*)element.Offset);
-					m_VertexBufferIndex++;
-					break;
-				}
-				case ShadeDataType::Mat3:
-				case ShadeDataType::Mat4:
-				{
-					uint8_t count = element.getComponentCount();
-					for (uint8_t i = 0; i < count; i++)
-					{
-						glEnableVertexAttribArray(m_VertexBufferIndex);
-						glVertexAttribPointer(m_VertexBufferIndex,
-							count,
-							ShadeDataType2OpenGLType(element.Type),
-							element.m_normalized ? GL_TRUE : GL_FALSE,
-							layout.getStride(),
-							(const void*)(element.Offset + sizeof(float) * count * i));
-						glVertexAttribDivisor(m_VertexBufferIndex, 1);
-						m_VertexBufferIndex++;
-					}
-					break;
-				}
-				default:
-					RE_CORE_ASSERT(false, "Unknown ShaderDataType!");
-			}
+        switch (element.Type)
+        {
+            case ShadeDataType::Float:
+            case ShadeDataType::Float2:
+            case ShadeDataType::Float3:
+            case ShadeDataType::Float4:
+            {
+                glEnableVertexAttribArray(m_VertexBufferIndex);
+                glVertexAttribPointer(m_VertexBufferIndex,
+                    element.getComponentCount(),
+                    ShadeDataType2OpenGLType(element.Type),
+                    element.m_normalized ? GL_TRUE : GL_FALSE,
+                    layout.getStride(),
+                    (const void*)element.Offset);
+                m_VertexBufferIndex++;
+                break;
+            }
+            case ShadeDataType::Int:
+            case ShadeDataType::Int2:
+            case ShadeDataType::Int3:
+            case ShadeDataType::Int4:
+            case ShadeDataType::Bool:
+            {
+                glEnableVertexAttribArray(m_VertexBufferIndex);
+                glVertexAttribIPointer(m_VertexBufferIndex,
+                    element.getComponentCount(),
+                    ShadeDataType2OpenGLType(element.Type),
+                    layout.getStride(),
+                    (const void*)element.Offset);
+                m_VertexBufferIndex++;
+                break;
+            }
+            case ShadeDataType::Mat3:
+            case ShadeDataType::Mat4:
+            {
+                uint8_t count = element.getComponentCount();
+                for (uint8_t i = 0; i < count; i++)
+                {
+                    glEnableVertexAttribArray(m_VertexBufferIndex);
+                    glVertexAttribPointer(m_VertexBufferIndex,
+                        count,
+                        ShadeDataType2OpenGLType(element.Type),
+                        element.m_normalized ? GL_TRUE : GL_FALSE,
+                        layout.getStride(),
+                        (const void*)(element.Offset + sizeof(float) * count * i));
+                    glVertexAttribDivisor(m_VertexBufferIndex, 1);
+                    m_VertexBufferIndex++;
+                }
+                break;
+            }
+            default:
+                RE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+        }
     } 
     // for (const auto& element : layout)
     // {

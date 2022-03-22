@@ -1,6 +1,8 @@
 #version 330
 
-// varying vec4 vPositionFromLight;
+
+uniform int u_Entity;
+
 in vec4 v_Color;
 
 void main(void) {

@@ -7,7 +7,7 @@ namespace Rengin
 class PRTMethod : public RenderMethod
 {
 private:
-
+    Ref<Shader> m_SkyBoxShader;
 public:
     PRTMethod();
     virtual ~PRTMethod();

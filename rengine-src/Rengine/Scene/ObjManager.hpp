@@ -6,23 +6,37 @@
 #include "Rengine/Renderer/VertexArray.hpp"
 #include "Rengine/Renderer/Material.hpp"
 #include "Rengine/Renderer/Texture.hpp"
+#include "tiny_obj_loader.hpp"
 
 namespace Rengin
 {
 class ObjManager
 {
-private:
+protected:
     std::vector<Ref<VertexArray>> m_VertexArrays;
     std::vector<Material> m_Materials;
     std::vector<Ref<Texture2D>> m_Textures;
     glm::mat4 m_transform;
 public:
-    ObjManager(const std::string& path,const std::string& materialpath,const glm::mat4& transform);
+    ObjManager() = default;
+    ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
     const Ref<VertexArray> GetVertexArray(int i) const {return m_VertexArrays[i];}
     size_t GetVertexArraySize() const {return m_VertexArrays.size();}
     const Material& GetMaterial(int i) const {return m_Materials[i];}
     const glm::mat4& GetTransform() const {return m_transform;}
     void BindTexture(int id,int slot = 0) const;
-    ~ObjManager();
+    virtual ~ObjManager();
 };
+
+class PRTObjManager :public ObjManager
+{
+private:
+    std::vector<tinyobj::real_t> m_Vertices;
+public:
+    PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
+    virtual ~PRTObjManager() = default;
+    void AddPRTVertex(const std::string& prtpath);
+};
+
+
 } // namespace Rengin
