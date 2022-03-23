@@ -111,7 +111,7 @@ OpenGLTextureCube::OpenGLTextureCube(const std::string& negx,const std::string& 
     : m_path({negx,negy,negz,posx,posy,posz})
 {
     RE_PROFILE_FUNCTION();
-    stbi_set_flip_vertically_on_load(1);
+    stbi_set_flip_vertically_on_load(0);
 
     glGenTextures(1, &m_render_id);
     glActiveTexture(GL_TEXTURE0);

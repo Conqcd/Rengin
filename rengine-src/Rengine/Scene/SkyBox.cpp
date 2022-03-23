@@ -75,13 +75,13 @@ void SkyBox::AddCubeMap(const std::string &path)
     SHfile.close();
 
     //cube Texture
-    m_CubeTextures.push_back(TextureCube::Create(path + "negx.jpg",path + "negy.jpg",path + "negz.jpg",path +
-    "posx.jpg",path + "posy.jpg",path + "posz.jpg"));
+    m_CubeTextures.push_back(TextureCube::Create(path + "posx.jpg",path + "negx.jpg",path + "posy.jpg",path +
+    "negy.jpg",path + "posz.jpg",path + "negz.jpg"));
 }
 
 void SkyBox::RenderCube(int id,const EditorCamera& camera)
 {
-
+    RE_CORE_ASSERT(id < m_CubeTextures.size(),"Can not use this texture");
     m_Shader->Bind();
     m_CubeTextures[id]->Bind();
     m_Shader->SetUniformInt("u_skybox", 0);
