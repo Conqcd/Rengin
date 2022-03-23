@@ -14,6 +14,7 @@ private:
     Ref<Shader> m_shader;
     // Ref<ObjManager> m_Obj;
     Ref<RendererObject> m_RenderObj;
+    SkyBox m_SkyBox;
 
     Ref<VertexBuffer> m_verbuf;
     Ref<IndexBuffer> m_indbuf;

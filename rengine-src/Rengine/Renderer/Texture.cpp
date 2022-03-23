@@ -41,6 +41,23 @@ Ref<Texture2D> Texture2D::Create(const std::string& path)
     return nullptr;
 }
 
+Ref<TextureCube> TextureCube::Create(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz)
+{
+    switch (Renderer::getRenderer())
+    {
+    case RendererAPI::API::None :
+        RE_CORE_ASSERT(false,"not support for No Render API");
+        return nullptr;
+    case RendererAPI::API::OpenGL :
+        return CreateRef<OpenGLTextureCube>(negx,negy,negz,posx,posy,posz);
+    case RendererAPI::API::Direct3D :
+        RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
+        return nullptr;
+    }
+    RE_CORE_ASSERT(false,"Unknown RendererAPI!");
+    return nullptr;
+}
+
 Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp)
 {
     switch (Renderer::getRenderer())

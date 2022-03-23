@@ -103,6 +103,92 @@ void OpenGLTexture2D::Unbind() const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////Cube/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+OpenGLTextureCube::OpenGLTextureCube(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz)
+    : m_path({negx,negy,negz,posx,posy,posz})
+{
+    RE_PROFILE_FUNCTION();
+    stbi_set_flip_vertically_on_load(1);
+
+    glGenTextures(1, &m_render_id);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_render_id);
+
+    // glCreateTextures(GL_TEXTURE_CUBE_MAP,1,&m_render_id);
+
+    int width, height, channels;
+    GLenum interFormat = 0, dataFormat = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        stbi_uc *data = nullptr;
+        {
+            RE_PROFILE_SCOPE(
+                "stbi_load - OpenGLTextureCube::OpenGLTextureCube(const std::string&,const std::string&,const std::string&,const std::string&,const std::string&,const std::string&)");
+            data = stbi_load(m_path[i].c_str(), &width, &height, &channels, 0);
+        }
+        RE_CORE_ASSERT(data, "fail to load image!");
+
+        m_width[i] = static_cast<uint32_t>(width);
+        m_height[i] = static_cast<uint32_t>(height);
+
+        if (channels == 4) {
+            interFormat = GL_RGBA8;
+            dataFormat = GL_RGBA;
+        } else if (channels == 3) {
+            interFormat = GL_RGB8;
+            dataFormat = GL_RGB;
+        }
+
+        m_interFormat[i] = interFormat;
+        m_dataFormat[i] = dataFormat;
+        RE_CORE_ASSERT(interFormat & dataFormat, "Format not Support!");
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, interFormat, m_width[i],
+                     m_height[i], 0, dataFormat, GL_UNSIGNED_BYTE, data);
+        // glTextureSubImage2D(m_render_id, 0, 0, 0, m_width[i], m_height[i], dataFormat,
+        //                     GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+    }
+
+    // glTextureStorage2D(m_render_id,1,interFormat,m_width,m_height);
+
+    glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTextureParameteri(m_render_id,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+OpenGLTextureCube::~OpenGLTextureCube()
+{
+    RE_PROFILE_FUNCTION();
+    glDeleteTextures(1,&m_render_id);
+}
+
+void OpenGLTextureCube::setData(void* data,uint32_t size)
+{
+    RE_PROFILE_FUNCTION();
+    // uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: 0); 
+    // RE_CORE_ASSERT((size == m_height * m_width * bpp),"Can not match the size!");
+    // glTextureSubImage2D(m_render_id,0,0,0,m_width,m_height,m_dataFormat,GL_UNSIGNED_BYTE,data);
+}
+
+void OpenGLTextureCube::Bind(uint32_t slot) const
+{
+    RE_PROFILE_FUNCTION();
+    glBindTextureUnit(slot,m_render_id);
+}
+
+void OpenGLTextureCube::Unbind() const
+{
+    RE_PROFILE_FUNCTION();
+    glBindTextureUnit(0,0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////3D///////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
 

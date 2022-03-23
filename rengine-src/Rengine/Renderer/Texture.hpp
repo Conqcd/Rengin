@@ -29,6 +29,13 @@ public:
 
 };
 
+class RE_API TextureCube :public Texture
+{
+public:
+    virtual ~TextureCube() = default;
+    static Ref<TextureCube> Create(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz);
+};
+
 class RE_API Texture3D :public Texture
 {
 public:

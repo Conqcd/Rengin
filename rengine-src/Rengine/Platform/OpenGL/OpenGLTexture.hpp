@@ -34,6 +34,34 @@ public:
     }
 };
 
+class RE_API OpenGLTextureCube : public TextureCube
+{
+private:
+    uint32_t m_height[6];
+    uint32_t m_width[6];
+    std::vector<std::string> m_path;
+    uint32_t m_render_id;
+    GLenum m_interFormat[6];
+    GLenum m_dataFormat[6];
+public:
+    OpenGLTextureCube(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz);
+    virtual ~OpenGLTextureCube();
+    
+    inline virtual uint32_t getWidth() const override {return m_width[0];}
+    inline virtual uint32_t getHeight() const override {return m_height[0];}
+    
+    virtual uint32_t getRendererID() const override {return m_render_id;}
+    virtual void setData(void* data,uint32_t size) override;
+
+    virtual void Bind(uint32_t slot = 0) const override;
+    virtual void Unbind() const override;
+    
+    virtual bool operator==(const Texture& other) const override
+    {
+        return m_render_id == ((OpenGLTextureCube&)other).m_render_id;
+    }
+};
+
 class RE_API OpenGLTexture3D : public Texture3D
 {
 private:

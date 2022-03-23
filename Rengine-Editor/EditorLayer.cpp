@@ -44,7 +44,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
 
     //Clear framebuffer id to -1
     int values = -1;
-    // m_framebuffer->ClearAttachment(1,&values);
+    m_framebuffer->ClearAttachment(1,&values);
 
     switch (m_SceneState)
     {
@@ -54,6 +54,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
+        m_SkyBox.RenderCube(0,m_EditorCamera);
         m_RenderObj->DrawObject("ShadowMap",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
@@ -330,6 +331,14 @@ void EditorLayer::OnAttach()
     shadowMapMethod->AddResource(shadowPhongShader,shadowShader);
     shadowMapMethod->AddResource(ShadowFrame,m_framebuffer);
     m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
+
+    //      SkyBox
+    auto SkyboxShader = Shader::Create("../../../Rengine-Editor/assets/shaders/SkyBoxVertex.glsl","../../../Rengine-Editor/assets/shaders/SkyBoxFragment.glsl");
+    m_SkyBox.SetShader(SkyboxShader);
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/CornellBox");
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/GraceCathedral");
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Indoor");
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/SkyBox");
 
     class CameraController :public ScriptableEntity
     {
