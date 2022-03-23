@@ -10,7 +10,7 @@ SkyBox::SkyBox()
     m_Cube = VertexArray::Create();
     BufferLayout layout_v = {
     {ShadeDataType::Float3 , "a_Position"},
-    {ShadeDataType::Float3 , "a_Normal"},
+    // {ShadeDataType::Float3 , "a_Normal"},
     // {ShadeDataType::Float2 , "a_TexCoords"}
     };
     float vertices[8 * 3] = {
