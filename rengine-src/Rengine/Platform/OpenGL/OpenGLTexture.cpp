@@ -107,7 +107,7 @@ void OpenGLTexture2D::Unbind() const
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-OpenGLTextureCube::OpenGLTextureCube(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz)
+OpenGLTextureCube::OpenGLTextureCube(const std::string& posx,const std::string& negx,const std::string& posy,const std::string& negy,const std::string& posz,const std::string& negz)
     : m_path({negx,negy,negz,posx,posy,posz})
 {
     RE_PROFILE_FUNCTION();

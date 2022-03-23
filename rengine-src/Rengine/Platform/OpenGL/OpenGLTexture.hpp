@@ -44,7 +44,7 @@ private:
     GLenum m_interFormat[6];
     GLenum m_dataFormat[6];
 public:
-    OpenGLTextureCube(const std::string& negx,const std::string& negy,const std::string& negz,const std::string& posx,const std::string& posy,const std::string& posz);
+    OpenGLTextureCube(const std::string& posx,const std::string& negx,const std::string& posy,const std::string& negy,const std::string& posz,const std::string& negz);
     virtual ~OpenGLTextureCube();
     
     inline virtual uint32_t getWidth() const override {return m_width[0];}
