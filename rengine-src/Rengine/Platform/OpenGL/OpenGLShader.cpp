@@ -80,6 +80,12 @@ void OpenGLShader::SetUniformIntArray(const std::string &name, int *values,
   UpLoadUniformIntArray(name, values, count);
 }
 
+void OpenGLShader::SetUniformMat3(const std::string& name,const glm::mat3& mat)
+{
+    RE_PROFILE_FUNCTION();
+    UpLoadUniformMat3(name, mat);
+}
+
 void OpenGLShader::SetUniformMat4(const std::string &name,
                                   const glm::mat4 &mat) {
   RE_PROFILE_FUNCTION();

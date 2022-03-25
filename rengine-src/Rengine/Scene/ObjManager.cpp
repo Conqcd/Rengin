@@ -118,15 +118,15 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
     tinyobj::LoadObj(attrib, shapes, material, warn, err, path.c_str(), material_path.c_str());
  
     int size = attrib->vertices.size() / 3;
-    m_Vertices.resize(size * 17);
+    m_Vertices.resize(size * 3);
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays.push_back(VertexArray::Create());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j ++) {
-            int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
-            m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 3] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
-            m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
-            m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
+            // int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
+            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 3] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
+            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
+            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
         }
         Material materiall;
         materiall.Ka.r = (*material)[i].ambient[0];
@@ -160,22 +160,22 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
 
     BufferLayout layout_v = {
         {ShadeDataType::Float3 , "a_position"},
-        {ShadeDataType::Float3 , "a_normal"},
-        {ShadeDataType::Float2 , "a_texCoords"},
-        {ShadeDataType::Mat3, "a_PrecomputeLT"}
+        // {ShadeDataType::Float3 , "a_normal"},
+        // {ShadeDataType::Float2 , "a_texCoords"},
+        // {ShadeDataType::Mat3, "a_PrecomputeLT"}
         };
 
     for (size_t i = 0; i < size; i++)
     {
-        m_Vertices[i * 17] = attrib->vertices[i * 3];
-        m_Vertices[i * 17 + 1] = attrib->vertices[i * 3 + 1];
-        m_Vertices[i * 17 + 2] = attrib->vertices[i * 3 + 2];
+        m_Vertices[i * 3] = attrib->vertices[i * 3];
+        m_Vertices[i * 3 + 1] = attrib->vertices[i * 3 + 1];
+        m_Vertices[i * 3 + 2] = attrib->vertices[i * 3 + 2];
 
-        m_Vertices[i * 17 + 6] = attrib->texcoords[i * 2];
-        m_Vertices[i * 17 + 7] = attrib->texcoords[i * 2 + 1];
+        // m_Vertices[i * 17 + 6] = attrib->texcoords[i * 2];
+        // m_Vertices[i * 17 + 7] = attrib->texcoords[i * 2 + 1];
     }
     
-    auto VertexBuffer = VertexBuffer::Create(m_Vertices.data(),size * 17 * sizeof(tinyobj::real_t));
+    auto VertexBuffer = VertexBuffer::Create(m_Vertices.data(),size * 3 * sizeof(tinyobj::real_t));
     VertexBuffer->SetLayout(layout_v);
 
     for (size_t i = 0; i < shapes->size(); i++)
@@ -192,6 +192,8 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
         delete[] indices;
     }
 
+    AddPRTVertex(material_path + "/transport.txt");
+
     RE_CORE_WARN("{0}",(*warn).c_str());
     RE_CORE_ERROR("{0}",(*err).c_str());
     delete warn;
@@ -204,6 +206,41 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
 void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 {
 
+    BufferLayout layout_v = {
+        {ShadeDataType::Mat3, "a_PrecomputeLT"}
+        };
+
+    auto Transport = new float[m_Vertices.size() / 3];
+
+    std::fstream tsFile;
+
+    tsFile.open(prtpath);
+
+    if(!tsFile.is_open())
+    {
+
+    }
+    int vernum = 0;
+    tsFile >> vernum;
+    int idx = 0;
+    for (int i = 0; i < vernum; i++)
+    {
+        tsFile >> Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
+        Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
+        Transport[idx++] >> Transport[idx++] >> Transport[idx++];
+    }
+
+    tsFile.close();
+    auto VertexBuffer = VertexBuffer::Create(Transport,vernum * 9 * sizeof(float));
+    VertexBuffer->SetLayout(layout_v);
+
+    for (size_t i = 0; i < m_VertexArrays.size(); i++)
+    {
+        m_VertexArrays[i]->Bind();
+        m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
+    }
+
+    delete[] Transport;
 }
 
 } // namespace Rengin

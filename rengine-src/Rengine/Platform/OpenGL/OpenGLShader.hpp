@@ -25,6 +25,7 @@ public:
     virtual void SetUniformInt(const std::string& name,int value)override;
     virtual void SetUniformUint(const std::string& name,unsigned int value)override;
     virtual void SetUniformIntArray(const std::string& name,int* values,uint32_t count)override;
+    virtual void SetUniformMat3(const std::string& name,const glm::mat3& mat) override;
     virtual void SetUniformMat4(const std::string& name,const glm::mat4& mat) override;
     virtual void SetUniformFloat(const std::string& name,float value) override;
     virtual void SetUniformFloat2(const std::string& name,const glm::vec2& vec) override;

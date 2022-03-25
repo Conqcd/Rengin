@@ -66,7 +66,6 @@ void SkyBox::AddCubeMap(const std::string &path)
             SHfile >> SHR[i][j] >> SHG[i][j] >> SHB[i][j];
         }
     }
-    
 
     PreComSHR.push_back(SHR);
     PreComSHG.push_back(SHG);
@@ -87,6 +86,9 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
     m_Shader->SetUniformInt("u_skybox", 0);
     m_Shader->SetUniformMat4("u_View",glm::mat4(glm::mat3(camera.GetViewMatrix())));
     m_Shader->SetUniformMat4("u_Projection", camera.getProjection());
+    m_Shader->SetUniformMat3("u_PrecomputeLr",PreComSHR[id]);
+    m_Shader->SetUniformMat3("u_PrecomputeLg",PreComSHG[id]);
+    m_Shader->SetUniformMat3("u_PrecomputeLb",PreComSHB[id]);
     // m_Shader->SetUniformMat4("u_MoveWithCamera", camera.getProjection());
     // m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
     RenderCommand::DrawIndex(m_Cube);
