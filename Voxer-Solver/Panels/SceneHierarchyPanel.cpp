@@ -499,7 +499,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 // SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 // t.detach();
                 m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
-                m_ExternalProcess->WaitProcess();
+                // m_ExternalProcess->WaitProcess();
             }
             if (ImGui::Button("Stop")) {
                 m_ExternalProcess->Terminate();

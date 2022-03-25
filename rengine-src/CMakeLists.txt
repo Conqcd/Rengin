@@ -22,6 +22,7 @@ include_directories(../ImGuizmo)
 include_directories(../rengine-src)
 include_directories(../stb)
 include_directories(../Entt)
+include_directories(${PROJECT_SOURCE_DIR}/Eigen)
 # add_library(rengine SHARED ${RENGINE_SRC})
 add_library(rengine STATIC ${RENGINE_SRC})
 target_link_libraries(rengine
@@ -35,4 +36,5 @@ target_link_libraries(rengine
     imguizmo
     glm
     yaml-cpp
+    eigen
     )
