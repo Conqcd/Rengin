@@ -3,7 +3,7 @@
 layout(location = 0) in vec3 a_position;
 // layout(location = 1) in vec3 a_normal;
 // layout(location = 2) in vec2 a_texCoords;
-layout(location = 3) mat3 a_PrecomputeLT;
+layout(location = 1) mat3 a_PrecomputeLT;
 
 uniform mat4 u_View;
 uniform mat4 u_Projection;
@@ -23,12 +23,6 @@ void main(void) {
             v_Color.x += u_PrecomputeLr[i][j] * a_PrecomputeLT[i][j];
             v_Color.y += u_PrecomputeLg[i][j] * a_PrecomputeLT[i][j];
             v_Color.z += u_PrecomputeLb[i][j] * a_PrecomputeLT[i][j];
-        // vColor.x += aPrecomputeLT[i][j];
-        // vColor.y += aPrecomputeLT[i][j];
-        // vColor.z += aPrecomputeLT[i][j];
-        // vColor.x += uPrecomputeLr[i][j];
-        // vColor.y += uPrecomputeLg[i][j];
-        // vColor.z += uPrecomputeLb[i][j];
         }
     }
 }
