@@ -210,7 +210,7 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
         {ShadeDataType::Mat3, "a_PrecomputeLT"}
         };
 
-    auto Transport = new float[m_Vertices.size() / 3];
+    auto Transport = new float[m_Vertices.size() * 3];
 
     std::fstream tsFile;
 
@@ -219,28 +219,30 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
     if(!tsFile.is_open())
     {
 
-    }
-    int vernum = 0;
-    tsFile >> vernum;
-    int idx = 0;
-    for (int i = 0; i < vernum; i++)
+    }else
     {
-        tsFile >> Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
-        Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
-        Transport[idx++] >> Transport[idx++] >> Transport[idx++];
+
+        int vernum = 0;
+        tsFile >> vernum;
+        int idx = 0;
+        for (int i = 0; i < vernum; i++) {
+            tsFile >> Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
+                Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
+                Transport[idx++] >> Transport[idx++] >> Transport[idx++];
+        }
+
+        tsFile.close();
+        auto VertexBuffer =
+            VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
+        VertexBuffer->SetLayout(layout_v);
+
+        for (size_t i = 0; i < m_VertexArrays.size(); i++) {
+            m_VertexArrays[i]->Bind();
+            m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
+        }
+
+        delete[] Transport;
     }
-
-    tsFile.close();
-    auto VertexBuffer = VertexBuffer::Create(Transport,vernum * 9 * sizeof(float));
-    VertexBuffer->SetLayout(layout_v);
-
-    for (size_t i = 0; i < m_VertexArrays.size(); i++)
-    {
-        m_VertexArrays[i]->Bind();
-        m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
-    }
-
-    delete[] Transport;
 }
 
 } // namespace Rengin

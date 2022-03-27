@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "SkyBox.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+#include "Rengine/Utils/PrtCompute.hpp"
 
 namespace Rengin
 {
@@ -51,31 +52,36 @@ SkyBox::SkyBox()
 }
 
 void SkyBox::AddCubeMap(const std::string &path)
-{
-    // SH coeff;
-    std::fstream SHfile;
-    SHfile.open((path + "/light.txt").c_str());
-    RE_CORE_ASSERT(SHfile.is_open(), "Can not open the SH para file!");
-
-    glm::mat3 SHR,SHG,SHB;
-
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            SHfile >> SHR[i][j] >> SHG[i][j] >> SHB[i][j];
-        }
-    }
-
-    PreComSHR.push_back(SHR);
-    PreComSHG.push_back(SHG);
-    PreComSHB.push_back(SHB);
-
-    SHfile.close();
-
+{ 
     //cube Texture
     m_CubeTextures.push_back(TextureCube::Create(path + "posx.jpg",path + "negx.jpg",path + "posy.jpg",path +
     "negy.jpg",path + "posz.jpg",path + "negz.jpg"));
+
+    // SH coeff;
+    std::fstream SHfile;
+    SHfile.open((path + "/light.txt").c_str());
+    if(!SHfile.is_open())
+    {
+        RE_CORE_ASSERT(SHfile.is_open(), "Can not open the SH para file!");
+        ComputePRTOK = false;
+        ComputePRTSH(path);
+    }else
+    {
+        glm::mat3 SHR,SHG,SHB;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                SHfile >> SHR[i][j] >> SHG[i][j] >> SHB[i][j];
+            }
+        }
+
+        PreComSHR.push_back(SHR);
+        PreComSHG.push_back(SHG);
+        PreComSHB.push_back(SHB);
+
+        SHfile.close();
+        ComputePRTOK = true;
+    }
 }
 
 void SkyBox::RenderCube(int id,const EditorCamera& camera)
@@ -86,17 +92,40 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
     m_Shader->SetUniformInt("u_skybox", 0);
     m_Shader->SetUniformMat4("u_View",glm::mat4(glm::mat3(camera.GetViewMatrix())));
     m_Shader->SetUniformMat4("u_Projection", camera.getProjection());
-    m_Shader->SetUniformMat3("u_PrecomputeLr",PreComSHR[id]);
-    m_Shader->SetUniformMat3("u_PrecomputeLg",PreComSHG[id]);
-    m_Shader->SetUniformMat3("u_PrecomputeLb",PreComSHB[id]);
     // m_Shader->SetUniformMat4("u_MoveWithCamera", camera.getProjection());
     // m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
     RenderCommand::DrawIndex(m_Cube);
+    
+    if(ComputePRTOK && m_PRTShader)
+    {
+        m_PRTShader->Bind();
+        m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSHR[id]);
+        m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSHG[id]);
+        m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSHB[id]);
+    }
 }
 
-void SkyBox::ComputePRTSH()
+void SkyBox::ComputePRTSH(const std::string& path)
 {
+    std::fstream SHfile;
+    SHfile.open((path + "/light.txt").c_str());
 
+    glm::mat3 SHR, SHG, SHB;
+
+    PrecomputeCubemapSH<2>(path, SHR, SHG, SHB);
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            SHfile << SHR[i][j] << SHG[i][j] << SHB[i][j];
+        }
+    }
+
+    PreComSHR.push_back(SHR);
+    PreComSHG.push_back(SHG);
+    PreComSHB.push_back(SHB);
+
+    SHfile.close();
+    ComputePRTOK = true;
 }
 
 } // namespace Rengin

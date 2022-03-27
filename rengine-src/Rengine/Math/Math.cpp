@@ -66,4 +66,48 @@ bool DecomposeTransform(const glm::mat4& transform,glm::vec3& outTranslation,glm
     return true;
 }
 
+double clamp(double num,double l,double r)
+{
+    if(num < l) return l;
+    if(num > r) return r;
+    return num;
+}
+
+static const int kCacheSize = 16;
+
+double Factorial(int x) {
+    static const double factorial_cache[kCacheSize] = {1, 1, 2, 6, 24, 120, 720, 5040,
+                                                40320, 362880, 3628800, 39916800,
+                                                479001600, 6227020800,
+                                                87178291200, 1307674368000};
+
+    if (x < kCacheSize) {
+        return factorial_cache[x];
+    } else {
+        double s = factorial_cache[kCacheSize - 1];
+        for (int n = kCacheSize; n <= x; n++) {
+            s *= n;
+        }
+        return s;
+    }
+}
+
+double DoubleFactorial(int x) 
+{
+    static const double dbl_factorial_cache[kCacheSize] = {1, 1, 2, 3, 8, 15, 48, 105,
+                                                    384, 945, 3840, 10395, 46080,
+                                                    135135, 645120, 2027025};
+
+    if (x < kCacheSize) {
+        return dbl_factorial_cache[x];
+    } else {
+        double s = dbl_factorial_cache[kCacheSize - (x % 2 == 0 ? 2 : 1)];
+        double n = x;
+        while (n >= kCacheSize) {
+            s *= n;
+            n -= 2.0;
+        }
+        return s;
+    }
+}
 } // namespace Rengin::Math
