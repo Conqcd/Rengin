@@ -221,7 +221,6 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 
     }else
     {
-
         int vernum = 0;
         tsFile >> vernum;
         int idx = 0;
@@ -243,6 +242,11 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 
         delete[] Transport;
     }
+}
+
+void PRTObjManager::ComputeTransportSH(const std::string &path)
+{
+
 }
 
 } // namespace Rengin

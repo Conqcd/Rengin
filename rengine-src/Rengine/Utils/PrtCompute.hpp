@@ -2,9 +2,11 @@
 #include "Rengine/Core/core.hpp"
 #include <glm/glm.hpp>
 #include <Eigen/Eigen>
+#include <stb_image.h>
 
 namespace Rengin
 {
+
 extern const Eigen::Vector3f cubemapFaceDirections[6][3];
 
 float CalcArea(const float &u_, const float &v_, const int &width,const int &height);
@@ -15,10 +17,18 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
 {
     std::vector<Eigen::Vector3f> cubemapDirs;
     int height,width,channel;
-    std::vector<float*> images;
+    std::vector<stbi_uc*> images;
+    char str[6][16] = {"negx.jpg","posx.jpg","negy.jpg","posy.jpg","negz.jpg","posz.jpg"};
+    stbi_set_flip_vertically_on_load(0);
     for (int i = 0; i < 6; i++)
     {
-
+        stbi_uc *data = nullptr;
+        {
+            RE_PROFILE_SCOPE(
+                "stbi_load - OpenGLTextureCube::OpenGLTextureCube(const std::string&,const std::string&,const std::string&,const std::string&,const std::string&,const std::string&)");
+            data = stbi_load((path + str[i]).c_str(), &width, &height, &channel, 0);
+        }
+        RE_CORE_ASSERT(data, "fail to load image!");
     }
     
     cubemapDirs.reserve(6 * width * height);
@@ -51,8 +61,7 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
             {
                 Eigen::Vector3f dir = cubemapDirs[i * width * height + y * width + x];
                 int index = (y * width + x) * channel;
-                Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],
-                                    images[i][index + 2]);
+                Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],images[i][index + 2]);
                 
                 int k = 0;
                 for (int l = 0; l < SHOrder + 1; l++)
@@ -63,6 +72,20 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
                     }
                 }
             }
+        }
+    }
+    for (int i = 0; i < 6; i++)
+    {
+        stbi_image_free(images[i]);
+    }
+    int idx = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            SHR[i][j] = SHCoeffiecents[idx][0];
+            SHG[i][j] = SHCoeffiecents[idx][1];
+            SHB[i][j] = SHCoeffiecents[idx++][2];
         }
     }
 }

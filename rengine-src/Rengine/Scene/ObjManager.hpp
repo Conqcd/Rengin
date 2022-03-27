@@ -36,6 +36,7 @@ public:
     PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
     virtual ~PRTObjManager() = default;
     void AddPRTVertex(const std::string& prtpath);
+    void ComputeTransportSH(const std::string& path);
 };
 
 
