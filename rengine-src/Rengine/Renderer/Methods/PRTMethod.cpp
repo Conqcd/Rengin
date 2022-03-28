@@ -15,7 +15,7 @@ PRTMethod::~PRTMethod()
 
 }
 
-void PRTMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights)
+void PRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
     m_SkyBoxShader->Bind();
 
@@ -25,11 +25,11 @@ void PRTMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
-        for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
+        for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
         {
-            m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
+            m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
 
-            RenderCommand::DrawIndex(ObjLists[ids[i]].GetVertexArray(j));
+            RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }
 }

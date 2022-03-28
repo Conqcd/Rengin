@@ -9,7 +9,7 @@ RendererObject::RendererObject()
 {
 }
 
-void RendererObject::AddObj(const ObjManager& obj)
+void RendererObject::AddObj(const Ref<ObjManager> obj)
 {
     ObjLists.push_back(obj);
 }

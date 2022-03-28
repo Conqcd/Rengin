@@ -15,7 +15,7 @@ protected:
 public:
     virtual ~RenderMethod() = default;
 
-    virtual void Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights) = 0; 
+    virtual void Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights) = 0; 
 
     // template<typename ...Args>
     // void AddResource(const Args&... resource);

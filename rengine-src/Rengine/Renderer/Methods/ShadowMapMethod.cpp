@@ -17,7 +17,7 @@ ShadowMapMethod::~ShadowMapMethod()
 
 }
 
-void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights)
+void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
     m_ShadowMap->Bind();
     RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
@@ -26,9 +26,9 @@ void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjMa
     m_ShadowShader->Bind();
     auto LightVP = lights.GetViewProjection();
     for (int i = 0; i < ids.size(); i++)
-        for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++) {
-            m_ShadowShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]].GetTransform());
-            RenderCommand::DrawIndex(ObjLists[ids[i]].GetVertexArray(j));
+        for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++) {
+            m_ShadowShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]]->GetTransform());
+            RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
 
     //          Phong
@@ -50,20 +50,20 @@ void ShadowMapMethod::Render(const std::vector<int>& ids,const std::vector<ObjMa
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
-        m_BaseShader->SetUniformMat4("u_LightMVP",LightVP * ObjLists[ids[i]].GetTransform());
-        m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
-        for (int j = 0; j < ObjLists[ids[i]].GetVertexArraySize(); j++)
+        m_BaseShader->SetUniformMat4("u_LightMVP",LightVP * ObjLists[ids[i]]->GetTransform());
+        m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
+        for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
         {
             m_BaseShader->SetUniformInt("u_TextureID", tidx);
-            ObjLists[ids[i]].BindTexture(j, tidx);
+            ObjLists[ids[i]]->BindTexture(j, tidx);
             m_BaseShader->SetUniformInt("u_texture", tidx++);
             tidx %= 31;
-            m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]].GetMaterial(j).Ka);
-            m_BaseShader->SetUniformFloat3("u_Ks", ObjLists[ids[i]].GetMaterial(j).Ks);
-            m_BaseShader->SetUniformFloat3("u_Kd", ObjLists[ids[i]].GetMaterial(j).Kd);
-            m_BaseShader->SetUniformFloat("u_Ns", ObjLists[ids[i]].GetMaterial(j).Ns);
-            m_BaseShader->SetUniformFloat("u_Ni", ObjLists[ids[i]].GetMaterial(j).Ni);
-            RenderCommand::DrawIndex(ObjLists[ids[i]].GetVertexArray(j));
+            m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]]->GetMaterial(j).Ka);
+            m_BaseShader->SetUniformFloat3("u_Ks", ObjLists[ids[i]]->GetMaterial(j).Ks);
+            m_BaseShader->SetUniformFloat3("u_Kd", ObjLists[ids[i]]->GetMaterial(j).Kd);
+            m_BaseShader->SetUniformFloat("u_Ns", ObjLists[ids[i]]->GetMaterial(j).Ns);
+            m_BaseShader->SetUniformFloat("u_Ni", ObjLists[ids[i]]->GetMaterial(j).Ni);
+            RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }
 }

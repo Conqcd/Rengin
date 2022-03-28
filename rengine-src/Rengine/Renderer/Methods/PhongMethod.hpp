@@ -12,7 +12,7 @@ public:
     PhongMethod();
     virtual ~PhongMethod();
 
-    virtual void Render(const std::vector<int>& ids,const std::vector<ObjManager>& ObjLists,const EditorCamera& camera,const Lights& lights) override;
+    virtual void Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights) override;
 
     template<typename ...Args>
     void AddResource(const Args&... resource); 

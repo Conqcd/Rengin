@@ -18,7 +18,7 @@ namespace Rengin
 class RendererObject
 {
 private:
-    std::vector<ObjManager> ObjLists;
+    std::vector<Ref<ObjManager>> ObjLists;
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
 
     Lights lights;
@@ -27,7 +27,7 @@ public:
     ~RendererObject() = default;
     void DrawObject(const std::string& methodName,const std::vector<int>& ids,const EditorCamera& camera);
     void AddMethod(const std::string& name,Ref<RenderMethod> method);
-    void AddObj(const ObjManager& obj);
+    void AddObj(const Ref<ObjManager> obj);
 };
 
 } // namespace Rengin
