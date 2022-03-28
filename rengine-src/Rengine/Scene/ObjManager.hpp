@@ -10,6 +10,12 @@
 
 namespace Rengin
 {
+enum class PRTType
+{
+    Unshadowed,
+    Shadow,
+    Interreflection
+};
 class ObjManager
 {
 protected:
@@ -18,6 +24,8 @@ protected:
     std::vector<Ref<Texture2D>> m_Textures;
     glm::mat4 m_transform;
     bool isPrt = false;
+    std::string m_Path;
+    int m_SampleCount = 100;
 public:
     ObjManager() = default;
     ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
@@ -27,18 +35,20 @@ public:
     const glm::mat4& GetTransform() const {return m_transform;}
     void BindTexture(int id,int slot = 0) const;
     virtual ~ObjManager();
-    bool isPrt() const {return isPrt;}
+    bool UsePrt() const {return isPrt;}
 };
 
 class PRTObjManager :public ObjManager
 {
 private:
-    std::vector<tinyobj::real_t> m_Vertices;
+    std::vector<tinyobj::real_t> m_Vertices,m_Normals;
+    std::vector<std::vector<uint32_t>> m_IndicesList;
+    bool hasTransportSH = false;
 public:
     PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
     virtual ~PRTObjManager() = default;
     void AddPRTVertex(const std::string& prtpath);
-    void ComputeTransportSH(const std::string& path);
+    void ComputeTransportSH(PRTType type);
 };
 
 

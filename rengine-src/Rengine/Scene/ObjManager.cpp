@@ -6,7 +6,7 @@ namespace Rengin
 {
  
 ObjManager::ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
-           : m_transform(transform)
+           : m_transform(transform), m_Path(path)
 {
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
@@ -120,14 +120,15 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
  
     int size = attrib->vertices.size() / 3;
     m_Vertices.resize(size * 3);
+    m_Normals.resize(size * 3);
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays.push_back(VertexArray::Create());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j ++) {
-            // int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
-            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 3] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
-            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
-            // m_Vertices[(*shapes)[i].mesh.indices[j].vertex_index * 17 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
+            int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
+            m_Normals[(*shapes)[i].mesh.indices[j].vertex_index * 3 + 0] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
+            m_Normals[(*shapes)[i].mesh.indices[j].vertex_index * 3 + 1] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
+            m_Normals[(*shapes)[i].mesh.indices[j].vertex_index * 3 + 2] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
         }
         Material materiall;
         materiall.Ka.r = (*material)[i].ambient[0];
@@ -182,15 +183,15 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays[i]->Bind();
-        uint32_t *indices;
-        indices = new uint32_t[(*shapes)[i].mesh.indices.size()];
+        std::vector<uint32_t> indices;
+        indices.resize((*shapes)[i].mesh.indices.size());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j++) {
             indices[j] = (*shapes)[i].mesh.indices[j].vertex_index;
         }
-        auto IndexBuf = IndexBuffer::Create(indices, (*shapes)[i].mesh.indices.size());
+        auto IndexBuf = IndexBuffer::Create(indices.data(), (*shapes)[i].mesh.indices.size());
         m_VertexArrays[i]->SetIndexBuffer(IndexBuf);
         m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
-        delete[] indices;
+        m_IndicesList.push_back(std::move(indices));
     }
 
     AddPRTVertex(material_path + "/transport.txt");
@@ -206,12 +207,9 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
 
 void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 {
-
     BufferLayout layout_v = {
         {ShadeDataType::Mat3, "a_PrecomputeLT"}
     };
-
-    auto Transport = new float[m_Vertices.size() * 3];
 
     std::fstream tsFile;
 
@@ -222,6 +220,7 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 
     }else
     {
+        auto Transport = new float[m_Vertices.size() * 3];
         int vernum = 0;
         tsFile >> vernum;
         int idx = 0;
@@ -232,8 +231,7 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
         }
 
         tsFile.close();
-        auto VertexBuffer =
-            VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
+        auto VertexBuffer = VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
         for (size_t i = 0; i < m_VertexArrays.size(); i++) {
@@ -242,12 +240,51 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
         }
 
         delete[] Transport;
+        hasTransportSH = true;
     }
 }
 
-void PRTObjManager::ComputeTransportSH(const std::string &path)
-{
+const int SHCoeffLength = 9;
+const int SHOrder = 2;
 
+void PRTObjManager::ComputeTransportSH(PRTType type)
+{
+    if(!hasTransportSH)
+    {
+        std::ofstream fout;
+        fout.open((m_Path + "/transport.txt"));
+        int VerticesSize = m_Vertices.size() / 3;
+        fout << m_Vertices.size() / 3 << std::endl;
+        auto Transport = new float[VerticesSize * SHCoeffLength];
+        for (int i = 0; i < VerticesSize; i++)
+        {
+            const glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
+            const glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
+            auto shFunc = [&](double phi, double theta) -> double {
+                Eigen::Array3d d = Math::ToVector(phi, theta);
+                const auto wi = Vector3f(d.x(), d.y(), d.z());
+                if (type == PRTType::Unshadowed)
+                    return std::max(0.0f,static_cast<float>(wi.transpose() * n));
+                // else
+                //     return std::max(0.0f,static_cast<float>(wi.transpose() * n)) * static_cast<float>(1.0 - scene->rayIntersect({v,wi}));
+            };
+            auto shCoeff = ProjectFunction(SHOrder, shFunc, m_SampleCount);
+            for (int j = 0; j < shCoeff->size(); j++)
+            {
+                m_TransportSHCoeffs.col(i).coeffRef(j) = (*shCoeff)[j];
+            }
+        }
+        auto VertexBuffer = VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
+        VertexBuffer->SetLayout(layout_v);
+
+        for (size_t i = 0; i < m_VertexArrays.size(); i++) {
+            m_VertexArrays[i]->Bind();
+            m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
+        }
+
+        delete[] Transport;
+        fout.close();
+    }
 }
 
 } // namespace Rengin

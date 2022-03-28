@@ -29,6 +29,7 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
             data = stbi_load((path + str[i]).c_str(), &width, &height, &channel, 0);
         }
         RE_CORE_ASSERT(data, "fail to load image!");
+        images.push_back(data);
     }
     
     cubemapDirs.reserve(6 * width * height);

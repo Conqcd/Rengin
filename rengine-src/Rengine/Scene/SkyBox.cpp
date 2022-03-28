@@ -107,16 +107,18 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
 
 void SkyBox::ComputePRTSH(const std::string& path)
 {
-    std::fstream SHfile;
+    std::ofstream SHfile;
     SHfile.open((path + "/light.txt").c_str());
 
+    if(SHfile.is_open())
+        std::cout <<":ascobc" << std::endl;
     glm::mat3 SHR, SHG, SHB;
 
     PrecomputeCubemapSH<2>(path, SHR, SHG, SHB);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            SHfile << SHR[i][j] << SHG[i][j] << SHB[i][j];
+            SHfile << SHR[i][j] << " " << SHG[i][j] << " " << SHB[i][j] << std::endl;
         }
     }
 

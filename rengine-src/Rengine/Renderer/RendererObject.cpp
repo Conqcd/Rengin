@@ -29,9 +29,9 @@ void RendererObject::ComputePrt()
 {
     for (int i = 0; i < ObjLists.size(); i++)
     {
-        if(ObjLists[i]->isPrt())
+        if(ObjLists[i]->UsePrt())
         {
-            dynamic_cast<PRTObjManager>(ObjLists[i])->ComputeTransportSH();
+            std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->ComputeTransportSH(m_PrtType);
         }
     }
 }
