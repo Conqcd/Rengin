@@ -28,6 +28,7 @@ public:
     void DrawObject(const std::string& methodName,const std::vector<int>& ids,const EditorCamera& camera);
     void AddMethod(const std::string& name,Ref<RenderMethod> method);
     void AddObj(const Ref<ObjManager> obj);
+    void ComputePrt();
 };
 
 } // namespace Rengin

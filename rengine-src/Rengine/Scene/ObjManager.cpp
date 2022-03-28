@@ -110,6 +110,7 @@ void ObjManager::BindTexture(int id,int slot) const
 
 PRTObjManager::PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
 {
+    isPrt = true;
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
     auto shapes = new std::vector<tinyobj::shape_t>();
@@ -208,7 +209,7 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 
     BufferLayout layout_v = {
         {ShadeDataType::Mat3, "a_PrecomputeLT"}
-        };
+    };
 
     auto Transport = new float[m_Vertices.size() * 3];
 

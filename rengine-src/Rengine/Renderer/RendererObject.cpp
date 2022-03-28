@@ -25,4 +25,15 @@ void RendererObject::DrawObject(const std::string& methodName,const std::vector<
     m_Methods[methodName]->Render(ids,ObjLists,camera,lights);
 }
 
+void RendererObject::ComputePrt()
+{
+    for (int i = 0; i < ObjLists.size(); i++)
+    {
+        if(ObjLists[i]->isPrt())
+        {
+            dynamic_cast<PRTObjManager>(ObjLists[i])->ComputeTransportSH();
+        }
+    }
+}
+
 } // namespace Rengin

@@ -17,6 +17,7 @@ protected:
     std::vector<Material> m_Materials;
     std::vector<Ref<Texture2D>> m_Textures;
     glm::mat4 m_transform;
+    bool isPrt = false;
 public:
     ObjManager() = default;
     ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
@@ -26,6 +27,7 @@ public:
     const glm::mat4& GetTransform() const {return m_transform;}
     void BindTexture(int id,int slot = 0) const;
     virtual ~ObjManager();
+    bool isPrt() const {return isPrt;}
 };
 
 class PRTObjManager :public ObjManager
