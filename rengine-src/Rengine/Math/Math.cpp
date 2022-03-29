@@ -110,4 +110,10 @@ double DoubleFactorial(int x)
         return s;
     }
 }
+
+Eigen::Vector3d ToVector(double phi, double theta) {
+  double r = sin(theta);
+  return Eigen::Vector3d(r * cos(phi), r * sin(phi), cos(theta));
+}
+
 } // namespace Rengin::Math

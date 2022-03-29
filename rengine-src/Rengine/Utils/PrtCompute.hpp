@@ -91,4 +91,6 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
     }
 }
 
+std::vector<double> ProjectFunction(int order, const std::function<double(double, double)>& func, int sample_count);
+
 } // namespace Rengin

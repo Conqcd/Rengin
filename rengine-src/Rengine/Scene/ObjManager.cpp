@@ -1,6 +1,9 @@
 #include "repch.hpp"
 #include "ObjManager.hpp"
 #include <cstring>
+#include <Eigen/Eigen>
+#include "Rengine/Utils/PrtCompute.hpp"
+#include "Rengine/Math/Math.hpp"
 
 namespace Rengin
 {
@@ -251,30 +254,34 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
 {
     if(!hasTransportSH)
     {
+        BufferLayout layout_v = {
+            {ShadeDataType::Mat3, "a_PrecomputeLT"}
+        };
         std::ofstream fout;
         fout.open((m_Path + "/transport.txt"));
         int VerticesSize = m_Vertices.size() / 3;
-        fout << m_Vertices.size() / 3 << std::endl;
+        fout << VerticesSize << std::endl;
         auto Transport = new float[VerticesSize * SHCoeffLength];
+        Eigen::Matrix4f transform(m_transform);
         for (int i = 0; i < VerticesSize; i++)
         {
-            const glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
-            const glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
+            const Eigen::Vector3f v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
+            const Eigen::Vector3f n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
             auto shFunc = [&](double phi, double theta) -> double {
                 Eigen::Array3d d = Math::ToVector(phi, theta);
-                const auto wi = Vector3f(d.x(), d.y(), d.z());
+                const Eigen::Vector3f wi(d.x(), d.y(), d.z());
                 if (type == PRTType::Unshadowed)
                     return std::max(0.0f,static_cast<float>(wi.transpose() * n));
                 // else
                 //     return std::max(0.0f,static_cast<float>(wi.transpose() * n)) * static_cast<float>(1.0 - scene->rayIntersect({v,wi}));
             };
             auto shCoeff = ProjectFunction(SHOrder, shFunc, m_SampleCount);
-            for (int j = 0; j < shCoeff->size(); j++)
+            for (int j = 0; j < shCoeff.size(); j++)
             {
-                m_TransportSHCoeffs.col(i).coeffRef(j) = (*shCoeff)[j];
+                Transport[i * 9 + j] = shCoeff[j];
             }
         }
-        auto VertexBuffer = VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
+        auto VertexBuffer = VertexBuffer::Create(Transport, VerticesSize * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
         for (size_t i = 0; i < m_VertexArrays.size(); i++) {

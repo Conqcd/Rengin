@@ -1,8 +1,17 @@
 #include "repch.hpp"
 #include "PrtCompute.hpp"
 #include "Rengine/Math/Math.hpp"
+#include <random>
 namespace Rengin
 {
+constexpr int GetCoefficientCount(int order) {
+  return (order + 1) * (order + 1);
+}
+
+constexpr int GetIndex(int l, int m) {
+  return l * (l + 1) + m;
+}
+
 const Eigen::Vector3f cubemapFaceDirections[6][3] = {
     {{0, 0, 1}, {0, -1, 0}, {-1, 0, 0}},  // negx
     {{0, 0, 1}, {0, -1, 0}, {1, 0, 0}},   // posx
@@ -92,6 +101,44 @@ double EvalSH(int l, int m, const Eigen::Vector3d& dir)
     RE_CORE_ASSERT(std::abs(dir.squaredNorm() - 1.0) > EPS, "dir is not unit.");
 
     return EvalSHSlow(l, m, dir);
+}
+
+std::vector<double> ProjectFunction(int order, const std::function<double(double, double)>& func, int sample_count) 
+{
+    RE_CORE_ASSERT(order >= 0, "Order must be at least zero.");
+    RE_CORE_ASSERT(sample_count > 0, "Sample count must be at least one.");
+
+    const int sample_side = static_cast<int>(floor(sqrt(sample_count)));
+    std::vector<double> coeffs;
+    coeffs.assign(GetCoefficientCount(order), 0.0);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> rng(0.0, 1.0);
+    for (int t = 0; t < sample_side; t++) {
+        for (int p = 0; p < sample_side; p++) {
+        double alpha = (t + rng(gen)) / sample_side;
+        double beta = (p + rng(gen)) / sample_side;
+        double phi = 2.0 * M_PI * beta;
+        double theta = acos(2.0 * alpha - 1.0);
+
+        double func_value = func(phi, theta);
+
+            for (int l = 0; l <= order; l++) {
+                for (int m = -l; m <= l; m++) {
+                    double sh = EvalSHSlow(l, m, phi, theta);
+                    coeffs[GetIndex(l, m)] += func_value * sh;
+                }
+            }
+        }
+    }
+
+    double weight = 4.0 * M_PI / (sample_side * sample_side);
+    for (unsigned int i = 0; i < coeffs.size(); i++) {
+        coeffs[i] *= weight;
+    }
+
+    return coeffs;
 }
 
 } // namespace Rengin
