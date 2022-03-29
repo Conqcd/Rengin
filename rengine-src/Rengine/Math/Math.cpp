@@ -2,6 +2,7 @@
 #include "Math.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/glm.hpp>
 
 namespace Rengin::Math
 {
@@ -111,9 +112,9 @@ double DoubleFactorial(int x)
     }
 }
 
-Eigen::Vector3d ToVector(double phi, double theta) {
+glm::vec3 ToVector(double phi, double theta) {
   double r = sin(theta);
-  return Eigen::Vector3d(r * cos(phi), r * sin(phi), cos(theta));
+  return glm::vec3(r * cos(phi), r * sin(phi), cos(theta));
 }
 
 } // namespace Rengin::Math

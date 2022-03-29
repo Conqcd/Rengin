@@ -1,9 +1,9 @@
 #include "repch.hpp"
 #include "ObjManager.hpp"
 #include <cstring>
-#include <Eigen/Eigen>
 #include "Rengine/Utils/PrtCompute.hpp"
 #include "Rengine/Math/Math.hpp"
+#include <Eigen/Core>
 
 namespace Rengin
 {
@@ -262,16 +262,28 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
         int VerticesSize = m_Vertices.size() / 3;
         fout << VerticesSize << std::endl;
         auto Transport = new float[VerticesSize * SHCoeffLength];
-        Eigen::Matrix4f transform(m_transform);
+        Eigen::Matrix4f transform;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                transform(i,j) = m_transform[i][j];
+            }
+        }
         for (int i = 0; i < VerticesSize; i++)
         {
-            const Eigen::Vector3f v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
-            const Eigen::Vector3f n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
+            // Eigen::Vector3f v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
+            // v = transform * Eigen::Vector4f(v,1.0f);
+            // Eigen::Vector3f n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]); 
+            glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
+            v = glm::vec3(m_transform * glm::vec4(v,1.0f));
+            glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
             auto shFunc = [&](double phi, double theta) -> double {
-                Eigen::Array3d d = Math::ToVector(phi, theta);
-                const Eigen::Vector3f wi(d.x(), d.y(), d.z());
+                const auto wi = Math::ToVector(phi, theta);
+                // const Eigen::Vector3f wi(d.x(), d.y(), d.z());
                 if (type == PRTType::Unshadowed)
-                    return std::max(0.0f,static_cast<float>(wi.transpose() * n));
+                    return std::max(0.0f,static_cast<float>(glm::dot(wi,n)));
+                    // return std::max(0.0f,static_cast<float>(wi.transpose() * n));
                 // else
                 //     return std::max(0.0f,static_cast<float>(wi.transpose() * n)) * static_cast<float>(1.0 - scene->rayIntersect({v,wi}));
             };
@@ -281,6 +293,7 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
                 Transport[i * 9 + j] = shCoeff[j];
             }
         }
+
         auto VertexBuffer = VertexBuffer::Create(Transport, VerticesSize * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
@@ -288,7 +301,14 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
             m_VertexArrays[i]->Bind();
             m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
         }
-
+        for (int f = 0; f < VerticesSize; f++)
+        {
+            for (int j = 0; j < SHCoeffLength; j++)
+            {
+                fout << Transport[f * SHCoeffLength + j] << " ";
+            }
+            fout << std::endl;
+        }
         delete[] Transport;
         fout.close();
     }

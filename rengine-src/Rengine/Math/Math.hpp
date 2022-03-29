@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 #define M_PI 3.141592653589793f
 #define EPS 1e-6
-#include <Eigen/Eigen>
+// #include <Eigen/Dense>
+#include <glm/glm.hpp>
 
 namespace Rengin
 {
@@ -18,7 +19,7 @@ double Factorial(int x);
 
 double DoubleFactorial(int x);
 
-Eigen::Vector3d ToVector(double phi, double theta);
+glm::vec3 ToVector(double phi, double theta);
 } // namespace Math
     
 } // namespace Rengin

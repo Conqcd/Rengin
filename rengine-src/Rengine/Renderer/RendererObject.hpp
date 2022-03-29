@@ -20,7 +20,7 @@ class RendererObject
 private:
     std::vector<Ref<ObjManager>> ObjLists;
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
-    PRTType m_PrtType = PRTType::Unshadow;
+    PRTType m_PrtType = PRTType::Unshadowed;
     Lights lights;
 public:
     RendererObject();
