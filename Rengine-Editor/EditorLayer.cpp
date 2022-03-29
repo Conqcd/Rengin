@@ -59,8 +59,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_RenderObj->DrawObject("ShadowMap",{0,1},m_EditorCamera);
         break;
     case SceneState::Play:
-      m_ActiveScene->OnUpdateRuntime(timestep);
-      break;
+        m_ActiveScene->OnUpdateRuntime(timestep);
+        break;
     default:
         break;
     }
