@@ -62,7 +62,7 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
             {
                 Eigen::Vector3f dir = cubemapDirs[i * width * height + y * width + x];
                 int index = (y * width + x) * channel;
-                Eigen::Array3f Le(images[i][index + 0], images[i][index + 1],images[i][index + 2]);
+                Eigen::Array3f Le(images[i][index + 0] / 256.f, images[i][index + 1] / 256.f,images[i][index + 2] / 256.f);
                 
                 int k = 0;
                 for (int l = 0; l < SHOrder + 1; l++)

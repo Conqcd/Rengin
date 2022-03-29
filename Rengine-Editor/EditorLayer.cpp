@@ -9,6 +9,7 @@
 #include <Rengine/Math/Math.hpp>
 #include "Rengine/Renderer/Methods/PhongMethod.hpp";
 #include "Rengine/Renderer/Methods/ShadowMapMethod.hpp";
+#include "Rengine/Renderer/Methods/PRTMethod.hpp";
 
 namespace Rengin
 {
@@ -55,7 +56,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("ShadowMap",{0,1,2},m_EditorCamera);
+        m_RenderObj->DrawObject("ShadowMap",{0,1},m_EditorCamera);
         break;
     case SceneState::Play:
       m_ActiveScene->OnUpdateRuntime(timestep);
@@ -278,15 +279,17 @@ void EditorLayer::OnAttach()
     m_RenderObj = CreateRef<RendererObject>();
     glm::mat4 transform1(1.0f);
     transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
     glm::mat4 transform2(1.0f);
     transform2 = glm::translate(transform2,glm::vec3(40.f,0.f,-40.f));
     transform2 = glm::scale(transform2,glm::vec3(10.f,10.f,10.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
     glm::mat4 transform3(1.0f);
     transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
     transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
 
     auto phongMethod = CreateRef<PhongMethod>();
     phongMethod->AddResource(m_shader);
@@ -331,6 +334,7 @@ void EditorLayer::OnAttach()
     shadowMapMethod->AddResource(shadowPhongShader,shadowShader);
     shadowMapMethod->AddResource(ShadowFrame,m_framebuffer);
     m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
+    
 
     //      SkyBox
     auto SkyboxShader = Shader::Create("../../../Rengine-Editor/assets/shaders/SkyBoxVertex.glsl","../../../Rengine-Editor/assets/shaders/SkyBoxFragment.glsl");
@@ -340,6 +344,12 @@ void EditorLayer::OnAttach()
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Indoor/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox2/");
+
+    // PRT
+    auto prtMethod = CreateRef<PRTMethod>();
+    auto prtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ShadowMapV.glsl","../../../Rengine-Editor/assets/shaders/ShadowMapF.glsl");
+    prtMethod->AddResource(prtShader,SkyboxShader);
+    m_RenderObj->AddMethod("PRT",prtMethod);
 
     class CameraController :public ScriptableEntity
     {
