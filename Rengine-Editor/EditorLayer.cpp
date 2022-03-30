@@ -56,7 +56,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("ShadowMap",{0,1},m_EditorCamera);
+        m_RenderObj->DrawObject("PRT",{0,1},m_EditorCamera);
         break;
     case SceneState::Play:
         m_ActiveScene->OnUpdateRuntime(timestep);
@@ -347,9 +347,13 @@ void EditorLayer::OnAttach()
 
     // PRT
     auto prtMethod = CreateRef<PRTMethod>();
-    auto prtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ShadowMapV.glsl","../../../Rengine-Editor/assets/shaders/ShadowMapF.glsl");
+    auto prtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/PRTVertex.glsl","../../../Rengine-Editor/assets/shaders/PRTFragment.glsl");
     prtMethod->AddResource(prtShader,SkyboxShader);
     m_RenderObj->AddMethod("PRT",prtMethod);
+    m_SkyBox.SetPRTShader(prtShader);
+
+    // PreCompute
+    m_RenderObj->ComputePrt();
 
     class CameraController :public ScriptableEntity
     {

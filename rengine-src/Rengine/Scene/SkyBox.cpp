@@ -110,8 +110,8 @@ void SkyBox::ComputePRTSH(const std::string& path)
     std::ofstream SHfile;
     SHfile.open((path + "/light.txt").c_str());
 
-    if(SHfile.is_open())
-        std::cout <<":ascobc" << std::endl;
+    // if(SHfile.is_open())
+    //     std::cout <<":ascobc" << std::endl;
     glm::mat3 SHR, SHG, SHB;
 
     PrecomputeCubemapSH<2>(path, SHR, SHG, SHB);

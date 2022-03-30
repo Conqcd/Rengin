@@ -17,8 +17,6 @@ PRTMethod::~PRTMethod()
 
 void PRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
-    m_SkyBoxShader->Bind();
-
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());

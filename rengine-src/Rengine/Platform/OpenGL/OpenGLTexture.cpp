@@ -108,7 +108,7 @@ void OpenGLTexture2D::Unbind() const
 
 
 OpenGLTextureCube::OpenGLTextureCube(const std::string& posx,const std::string& negx,const std::string& posy,const std::string& negy,const std::string& posz,const std::string& negz)
-    : m_path({negx,negy,negz,posx,posy,posz})
+    : m_path({posx,negx,posy,negy,posz,negz})
 {
     RE_PROFILE_FUNCTION();
     stbi_set_flip_vertically_on_load(0);

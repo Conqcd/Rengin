@@ -9,7 +9,7 @@ namespace Rengin
 {
  
 ObjManager::ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
-           : m_transform(transform), m_Path(path)
+           : m_transform(transform), m_Path(material_path)
 {
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
@@ -113,6 +113,8 @@ void ObjManager::BindTexture(int id,int slot) const
 
 PRTObjManager::PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
 {
+    m_transform = transform;
+    m_Path = material_path;
     isPrt = true;
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
