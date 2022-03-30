@@ -17,16 +17,16 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
 {
     std::vector<Eigen::Vector3f> cubemapDirs;
     int height,width,channel;
-    std::vector<stbi_uc*> images;
-    char str[6][16] = {"negx.jpg","posx.jpg","negy.jpg","posy.jpg","negz.jpg","posz.jpg"};
+    std::vector<float*> images;
+    char str[6][16] = {"negx.jpg","posx.jpg","posy.jpg","negy.jpg","negz.jpg","posz.jpg"};
     stbi_set_flip_vertically_on_load(0);
     for (int i = 0; i < 6; i++)
     {
-        stbi_uc *data = nullptr;
+        float *data = nullptr;
         {
             RE_PROFILE_SCOPE(
                 "stbi_load - OpenGLTextureCube::OpenGLTextureCube(const std::string&,const std::string&,const std::string&,const std::string&,const std::string&,const std::string&)");
-            data = stbi_load((path + str[i]).c_str(), &width, &height, &channel, 0);
+            data = stbi_loadf((path + str[i]).c_str(), &width, &height, &channel, 3);
         }
         RE_CORE_ASSERT(data, "fail to load image!");
         images.push_back(data);
@@ -62,7 +62,7 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
             {
                 Eigen::Vector3f dir = cubemapDirs[i * width * height + y * width + x];
                 int index = (y * width + x) * channel;
-                Eigen::Array3f Le(images[i][index + 0] / 256.f, images[i][index + 1] / 256.f,images[i][index + 2] / 256.f);
+                Eigen::Array3f Le(images[i][index + 0] , images[i][index + 1] ,images[i][index + 2]);
                 
                 int k = 0;
                 for (int l = 0; l < SHOrder + 1; l++)

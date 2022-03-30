@@ -55,7 +55,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
-        m_SkyBox.RenderCube(4,m_EditorCamera);
+        m_SkyBox.RenderCube(1,m_EditorCamera);
         m_RenderObj->DrawObject("PRT",{0,1},m_EditorCamera);
         break;
     case SceneState::Play:
@@ -141,8 +141,6 @@ void EditorLayer::OnImGuiRender()
     {
         if (ImGui::BeginMenu("File"))
         {
-            // Disabling fullscreen would allow the window to be moved to the front of other windows,
-            // which we can't undo at the moment without finer window depth/z control.
             if(ImGui::MenuItem("New","Ctrl+N"))
             {
                 NewScene();
