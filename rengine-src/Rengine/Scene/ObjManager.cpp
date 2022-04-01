@@ -10,6 +10,9 @@
 namespace Rengin
 {
  
+const int SHCoeffLength = 9;
+const int SHOrder = 2;
+
 ObjManager::ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
            : m_transform(transform), m_Path(material_path)
 {
@@ -128,6 +131,7 @@ PRTObjManager::PRTObjManager(const std::string& path,const std::string& material
     int size = attrib->vertices.size() / 3;
     m_Vertices.resize(size * 3);
     m_Normals.resize(size * 3);
+    m_Transport.resize(size * SHCoeffLength);
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays.push_back(VertexArray::Create());
@@ -227,18 +231,17 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 
     }else
     {
-        auto Transport = new float[m_Vertices.size() * 3];
         int vernum = 0;
         tsFile >> vernum;
         int idx = 0;
         for (int i = 0; i < vernum; i++) {
-            tsFile >> Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
-                Transport[idx++] >> Transport[idx++] >> Transport[idx++] >>
-                Transport[idx++] >> Transport[idx++] >> Transport[idx++];
+            tsFile >> m_Transport[idx++] >> m_Transport[idx++] >> m_Transport[idx++] >>
+                m_Transport[idx++] >> m_Transport[idx++] >> m_Transport[idx++] >>
+                m_Transport[idx++] >> m_Transport[idx++] >> m_Transport[idx++];
         }
 
         tsFile.close();
-        auto VertexBuffer = VertexBuffer::Create(Transport, vernum * 9 * sizeof(float));
+        auto VertexBuffer = VertexBuffer::Create(m_Transport.data(), vernum * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
         for (size_t i = 0; i < m_VertexArrays.size(); i++) {
@@ -246,13 +249,10 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
             m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
         }
 
-        delete[] Transport;
         hasTransportSH = true;
     }
 }
 
-const int SHCoeffLength = 9;
-const int SHOrder = 2;
 
 void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
 {
@@ -265,7 +265,6 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
         fout.open((m_Path + "/transport.txt"));
         int VerticesSize = m_Vertices.size() / 3;
         fout << VerticesSize << std::endl;
-        m_Transport.resize(VerticesSize * SHCoeffLength);
         Eigen::Matrix4f transform;
         for (int i = 0; i < 4; i++)
         {
@@ -351,7 +350,7 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
                     m_Transport[j] += Transport_tmp[j];
             }
         }
-        auto VertexBuffer = VertexBuffer::Create(m_Transport.data(), VerticesSize * 9 * sizeof(float));
+        auto VertexBuffer = VertexBuffer::Create(m_Transport.data(), VerticesSize * SHCoeffLength * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
         for (size_t i = 0; i < m_VertexArrays.size(); i++) {
