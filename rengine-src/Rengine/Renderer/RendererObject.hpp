@@ -30,7 +30,7 @@ public:
     void AddObj(const Ref<ObjManager> obj);
     void ComputePrt();
     bool rayIntersect(const glm::vec3& v,const glm::vec3& wi);
-    bool rayIntersect(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float& value);
+    bool rayIntersect(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,std::vector<float>& value);
 
 };
 

@@ -265,7 +265,7 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
         fout.open((m_Path + "/transport.txt"));
         int VerticesSize = m_Vertices.size() / 3;
         fout << VerticesSize << std::endl;
-        auto Transport = new float[VerticesSize * SHCoeffLength];
+        m_Transport.resize(VerticesSize * SHCoeffLength);
         Eigen::Matrix4f transform;
         for (int i = 0; i < 4; i++)
         {
@@ -297,14 +297,14 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
             auto shCoeff = ProjectFunction(SHOrder, shFunc, m_SampleCount);
             for (int j = 0; j < shCoeff.size(); j++)
             {
-                Transport[i * 9 + j] = shCoeff[j];
+                m_Transport[i * 9 + j] = shCoeff[j];
             }
         }
         if (type == PRTType::Interreflection)
         {
-            auto Transport_tmp = new float[VerticesSize * SHCoeffLength];
             for (int i = 0; i < m_Bounce; i++)
-            {
+            {                
+                decltype(m_Transport) Transport_tmp(VerticesSize * SHCoeffLength);
                 for (int j = 0; j < VerticesSize; j++)
                 {
                     glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
@@ -335,20 +335,23 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
 
                             // double value = 0.0;
                             glm::vec3 bary;
-                            float value = 0.f;
+                            std::vector<float> value(SHCoeffLength);
                             if(total->rayIntersect(v,wi,bary,value))
                             {
-                                Transport_tmp[j * 9] = value * weight * std::max(0.0f,static_cast<float>(glm::dot(glm::transpose(wi), n)));
+                                for (int k = 0; k < SHCoeffLength; k++)
+                                {
+                                    Transport_tmp[j * 9 + k] = value[k] * weight * std::max(0.0f,static_cast<float>(glm::dot(wi, n)));
+                                }
                             }
                         }
                     }
                 }
                 int length = VerticesSize * SHCoeffLength;
                 for(int j = 0; j < length;j ++)
-                    Transport[j] += Transport_tmp[j];
+                    m_Transport[j] += Transport_tmp[j];
             }
         }
-        auto VertexBuffer = VertexBuffer::Create(Transport, VerticesSize * 9 * sizeof(float));
+        auto VertexBuffer = VertexBuffer::Create(m_Transport.data(), VerticesSize * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
         for (size_t i = 0; i < m_VertexArrays.size(); i++) {
@@ -359,11 +362,10 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
         {
             for (int j = 0; j < SHCoeffLength; j++)
             {
-                fout << Transport[f * SHCoeffLength + j] << " ";
+                fout << m_Transport[f * SHCoeffLength + j] << " ";
             }
             fout << std::endl;
         }
-        delete[] Transport;
         fout.close();
     }
 }
@@ -397,7 +399,7 @@ bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi)
     return false;
 }
 
-bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float &t,float& value)
+bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float &t,std::vector<float>& value)
 {
     bool flag = false;
     for (int i = 0; i < m_IndicesList.size(); i++)
@@ -426,6 +428,11 @@ bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary
                 bary[0] = b1;
                 bary[1] = b2;
                 bary[2] = 1 - b1 - b2;
+                int SHLen = value.size();
+                for (int k = 0; k < SHLen; k++)
+                {
+                    value[k] = m_Transport[id1 * SHLen + k] * b1 + m_Transport[id2 * SHLen + k] * b2 + m_Transport[id3 * SHLen + k] * bary[2];
+                }
                 flag = true;
             }
         }

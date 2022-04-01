@@ -46,6 +46,7 @@ class PRTObjManager :public ObjManager
 {
 private:
     std::vector<tinyobj::real_t> m_Vertices,m_Normals;
+    std::vector<float> m_Transport;
     std::vector<std::vector<uint32_t>> m_IndicesList;
     bool hasTransportSH = false;
 public:
@@ -54,7 +55,7 @@ public:
     void AddPRTVertex(const std::string& prtpath);
     void ComputeTransportSH(PRTType type,RendererObject* total);
     bool hit(const glm::vec3& v,const glm::vec3& wi);
-    bool hit(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float &t,float& value);
+    bool hit(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float &t,std::vector<float>& value);
 };
 
 

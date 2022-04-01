@@ -46,7 +46,7 @@ bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi)
     return false;
 }
 
-bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float& value)
+bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,std::vector<float>& value)
 {
     bool flag = false;
     float t = 1e20;
