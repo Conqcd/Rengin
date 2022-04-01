@@ -46,13 +46,13 @@ bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi)
     return false;
 }
 
-bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary)
+bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float& value)
 {
     bool flag = false;
     float t = 1e20;
     for (int i = 0; i < ObjLists.size(); i++)
     {
-        if(std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->hit(v,wi,bary,t))   flag = true;
+        if(std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->hit(v,wi,bary,t,value))   flag = true;
     }
     return flag;
 }

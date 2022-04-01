@@ -335,12 +335,10 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
 
                             // double value = 0.0;
                             glm::vec3 bary;
-                            if(total->rayIntersect(v,wi,bary))
+                            float value = 0.f;
+                            if(total->rayIntersect(v,wi,bary,value))
                             {
-                                Transport_tmp[j * 9] =   (Transport.col(its.tri_index.x()) * bary[0]
-                                                                +   Transport.col(its.tri_index.y()) * bary[1]
-                                                                +   Transport.col(its.tri_index.z()) * bary[2])
-                                                                * weight * std::max(0.0f,static_cast<float>(glm::dot(glm::transpose(wi), n)));
+                                Transport_tmp[j * 9] = value * weight * std::max(0.0f,static_cast<float>(glm::dot(glm::transpose(wi), n)));
                             }
                         }
                     }
@@ -399,7 +397,7 @@ bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi)
     return false;
 }
 
-bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float &t)
+bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float &t,float& value)
 {
     bool flag = false;
     for (int i = 0; i < m_IndicesList.size(); i++)

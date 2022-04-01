@@ -54,7 +54,7 @@ public:
     void AddPRTVertex(const std::string& prtpath);
     void ComputeTransportSH(PRTType type,RendererObject* total);
     bool hit(const glm::vec3& v,const glm::vec3& wi);
-    bool hit(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float &t);
+    bool hit(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float &t,float& value);
 };
 
 
