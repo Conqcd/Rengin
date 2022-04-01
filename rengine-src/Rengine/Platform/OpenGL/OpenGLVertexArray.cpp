@@ -107,6 +107,10 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexbuffer)
                     // glVertexAttribDivisor(m_VertexBufferIndex, 1);
                     m_VertexBufferIndex++;
                 }
+                // for (uint8_t i = 0; i < count; i++)
+                // {
+                //     glVertexAttribDivisor(m_VertexBufferIndex - count + i, 1);
+                // }
                 break;
             }
             default:
