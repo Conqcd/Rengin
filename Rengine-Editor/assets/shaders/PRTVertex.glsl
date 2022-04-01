@@ -20,12 +20,12 @@ void main(void) {
     v_Color = vec3(0);
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
-            v_Color.x += a_PrecomputeLT[i][j];
-            v_Color.y += a_PrecomputeLT[i][j];
-            v_Color.z += a_PrecomputeLT[i][j];
-            // v_Color.x += u_PrecomputeLr[i][j] * a_PrecomputeLT[i][j];
-            // v_Color.y += u_PrecomputeLg[i][j] * a_PrecomputeLT[i][j];
-            // v_Color.z += u_PrecomputeLb[i][j] * a_PrecomputeLT[i][j];
+            // v_Color.x += a_PrecomputeLT[i][j];
+            // v_Color.y += a_PrecomputeLT[i][j];
+            // v_Color.z += a_PrecomputeLT[i][j];
+            v_Color.x += u_PrecomputeLr[i][j] * a_PrecomputeLT[j][i];
+            v_Color.y += u_PrecomputeLg[i][j] * a_PrecomputeLT[j][i];
+            v_Color.z += u_PrecomputeLb[i][j] * a_PrecomputeLT[j][i];
         }
     }
 }

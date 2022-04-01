@@ -55,7 +55,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         }
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
-        m_SkyBox.RenderCube(1,m_EditorCamera);
+        m_SkyBox.RenderCube(4,m_EditorCamera);
         m_RenderObj->DrawObject("PRT",{0,1},m_EditorCamera);
         break;
     case SceneState::Play:

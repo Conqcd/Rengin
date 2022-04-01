@@ -104,7 +104,7 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexbuffer)
                         element.m_normalized ? GL_TRUE : GL_FALSE,
                         layout.getStride(),
                         (const void*)(element.Offset + sizeof(float) * count * i));
-                    glVertexAttribDivisor(m_VertexBufferIndex, 1);
+                    // glVertexAttribDivisor(m_VertexBufferIndex, 1);
                     m_VertexBufferIndex++;
                 }
                 break;

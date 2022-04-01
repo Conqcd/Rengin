@@ -280,6 +280,8 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
             glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
             v = glm::vec3(m_transform * glm::vec4(v,1.0f));
             glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
+            n = glm::vec3(m_transform * glm::vec4(n,0.0f));
+            n = glm::normalize(n);
             auto shFunc = [&](double phi, double theta) -> double {
                 const auto wi = Math::ToVector(phi, theta);
                 // const Eigen::Vector3f wi(d.x(), d.y(), d.z());
