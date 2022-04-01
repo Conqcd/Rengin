@@ -10,6 +10,9 @@
 
 namespace Rengin
 {
+
+class RendererObject;
+
 enum class PRTType
 {
     Unshadowed,
@@ -26,6 +29,7 @@ protected:
     bool isPrt = false;
     std::string m_Path;
     int m_SampleCount = 100;
+    int m_Bounce = 1;
 public:
     ObjManager() = default;
     ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
@@ -48,7 +52,9 @@ public:
     PRTObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform);
     virtual ~PRTObjManager() = default;
     void AddPRTVertex(const std::string& prtpath);
-    void ComputeTransportSH(PRTType type);
+    void ComputeTransportSH(PRTType type,RendererObject* total);
+    bool hit(const glm::vec3& v,const glm::vec3& wi);
+    bool hit(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary,float &t);
 };
 
 

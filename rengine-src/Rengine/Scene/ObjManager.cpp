@@ -1,9 +1,11 @@
 #include "repch.hpp"
+#include <random>
 #include "ObjManager.hpp"
 #include <cstring>
 #include "Rengine/Utils/PrtCompute.hpp"
 #include "Rengine/Math/Math.hpp"
 #include <Eigen/Core>
+#include "Rengine/Renderer/RendererObject.hpp"
 
 namespace Rengin
 {
@@ -252,7 +254,7 @@ void PRTObjManager::AddPRTVertex(const std::string &prtpath)
 const int SHCoeffLength = 9;
 const int SHOrder = 2;
 
-void PRTObjManager::ComputeTransportSH(PRTType type)
+void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
 {
     if(!hasTransportSH)
     {
@@ -286,9 +288,10 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
                 const auto wi = Math::ToVector(phi, theta);
                 // const Eigen::Vector3f wi(d.x(), d.y(), d.z());
                 if (type == PRTType::Unshadowed)
-                    return std::max(0.0f,static_cast<float>(glm::dot(wi,n)));
+                    return std::max(0.0f,glm::dot(wi,n));
                     // return std::max(0.0f,static_cast<float>(wi.transpose() * n));
-                // else
+                else
+                    return std::max(0.0f,glm::dot(wi,n)) * static_cast<float>(1.0 - total->rayIntersect(v,wi));
                 //     return std::max(0.0f,static_cast<float>(wi.transpose() * n)) * static_cast<float>(1.0 - scene->rayIntersect({v,wi}));
             };
             auto shCoeff = ProjectFunction(SHOrder, shFunc, m_SampleCount);
@@ -297,7 +300,56 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
                 Transport[i * 9 + j] = shCoeff[j];
             }
         }
+        if (type == PRTType::Interreflection)
+        {
+            auto Transport_tmp = new float[VerticesSize * SHCoeffLength];
+            for (int i = 0; i < m_Bounce; i++)
+            {
+                for (int j = 0; j < VerticesSize; j++)
+                {
+                    glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
+                    v = glm::vec3(m_transform * glm::vec4(v,1.0f));
+                    glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
+                    n = glm::vec3(m_transform * glm::vec4(n,0.0f));
+                    n = glm::normalize(n);
 
+                    const int sample_side = static_cast<int>(floor(sqrt(m_SampleCount)));
+
+                    std::unique_ptr<std::vector<double>> coeffs(new std::vector<double>());
+                    coeffs->assign(GetCoefficientCount(SHOrder), 0.0);
+
+                    std::random_device rd;
+                    std::mt19937 gen(rd());
+                    std::uniform_real_distribution<> rng(0.0, 1.0);
+                    
+                    double weight = 4.0 * M_PI / (sample_side * sample_side);
+                    for (int t = 0; t < sample_side; t++) {
+                        for (int p = 0; p < sample_side; p++) {
+                            double alpha = (t + rng(gen)) / sample_side;
+                            double beta = (p + rng(gen)) / sample_side;
+                            
+                            double phi = 2.0 * M_PI * beta;
+                            double theta = acos(2.0 * alpha - 1.0);
+
+                            const auto wi = Math::ToVector(phi, theta);
+
+                            // double value = 0.0;
+                            glm::vec3 bary;
+                            if(total->rayIntersect(v,wi,bary))
+                            {
+                                Transport_tmp[j * 9] =   (Transport.col(its.tri_index.x()) * bary[0]
+                                                                +   Transport.col(its.tri_index.y()) * bary[1]
+                                                                +   Transport.col(its.tri_index.z()) * bary[2])
+                                                                * weight * std::max(0.0f,static_cast<float>(glm::dot(glm::transpose(wi), n)));
+                            }
+                        }
+                    }
+                }
+                int length = VerticesSize * SHCoeffLength;
+                for(int j = 0; j < length;j ++)
+                    Transport[j] += Transport_tmp[j];
+            }
+        }
         auto VertexBuffer = VertexBuffer::Create(Transport, VerticesSize * 9 * sizeof(float));
         VertexBuffer->SetLayout(layout_v);
 
@@ -316,6 +368,71 @@ void PRTObjManager::ComputeTransportSH(PRTType type)
         delete[] Transport;
         fout.close();
     }
+}
+
+bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi)
+{
+    for (int i = 0; i < m_IndicesList.size(); i++)
+    {
+        for (int j = 0; j < m_IndicesList[i].size(); j += 3)
+        {
+            int id1 = m_IndicesList[i][j];
+            int id2 = m_IndicesList[i][j + 1];
+            int id3 = m_IndicesList[i][j + 2];
+            glm::vec3 v0(m_Vertices[id1 * 3], m_Vertices[id1 * 3 + 1], m_Vertices[id1 * 3 + 2]);
+            glm::vec3 v1(m_Vertices[id2 * 3], m_Vertices[id2 * 3 + 1], m_Vertices[id2 * 3 + 2]);
+            glm::vec3 v2(m_Vertices[id3 * 3], m_Vertices[id3 * 3 + 1], m_Vertices[id3 * 3 + 2]);
+
+            glm::vec3 E1 = v1 - v0;
+            glm::vec3 E2 = v2 - v0;
+            glm::vec3 S = v - v0;
+            glm::vec3 S1 = glm::cross(wi, E2);
+            glm::vec3 S2 = glm::cross(S, E1);
+            float coeff = 1.0 / glm::dot(S1, E1);
+            float tt = coeff * glm::dot(S2, E2);
+            float b1 = coeff * glm::dot(S1, S);
+            float b2 = coeff * glm::dot(S2, wi);
+            if (tt >= 0.f && b1 >= 0.f && b2 >= 0.f && (1 - b1 - b2) >= 0.f)
+                return true;
+        }
+    }
+    return false;
+}
+
+bool PRTObjManager::hit(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary,float &t)
+{
+    bool flag = false;
+    for (int i = 0; i < m_IndicesList.size(); i++)
+    {
+        for (int j = 0; j < m_IndicesList[i].size(); j += 3)
+        {
+            int id1 = m_IndicesList[i][j];
+            int id2 = m_IndicesList[i][j + 1];
+            int id3 = m_IndicesList[i][j + 2];
+            glm::vec3 v0(m_Vertices[id1 * 3], m_Vertices[id1 * 3 + 1], m_Vertices[id1 * 3 + 2]);
+            glm::vec3 v1(m_Vertices[id2 * 3], m_Vertices[id2 * 3 + 1], m_Vertices[id2 * 3 + 2]);
+            glm::vec3 v2(m_Vertices[id3 * 3], m_Vertices[id3 * 3 + 1], m_Vertices[id3 * 3 + 2]);
+
+            glm::vec3 E1 = v1 - v0;
+            glm::vec3 E2 = v2 - v0;
+            glm::vec3 S = v - v0;
+            glm::vec3 S1 = glm::cross(wi, E2);
+            glm::vec3 S2 = glm::cross(S, E1);
+            float coeff = 1.0 / glm::dot(S1, E1);
+            float tt = coeff * glm::dot(S2, E2);
+            float b1 = coeff * glm::dot(S1, S);
+            float b2 = coeff * glm::dot(S2, wi);
+            if (tt >= 0.f && tt < t && b1 >= 0.f && b2 >= 0.f && (1 - b1 - b2) >= 0.f)
+            {
+                t = tt;
+                bary[0] = b1;
+                bary[1] = b2;
+                bary[2] = 1 - b1 - b2;
+                flag = true;
+            }
+        }
+    }
+    return flag;
 }
 
 } // namespace Rengin

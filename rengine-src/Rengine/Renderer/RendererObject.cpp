@@ -3,6 +3,7 @@
 #include "Rengine/Renderer/RenderCommand.hpp"
 
 namespace Rengin
+
 {
 
 RendererObject::RendererObject()
@@ -31,9 +32,29 @@ void RendererObject::ComputePrt()
     {
         if(ObjLists[i]->UsePrt())
         {
-            std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->ComputeTransportSH(m_PrtType);
+            std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->ComputeTransportSH(m_PrtType,this);
         }
     }
+}
+
+bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi)
+{
+    for (int i = 0; i < ObjLists.size(); i++)
+    {
+        if(std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->hit(v,wi))   return true;
+    }
+    return false;
+}
+
+bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::vec3 &bary)
+{
+    bool flag = false;
+    float t = 1e20;
+    for (int i = 0; i < ObjLists.size(); i++)
+    {
+        if(std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->hit(v,wi,bary,t))   flag = true;
+    }
+    return flag;
 }
 
 } // namespace Rengin

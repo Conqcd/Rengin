@@ -9,6 +9,10 @@ namespace Rengin
 
 extern const Eigen::Vector3f cubemapFaceDirections[6][3];
 
+constexpr int GetCoefficientCount(int order) {
+  return (order + 1) * (order + 1);
+}
+
 float CalcArea(const float &u_, const float &v_, const int &width,const int &height);
 double EvalSH(int l, int m, const Eigen::Vector3d& dir);
 

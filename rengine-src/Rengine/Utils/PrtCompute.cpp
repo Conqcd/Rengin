@@ -4,9 +4,7 @@
 #include <random>
 namespace Rengin
 {
-constexpr int GetCoefficientCount(int order) {
-  return (order + 1) * (order + 1);
-}
+
 
 constexpr int GetIndex(int l, int m) {
   return l * (l + 1) + m;

@@ -20,7 +20,7 @@ class RendererObject
 private:
     std::vector<Ref<ObjManager>> ObjLists;
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
-    PRTType m_PrtType = PRTType::Unshadowed;
+    PRTType m_PrtType = PRTType::Shadow;
     Lights lights;
 public:
     RendererObject();
@@ -29,6 +29,9 @@ public:
     void AddMethod(const std::string& name,Ref<RenderMethod> method);
     void AddObj(const Ref<ObjManager> obj);
     void ComputePrt();
+    bool rayIntersect(const glm::vec3& v,const glm::vec3& wi);
+    bool rayIntersect(const glm::vec3& v,const glm::vec3& wi,glm::vec3& bary);
+
 };
 
 } // namespace Rengin
