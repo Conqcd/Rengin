@@ -340,8 +340,9 @@ void EditorLayer::OnAttach()
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/CornellBox/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/GraceCathedral/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Indoor/");
-    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox/");
+    // m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox2/");
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Color/");
 
     // PRT
     auto prtMethod = CreateRef<PRTMethod>();

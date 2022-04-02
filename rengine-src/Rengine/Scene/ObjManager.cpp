@@ -275,9 +275,6 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
         }
         for (int i = 0; i < VerticesSize; i++)
         {
-            // Eigen::Vector3f v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
-            // v = transform * Eigen::Vector4f(v,1.0f);
-            // Eigen::Vector3f n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]); 
             glm::vec3 v(m_Vertices[i * 3],m_Vertices[i * 3 + 1],m_Vertices[i * 3 + 2]);
             v = glm::vec3(m_transform * glm::vec4(v,1.0f));
             glm::vec3 n(m_Normals[i * 3],m_Normals[i * 3 + 1],m_Normals[i * 3 + 2]);
@@ -285,13 +282,10 @@ void PRTObjManager::ComputeTransportSH(PRTType type,RendererObject* total)
             n = glm::normalize(n);
             auto shFunc = [&](double phi, double theta) -> double {
                 const auto wi = Math::ToVector(phi, theta);
-                // const Eigen::Vector3f wi(d.x(), d.y(), d.z());
                 if (type == PRTType::Unshadowed)
                     return std::max(0.0f,glm::dot(wi,n));
-                    // return std::max(0.0f,static_cast<float>(wi.transpose() * n));
                 else
                     return std::max(0.0f,glm::dot(wi,n)) * static_cast<float>(1.0 - total->rayIntersect(v,wi));
-                //     return std::max(0.0f,static_cast<float>(wi.transpose() * n)) * static_cast<float>(1.0 - scene->rayIntersect({v,wi}));
             };
             auto shCoeff = ProjectFunction(SHOrder, shFunc, m_SampleCount);
             for (int j = 0; j < shCoeff.size(); j++)

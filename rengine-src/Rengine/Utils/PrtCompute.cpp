@@ -142,11 +142,10 @@ std::vector<double> ProjectFunction(int order, const std::function<double(double
 }
 
 
-Eigen::Matrix3f ComputeSquareMatrix_3by3(const glm::mat4& rotation)
+Eigen::Matrix3f ComputeSquareMatrix_3by3(const Eigen::Matrix3d& rotation)
 {
-    Eigen::Matrix3f m33;
     // 1、pick ni - {ni}
-	Eigen::Vector3d  n1(1.0, 0.0, 0.0, 0.0), n2(0.0, 0.0, 1.0, 0.0), n3(0.0, 1.0, 0.0, 0.0);
+	Eigen::Vector3d  n1(1.0, 0.0, 0.0), n2(0.0, 0.0, 1.0), n3(0.0, 1.0, 0.0);
 
 	// 2、{P(ni)} - A  A_inverse
 	
@@ -157,53 +156,100 @@ Eigen::Matrix3f ComputeSquareMatrix_3by3(const glm::mat4& rotation)
         A_Inverse(1,i) = EvalSH(1,i - 1,n2);
         A_Inverse(2,i) = EvalSH(1,i - 1,n3);
     }
-    A_Inverse = A_Inverse.inverse();
-    
-	// A_inverse = math.inv(A_inverse);
+
+    Eigen::Matrix3f b = A_Inverse.inverse();
 
 	// 3、用 R 旋转 ni - {R(ni)}
-	// n1 = math.multiply(rotationMatrix,n1);
-	// n2 = math.multiply(rotationMatrix,n2);
-	// n3 = math.multiply(rotationMatrix,n3);
+
+    n1 = rotation * n1;
+    n2 = rotation * n2;
+    n3 = rotation * n3;
 
 	// 4、R(ni) SH投影 - S
-	// let row11 = SHEval(n1._data[0],n1._data[1],n1._data[2],3);
-	// let row22 = SHEval(n2._data[0],n2._data[1],n2._data[2],3);
-	// let row33 = SHEval(n3._data[0],n3._data[1],n3._data[2],3);
 
-	// let mathMatrix2 = [];
-	// mathMatrix2.push(row11.slice(1,4));
-	// mathMatrix2.push(row22.slice(1,4));
-	// mathMatrix2.push(row33.slice(1,4));
-	// let S = math.matrix(mathMatrix2);
+    Eigen::Matrix3f S;
+    for (int i = 0; i < 3; i++)
+    {
+        S(0,i) = EvalSH(1,i - 1,n1);
+        S(1,i) = EvalSH(1,i - 1,n2);
+        S(2,i) = EvalSH(1,i - 1,n3);
+    }
 
 	// 5、S*A_inverse
-	// return math.multiply(S, A_inverse)
-    return m33;
+	return -S * -A_Inverse.inverse();
 }
 
-Eigen::Matrix<float,5,5> ComputeSquareMatrix_5by5(const glm::mat4& rotation)
+Eigen::Matrix<float,5,5> ComputeSquareMatrix_5by5(const Eigen::Matrix3d& rotation)
 {
-    Eigen::Matrix<float,5,5> m55;
+    // 1、pick ni - {ni}
+    double k = 1 / std::sqrt(2);
+	Eigen::Vector3d  n1(1.0, 0.0, 0.0), n2(0.0, 0.0, 1.0), n3(k, k, 0.0), n4(k, 0.0, k), n5(0.0, k, k);
 
-    return m55;
+	// 2、{P(ni)} - A  A_inverse
+	
+    Eigen::Matrix<float,5,5> A_Inverse;
+    for (int i = 0; i < 5; i++)
+    {
+        A_Inverse(0,i) = EvalSH(2,i - 2,n1);
+        A_Inverse(1,i) = EvalSH(2,i - 2,n2);
+        A_Inverse(2,i) = EvalSH(2,i - 2,n3);
+        A_Inverse(3,i) = EvalSH(2,i - 2,n4);
+        A_Inverse(4,i) = EvalSH(2,i - 2,n5);
+    }
+    Eigen::Matrix<float,5,5> b = A_Inverse.inverse();
+
+	// 3、用 R 旋转 ni - {R(ni)}
+
+    n1 = rotation * n1;
+    n2 = rotation * n2;
+    n3 = rotation * n3;
+    n4 = rotation * n4;
+    n5 = rotation * n5;
+
+	// 4、R(ni) SH投影 - S
+
+    Eigen::Matrix<float,5,5> S;
+    for (int i = 0; i < 5; i++)
+    {
+        S(0,i) = EvalSH(2,i - 2,n1);
+        S(1,i) = EvalSH(2,i - 2,n2);
+        S(2,i) = EvalSH(2,i - 2,n3);
+        S(3,i) = EvalSH(2,i - 2,n4);
+        S(4,i) = EvalSH(2,i - 2,n5);
+    }
+
+	// 5、S*A_inverse
+	return -S * -A_Inverse.inverse();
 }
 
 std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const glm::mat3& PreComSHR
                         ,const glm::mat3& PreComSHG,const glm::mat3& PreComSHB)
 {
-    Eigen::Matrix<float,9,9>  rotMatrix;
+    Eigen::Matrix<float,9,9>  rotMatrix = Eigen::Matrix<float,9,9>::Zero(9,9);
     Eigen::Vector<float,9>  shR,shG,shB;
     std::vector<glm::mat3> PreCom(3);
 
     // 1 × 1
     rotMatrix(0,0) = 1.f;
+    Eigen::Matrix3d rota;
+    int idx = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            rota(i,j) = rotation[i][j];
+            shR(idx) = PreComSHR[i][j];
+            shG(idx) = PreComSHG[i][j];
+            shB(idx++) = PreComSHB[i][j];
+        }
+    }
+    
 
     // 3 × 3
-    auto M33 = ComputeSquareMatrix_3by3(rotation);
+    auto M33 = ComputeSquareMatrix_3by3(rota);
 
     // 5 × 5
-    auto M55 = ComputeSquareMatrix_5by5(rotation);
+    auto M55 = ComputeSquareMatrix_5by5(rota);
 
     for (int i = 1; i < 4; i++)
     {
@@ -223,7 +269,7 @@ std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const gl
     shR = rotMatrix * shR;
     shG = rotMatrix * shG;
     shB = rotMatrix * shB;
-    int idx = 0;
+    idx = 0;
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)

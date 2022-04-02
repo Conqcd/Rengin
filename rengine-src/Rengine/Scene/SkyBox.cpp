@@ -94,18 +94,23 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
     m_Shader->SetUniformMat4("u_View",glm::mat4(glm::mat3(camera.GetViewMatrix())));
     m_Shader->SetUniformMat4("u_Projection", camera.getProjection());
     // m_Shader->SetUniformMat4("u_MoveWithCamera", camera.getProjection());
-    // m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]].GetTransform());
+    // rotated[1] += 0.15f;
+    auto rotation = glm::rotate(glm::mat4(1.0), glm::radians(rotated[1]),glm::vec3(0.0, 1.0, 0.0));
+    m_Shader->SetUniformMat4("u_Transform",rotation);
     RenderCommand::DrawIndex(m_Cube);
     
     if(ComputePRTOK && m_PRTShader)
     {
-        rotated[1] += 30.f;
-        auto rotation = glm::rotate(glm::mat4(1.0),glm::radians(rotated[1]),glm::vec3(0.0,1.0,0.0));
+        auto rotation = glm::rotate(glm::mat4(1.0), glm::radians(rotated[1]),glm::vec3(1.0, 0.0, 0.0));
         std::vector<glm::mat3> PreComSH = GetRotationPrecomputeL(rotation,PreComSHR[id],PreComSHG[id],PreComSHB[id]);
         m_PRTShader->Bind();
-        m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSHR[id]);
-        m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSHG[id]);
-        m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSHB[id]);
+        m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSH[0]);
+        m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSH[1]);
+        m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSH[2]);
+
+        // m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSHR[id]);
+        // m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSHG[id]);
+        // m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSHB[id]);
     }
 }
 

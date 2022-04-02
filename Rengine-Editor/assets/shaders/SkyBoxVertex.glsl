@@ -17,7 +17,7 @@ void main() {
     // v_Normal = a_Normal;
     // v_TexCoords = a_TexCoords;
     v_TexCoords = a_Position;
-    vec4 position = u_Projection * u_View * vec4(a_Position, 1.0);
+    vec4 position = u_Projection * u_View * u_Transform * vec4(a_Position, 1.0);
     gl_Position = position.xyww;
     // gl_Position = position;
     // gl_Position = u_Projection * viewMatrix * u_Transform * u_MoveWithCamera * vec4(a_Position, 1.0);
