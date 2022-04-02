@@ -146,18 +146,19 @@ Eigen::Matrix3f ComputeSquareMatrix_3by3(const glm::mat4& rotation)
 {
     Eigen::Matrix3f m33;
     // 1、pick ni - {ni}
-	// Eigen n1 = [1, 0, 0, 0]; let n2 = [0, 0, 1, 0]; let n3 = [0, 1, 0, 0];
+	Eigen::Vector3d  n1(1.0, 0.0, 0.0, 0.0), n2(0.0, 0.0, 1.0, 0.0), n3(0.0, 1.0, 0.0, 0.0);
 
 	// 2、{P(ni)} - A  A_inverse
-	// let row1 = SHEval(n1[0],n1[1],n1[2],3);
-	// let row2 = SHEval(n2[0],n2[1],n2[2],3);
-	// let row3 = SHEval(n3[0],n3[1],n3[2],3);
 	
-	// let mathMatrix = [];
-	// mathMatrix.push(row1.slice(1,4));
-	// mathMatrix.push(row2.slice(1,4));
-	// mathMatrix.push(row3.slice(1,4));
-	// let A_inverse = math.matrix(mathMatrix);
+    Eigen::Matrix3f A_Inverse;
+    for (int i = 0; i < 3; i++)
+    {
+        A_Inverse(0,i) = EvalSH(1,i - 1,n1);
+        A_Inverse(1,i) = EvalSH(1,i - 1,n2);
+        A_Inverse(2,i) = EvalSH(1,i - 1,n3);
+    }
+    A_Inverse = A_Inverse.inverse();
+    
 	// A_inverse = math.inv(A_inverse);
 
 	// 3、用 R 旋转 ni - {R(ni)}
