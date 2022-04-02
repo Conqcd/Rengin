@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "SkyBox.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 #include "Rengine/Utils/PrtCompute.hpp"
 
 namespace Rengin
@@ -98,6 +99,9 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
     
     if(ComputePRTOK && m_PRTShader)
     {
+        rotated[1] += 30.f;
+        auto rotation = glm::rotate(glm::mat4(1.0),glm::radians(rotated[1]),glm::vec3(0.0,1.0,0.0));
+        std::vector<glm::mat3> PreComSH = GetRotationPrecomputeL(rotation,PreComSHR[id],PreComSHG[id],PreComSHB[id]);
         m_PRTShader->Bind();
         m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSHR[id]);
         m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSHG[id]);

@@ -18,6 +18,7 @@ private:
     Ref<Shader> m_Shader,m_PRTShader;
     std::vector<glm::mat3> PreComSHR,PreComSHG,PreComSHB;
     bool ComputePRTOK = true;
+    glm::vec3 rotated = glm::vec3(0.0,0.0,0.0);
 public:
     SkyBox();
     ~SkyBox() = default;

@@ -97,4 +97,5 @@ void PrecomputeCubemapSH(const std::string &path,glm::mat3& SHR,glm::mat3& SHG,g
 
 std::vector<double> ProjectFunction(int order, const std::function<double(double, double)>& func, int sample_count);
 
+std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const glm::mat3& PreComSHR,const glm::mat3& PreComSHG,const glm::mat3& PreComSHB);
 } // namespace Rengin

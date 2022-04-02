@@ -2,6 +2,8 @@
 #include "PrtCompute.hpp"
 #include "Rengine/Math/Math.hpp"
 #include <random>
+#include <Eigen/Dense>
+
 namespace Rengin
 {
 
@@ -139,4 +141,97 @@ std::vector<double> ProjectFunction(int order, const std::function<double(double
     return coeffs;
 }
 
+
+Eigen::Matrix3f ComputeSquareMatrix_3by3(const glm::mat4& rotation)
+{
+    Eigen::Matrix3f m33;
+    // 1、pick ni - {ni}
+	// Eigen n1 = [1, 0, 0, 0]; let n2 = [0, 0, 1, 0]; let n3 = [0, 1, 0, 0];
+
+	// 2、{P(ni)} - A  A_inverse
+	// let row1 = SHEval(n1[0],n1[1],n1[2],3);
+	// let row2 = SHEval(n2[0],n2[1],n2[2],3);
+	// let row3 = SHEval(n3[0],n3[1],n3[2],3);
+	
+	// let mathMatrix = [];
+	// mathMatrix.push(row1.slice(1,4));
+	// mathMatrix.push(row2.slice(1,4));
+	// mathMatrix.push(row3.slice(1,4));
+	// let A_inverse = math.matrix(mathMatrix);
+	// A_inverse = math.inv(A_inverse);
+
+	// 3、用 R 旋转 ni - {R(ni)}
+	// n1 = math.multiply(rotationMatrix,n1);
+	// n2 = math.multiply(rotationMatrix,n2);
+	// n3 = math.multiply(rotationMatrix,n3);
+
+	// 4、R(ni) SH投影 - S
+	// let row11 = SHEval(n1._data[0],n1._data[1],n1._data[2],3);
+	// let row22 = SHEval(n2._data[0],n2._data[1],n2._data[2],3);
+	// let row33 = SHEval(n3._data[0],n3._data[1],n3._data[2],3);
+
+	// let mathMatrix2 = [];
+	// mathMatrix2.push(row11.slice(1,4));
+	// mathMatrix2.push(row22.slice(1,4));
+	// mathMatrix2.push(row33.slice(1,4));
+	// let S = math.matrix(mathMatrix2);
+
+	// 5、S*A_inverse
+	// return math.multiply(S, A_inverse)
+    return m33;
+}
+
+Eigen::Matrix<float,5,5> ComputeSquareMatrix_5by5(const glm::mat4& rotation)
+{
+    Eigen::Matrix<float,5,5> m55;
+
+    return m55;
+}
+
+std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const glm::mat3& PreComSHR
+                        ,const glm::mat3& PreComSHG,const glm::mat3& PreComSHB)
+{
+    Eigen::Matrix<float,9,9>  rotMatrix;
+    Eigen::Vector<float,9>  shR,shG,shB;
+    std::vector<glm::mat3> PreCom(3);
+
+    // 1 × 1
+    rotMatrix(0,0) = 1.f;
+
+    // 3 × 3
+    auto M33 = ComputeSquareMatrix_3by3(rotation);
+
+    // 5 × 5
+    auto M55 = ComputeSquareMatrix_5by5(rotation);
+
+    for (int i = 1; i < 4; i++)
+    {
+        for (int j = 1; j < 4; j++)
+        {
+            rotMatrix(i,j) = M33(i - 1,j - 1);
+        }
+    }
+    for (int i = 4; i < 9; i++)
+    {
+        for (int j = 4; j < 9; j++)
+        {
+            rotMatrix(i,j) = M55(i - 4,j - 4);
+        }
+    }
+
+    shR = rotMatrix * shR;
+    shG = rotMatrix * shG;
+    shB = rotMatrix * shB;
+    int idx = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            PreCom[0][i][j] = shR(idx); 
+            PreCom[1][i][j] = shG(idx); 
+            PreCom[2][i][j] = shB(idx++); 
+        }
+    }
+    return PreCom;
+}
 } // namespace Rengin
