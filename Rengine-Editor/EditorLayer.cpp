@@ -332,7 +332,7 @@ void EditorLayer::OnAttach()
     shadowMapMethod->AddResource(shadowPhongShader,shadowShader);
     shadowMapMethod->AddResource(ShadowFrame,m_framebuffer);
     m_RenderObj->AddMethod("ShadowMap",shadowMapMethod);
-    
+ 
 
     //      SkyBox
     auto SkyboxShader = Shader::Create("../../../Rengine-Editor/assets/shaders/SkyBoxVertex.glsl","../../../Rengine-Editor/assets/shaders/SkyBoxFragment.glsl");
@@ -340,7 +340,7 @@ void EditorLayer::OnAttach()
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/CornellBox/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/GraceCathedral/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Indoor/");
-    // m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox/");
+    m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Skybox2/");
     m_SkyBox.AddCubeMap("../../../Rengine-Editor/assets/cubemap/Color/");
 
