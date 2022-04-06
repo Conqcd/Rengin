@@ -10,8 +10,10 @@ class SSRMethod : public RenderMethod
 {
 private:
     Ref<FrameBuffer> m_ShadowMap;
+    Ref<FrameBuffer> m_GBuffer;
     Ref<FrameBuffer> m_MainFrame;
-    Ref<Shader> m_ShadowShader;
+    Ref<Shader> m_GBufferShader;
+    Ref<Shader> m_SSRShader;
 public:
     SSRMethod();
     virtual ~SSRMethod();
