@@ -10,6 +10,7 @@
 #include "Rengine/Renderer/Methods/PhongMethod.hpp";
 #include "Rengine/Renderer/Methods/ShadowMapMethod.hpp";
 #include "Rengine/Renderer/Methods/PRTMethod.hpp";
+#include "Rengine/Renderer/Methods/SSRMethod.hpp";
 
 namespace Rengin
 {
@@ -56,7 +57,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("PRT",{0,1},m_EditorCamera);
+        m_RenderObj->DrawObject("SSR",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
         m_ActiveScene->OnUpdateRuntime(timestep);
@@ -277,17 +278,17 @@ void EditorLayer::OnAttach()
     m_RenderObj = CreateRef<RendererObject>();
     glm::mat4 transform1(1.0f);
     transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
-    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    // m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
     glm::mat4 transform2(1.0f);
     transform2 = glm::translate(transform2,glm::vec3(40.f,0.f,-40.f));
     transform2 = glm::scale(transform2,glm::vec3(10.f,10.f,10.f));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
     glm::mat4 transform3(1.0f);
     transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
     transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
-    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    // m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
 
     auto phongMethod = CreateRef<PhongMethod>();
     phongMethod->AddResource(m_shader);
@@ -319,7 +320,7 @@ void EditorLayer::OnAttach()
     m_Camera.AddComponent<CameraComponent>();
 
 
-    // Render 
+    // ShadowMap 
     FrameBufferSpecification FbSpecShadow;
     FbSpecShadow.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
     FbSpecShadow.Width = 12800;
@@ -349,10 +350,26 @@ void EditorLayer::OnAttach()
     auto prtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/PRTVertex.glsl","../../../Rengine-Editor/assets/shaders/PRTFragment.glsl");
     prtMethod->AddResource(prtShader,SkyboxShader);
     m_RenderObj->AddMethod("PRT",prtMethod);
-    m_SkyBox.SetPRTShader(prtShader);
+    // m_SkyBox.SetPRTShader(prtShader);
 
     // PreCompute
-    m_RenderObj->ComputePrt();
+    // m_RenderObj->ComputePrt();
+
+    // SSR
+    FrameBufferSpecification FbSpecGBuffer;
+    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGBF32, FramebufferTextureFormat::RF32, FramebufferTextureFormat::RGBF32,
+                                FramebufferTextureFormat::RF32,FramebufferTextureFormat::RGBF32, FramebufferTextureFormat::Depth};
+
+    FbSpecGBuffer.Width = 1280;
+    FbSpecGBuffer.Height = 720;
+    auto gBufferFrame = FrameBuffer::Create(FbSpecGBuffer);
+    auto ssrMethod = CreateRef<SSRMethod>();
+    auto ssrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ssrVertex.glsl","../../../Rengine-Editor/assets/shaders/ssrFragment.glsl");
+    auto GBuShader = Shader::Create("../../../Rengine-Editor/assets/shaders/gbufferVertex.glsl","../../../Rengine-Editor/assets/shaders/gbufferFragment.glsl");
+    ssrMethod->AddResource(shadowPhongShader,shadowShader,GBuShader);
+    ssrMethod->AddResource(gBufferFrame,ShadowFrame,m_framebuffer);
+    m_RenderObj->AddMethod("SSR",ssrMethod);
+ 
 
     class CameraController :public ScriptableEntity
     {

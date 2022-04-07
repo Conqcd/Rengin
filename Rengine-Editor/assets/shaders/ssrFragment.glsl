@@ -84,7 +84,7 @@ vec2 GetScreenCoordinate(vec3 posWorld) {
 }
 
 float GetGBufferDepth(vec2 uv) {
-    float depth = texture2D(uGDepth, uv).x;
+    float depth = texture2D(u_GDepth, uv).x;
     if (depth < 1e-2) {
         depth = 1000.0;
     }

@@ -62,8 +62,16 @@ static GLenum FBTextureFormat2GL(FramebufferTextureFormat format)
         return GL_RGB8;
     case FramebufferTextureFormat::RGBI32 :
         return GL_RGB32I;
+    case FramebufferTextureFormat::RGBAI32 :
+        return GL_RGBA32I;
+    case FramebufferTextureFormat::RGBF32 :
+        return GL_RGB32F;
+    case FramebufferTextureFormat::RGBAF32 :
+        return GL_RGBA32F;
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
+    case FramebufferTextureFormat::RF32 :
+        return GL_R32F;
     }
     RE_CORE_ASSERT(false);
     return 0;
@@ -79,8 +87,16 @@ static GLenum FBTextureFormat2GLFormat(FramebufferTextureFormat format)
         return GL_RGB;
     case FramebufferTextureFormat::RGBI32 :
         return GL_RGB_INTEGER;
+    case FramebufferTextureFormat::RGBAI32 :
+        return GL_RGBA_INTEGER;
+    case FramebufferTextureFormat::RGBF32 :
+        return GL_RGB;
+    case FramebufferTextureFormat::RGBAF32 :
+        return GL_RGBA;
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
+    case FramebufferTextureFormat::RF32 :
+        return GL_RED;
     }
     RE_CORE_ASSERT(false);
     return 0;
@@ -93,7 +109,12 @@ static GLenum FBTextureFormat2GLType(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RGBA8 :
     case FramebufferTextureFormat::RGB8 :
         return GL_UNSIGNED_BYTE;
+    case FramebufferTextureFormat::RGBAF32 :
+    case FramebufferTextureFormat::RGBF32 :
+    case FramebufferTextureFormat::RF32 :
+        return GL_FLOAT;
     case FramebufferTextureFormat::RGBI32 :
+    case FramebufferTextureFormat::RGBAI32 :
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_INT;
     }

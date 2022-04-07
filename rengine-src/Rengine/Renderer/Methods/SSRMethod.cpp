@@ -31,6 +31,24 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
 
+    // GBuffer
+    m_GBuffer->Bind();
+    RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
+    RenderCommand::Clear();
+    m_GBufferShader->Bind();
+    m_GBufferShader->SetUniformMat4("u_LightVP", LightVP);
+    m_GBufferShader->SetUniformMat4("u_View", camera.GetViewMatrix());
+    m_GBufferShader->SetUniformMat4("u_Projection", camera.getProjection());
+    m_ShadowMap->BindTexture(0,31);
+    m_GBufferShader->SetUniformInt("u_ShadowMap", 31);
+    for (int i = 0; i < ids.size(); i++)
+    {    
+        m_GBufferShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
+        for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++) {
+            RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
+        }
+    }
+
     //          Phong
     m_MainFrame->Bind();
     RenderCommand::EnableAlpha();
