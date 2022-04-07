@@ -107,10 +107,6 @@ void SkyBox::RenderCube(int id,const EditorCamera& camera)
         m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSH[0]);
         m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSH[1]);
         m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSH[2]);
-
-        // m_PRTShader->SetUniformMat3("u_PrecomputeLr", PreComSHR[id]);
-        // m_PRTShader->SetUniformMat3("u_PrecomputeLg", PreComSHG[id]);
-        // m_PRTShader->SetUniformMat3("u_PrecomputeLb", PreComSHB[id]);
     }
 }
 
@@ -119,8 +115,6 @@ void SkyBox::ComputePRTSH(const std::string& path)
     std::ofstream SHfile;
     SHfile.open((path + "/light.txt").c_str());
 
-    // if(SHfile.is_open())
-    //     std::cout <<":ascobc" << std::endl;
     glm::mat3 SHR, SHG, SHB;
 
     PrecomputeCubemapSH<2>(path, SHR, SHG, SHB);

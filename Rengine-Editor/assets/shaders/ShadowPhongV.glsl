@@ -15,7 +15,7 @@ out vec2 v_texCoords;
 out vec4 v_PositionFromLight;
 
 void main()
-{  
+{
     v_position = (u_Transform * vec4(a_position, 1.0)).xyz;
     v_normal = (u_Transform * vec4(a_normal, 0.0)).xyz;
     v_texCoords = a_texCoords;

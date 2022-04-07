@@ -74,14 +74,16 @@ void SSRMethod::AddResource(const Args&... resource) {
 }
 
 template <>
-void SSRMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& shadow) {
+void SSRMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& shadow,const Ref<Shader>& GShader) {
     m_BaseShader = base;
     m_ShadowShader = shadow;
+    m_GBufferShader = GShader;
 }
 
 template <>
-void SSRMethod::AddResource<Ref<FrameBuffer>,Ref<FrameBuffer>>(const Ref<FrameBuffer>& Shadow,const Ref<FrameBuffer>& Main) {
+void SSRMethod::AddResource<Ref<FrameBuffer>,Ref<FrameBuffer>>(const Ref<FrameBuffer>& GBuffer,const Ref<FrameBuffer>& Shadow,const Ref<FrameBuffer>& Main) {
     m_ShadowMap = Shadow;
+    m_GBuffer = GBuffer;
     m_MainFrame = Main;
 }
 

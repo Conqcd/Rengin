@@ -14,6 +14,7 @@ private:
     Ref<FrameBuffer> m_MainFrame;
     Ref<Shader> m_GBufferShader;
     Ref<Shader> m_SSRShader;
+    Ref<Shader> m_ShadowShader;
 public:
     SSRMethod();
     virtual ~SSRMethod();
