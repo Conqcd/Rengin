@@ -150,6 +150,7 @@ vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv)
  * uv is in screen space, [0, 1] x [0, 1].
  *
  */
+
 vec3 EvalDirectionalLight(vec2 uv)
 {
     vec3 Le = vec3(0.0);
