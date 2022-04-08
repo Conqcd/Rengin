@@ -357,8 +357,11 @@ void EditorLayer::OnAttach()
 
     // SSR
     FrameBufferSpecification FbSpecGBuffer;
-    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGBF32, FramebufferTextureFormat::RF32, FramebufferTextureFormat::RGBF32,
-                                FramebufferTextureFormat::RF32,FramebufferTextureFormat::RGBF32, FramebufferTextureFormat::Depth};
+    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32,
+                                FramebufferTextureFormat::RGBF32,
+                                FramebufferTextureFormat::RF32,
+                                FramebufferTextureFormat::RGBF32,
+                                FramebufferTextureFormat::Depth};
 
     FbSpecGBuffer.Width = 1280;
     FbSpecGBuffer.Height = 720;
@@ -366,7 +369,7 @@ void EditorLayer::OnAttach()
     auto ssrMethod = CreateRef<SSRMethod>();
     auto ssrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ssrVertex.glsl","../../../Rengine-Editor/assets/shaders/ssrFragment.glsl");
     auto GBuShader = Shader::Create("../../../Rengine-Editor/assets/shaders/gbufferVertex.glsl","../../../Rengine-Editor/assets/shaders/gbufferFragment.glsl");
-    ssrMethod->AddResource(shadowPhongShader,shadowShader,GBuShader);
+    ssrMethod->AddResource(ssrShader,shadowShader,GBuShader);
     ssrMethod->AddResource(gBufferFrame,ShadowFrame,m_framebuffer);
     m_RenderObj->AddMethod("SSR",ssrMethod);
  

@@ -1,4 +1,4 @@
-#version 330
+#version 450
 
 uniform sampler2D u_Kd;
 uniform sampler2D u_Nt;
@@ -16,12 +16,18 @@ layout(location = 2) out vec3 o_NormalMap;
 layout(location = 3) out float o_SimpleShadowMap;
 layout(location = 4) out vec3 o_Position;
 
+float unpack(vec4 rgbaDepth) 
+{
+    const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0 * 256.0), 1.0/(256.0 * 256.0 * 256.0));
+    return dot(rgbaDepth, bitShift);
+}
+
 float SimpleShadowMap(vec3 posWorld,float bias)
 {
     vec4 posLight = v_WorldToLight * vec4(posWorld, 1.0);
     vec2 shadowCoord = clamp(posLight.xy * 0.5 + 0.5, vec2(0.0), vec2(1.0));
-    float depthSM = texture2D(u_ShadowMap, shadowCoord).x;
-    float depth = (posLight.z * 0.5 + 0.5) * 100.0;
+    float depthSM = unpack(texture2D(u_ShadowMap, shadowCoord));
+    float depth = (posLight.z * 0.5 + 0.5);
     return step(0.0, depthSM - depth + bias);
 }
 
@@ -50,7 +56,8 @@ void main(void)
 {
     o_Kd = texture2D(u_Kd, v_TextureCoord).rgb;
     o_Depth = v_Depth;
-    o_NormalMap = ApplyTangentNormalMap();
+    // o_NormalMap = ApplyTangentNormalMap();
+    o_NormalMap = v_NormalWorld;
     o_SimpleShadowMap = SimpleShadowMap(v_PosWorld.xyz, 1e-2);
     o_Position = v_PosWorld.xyz;
 }

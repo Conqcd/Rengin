@@ -7,7 +7,7 @@ namespace Rengin
 class Lights
 {
 public:
-    glm::vec3 LightPos,LightIntensity,LookAtPoint,WorldUp,Bound;
+    glm::vec3 LightPos,LightIntensity,LookAtPoint,WorldUp,Bound,Direction;
     glm::mat4 m_Projection,m_ViewMatrix;
 public:
     Lights(/* args */);

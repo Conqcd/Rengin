@@ -160,6 +160,8 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
     }
     
     Invalidate();
+    // GLint maxAttach = 0;
+    // glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxAttach);
 }
 
 OpenGLFrameBuffer::~OpenGLFrameBuffer()
@@ -195,29 +197,30 @@ void OpenGLFrameBuffer::Invalidate()
             Utils::BindTexture(multiSamples,m_ColorAttachments[i]);
             switch (m_ColorAttachmentSpecs[i].TextureFormat)
             {
-            case FramebufferTextureFormat::RGBA8 :
+            case FramebufferTextureFormat::RGBA8:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA8,GL_RGBA,GL_UNSIGNED_BYTE,m_specification.Width,m_specification.Height,i);
                 break;
-            case FramebufferTextureFormat::RGB8 :
+            case FramebufferTextureFormat::RGB8:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB8,GL_RGB,GL_UNSIGNED_BYTE,m_specification.Width,m_specification.Height,i);
                 break;
-            case FramebufferTextureFormat::RGBI32 :
+            case FramebufferTextureFormat::RGBI32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB32I,GL_RGB_INTEGER,GL_INT,m_specification.Width,m_specification.Height,i);
                 break;
-            case FramebufferTextureFormat::RGBAI32 :
+            case FramebufferTextureFormat::RGBAI32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA32I,GL_RGBA_INTEGER,GL_INT,m_specification.Width,m_specification.Height,i);
                 break;
-            case FramebufferTextureFormat::RGBF32 :
+            case FramebufferTextureFormat::RGBF32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGB32F,GL_RGB,GL_FLOAT,m_specification.Width,m_specification.Height,i);
-            case FramebufferTextureFormat::RGBAF32 :
+                break;
+            case FramebufferTextureFormat::RGBAF32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_RGBA32F,GL_RGBA,GL_FLOAT,m_specification.Width,m_specification.Height,i);
+                break;
             case FramebufferTextureFormat::RED_INTEGER:
-                Utils::AttachColorTexture(m_ColorAttachments[i], m_specification.Samples, GL_R32I,
-                    GL_RED_INTEGER,GL_INT, m_specification.Width, m_specification.Height, i);
-            case FramebufferTextureFormat::RF32 :
+                Utils::AttachColorTexture(m_ColorAttachments[i], m_specification.Samples, GL_R32I,GL_RED_INTEGER,GL_INT, m_specification.Width, m_specification.Height, i);
+                break;
+            case FramebufferTextureFormat::RF32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i);
                 break;
-
             default:
                 break;
             }
@@ -238,8 +241,9 @@ void OpenGLFrameBuffer::Invalidate()
     }
     if(m_ColorAttachments.size() > 1)
     {
-        RE_CORE_ASSERT((m_ColorAttachments.size() < 4));
-        GLenum buffers[4] = {GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3};
+        RE_CORE_ASSERT((m_ColorAttachments.size() < 8));
+        GLenum buffers[8] = {GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,
+        GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5,GL_COLOR_ATTACHMENT6,GL_COLOR_ATTACHMENT7};
         glDrawBuffers(m_ColorAttachments.size(),buffers);
     }else if(m_ColorAttachments.empty())
     {

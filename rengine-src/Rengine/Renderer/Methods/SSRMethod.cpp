@@ -30,57 +30,59 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
             m_ShadowShader->SetUniformMat4("u_LightMVP", LightVP * ObjLists[ids[i]]->GetTransform());
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
-
+    
+    int tidx = 0;
     // GBuffer
     m_GBuffer->Bind();
     RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
     RenderCommand::Clear();
+    // float value = 0;
+    // m_GBuffer->ClearAttachment(1,&value);
     m_GBufferShader->Bind();
     m_GBufferShader->SetUniformMat4("u_LightVP", LightVP);
     m_GBufferShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_GBufferShader->SetUniformMat4("u_Projection", camera.getProjection());
     m_ShadowMap->BindTexture(0,31);
     m_GBufferShader->SetUniformInt("u_ShadowMap", 31);
+    tidx = 0; 
+
     for (int i = 0; i < ids.size(); i++)
     {
         m_GBufferShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
         for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++) {
+            ObjLists[ids[i]]->BindTexture(j, tidx);
+            m_GBufferShader->SetUniformInt("u_Kd", tidx++);
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
+            tidx %= 31;
         }
     }
 
-    //          Phong
+    //          SSR
     m_MainFrame->Bind();
     RenderCommand::EnableAlpha();
     m_BaseShader->Bind();
-    m_BaseShader->SetUniformFloat3("u_LightPos", lights.LightPos);
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
+    m_BaseShader->SetUniformFloat3("u_LightDir", lights.LightIntensity);
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
-    m_BaseShader->SetUniformFloat3("u_LightIntensity", lights.LightIntensity);
-    int tidx = 0;
+    m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.Direction);
+    m_GBuffer->BindTexture(0,0);
+    m_BaseShader->SetUniformInt("u_GDiffuse", 0);
+    m_GBuffer->BindTexture(1,1);
+    m_BaseShader->SetUniformInt("u_GDepth", 1);
+    m_GBuffer->BindTexture(2,2);
+    m_BaseShader->SetUniformInt("u_GNormalWorld", 2);
+    m_GBuffer->BindTexture(3,3);
+    m_BaseShader->SetUniformInt("u_GShadow", 3);
+    m_GBuffer->BindTexture(4,4);
+    m_BaseShader->SetUniformInt("u_GPosWorld", 4);
 
-    m_ShadowMap->BindTexture(0,31);
-    m_BaseShader->SetUniformInt("u_ShadowMap", 31);
-    m_BaseShader->SetUniformInt("u_RenderType", 2);
-
-    tidx = 0;
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
-        m_BaseShader->SetUniformMat4("u_LightMVP",LightVP * ObjLists[ids[i]]->GetTransform());
         m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
         for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
         {
-            m_BaseShader->SetUniformInt("u_TextureID", tidx);
-            ObjLists[ids[i]]->BindTexture(j, tidx);
-            m_BaseShader->SetUniformInt("u_texture", tidx++);
-            tidx %= 31;
-            m_BaseShader->SetUniformFloat3("u_Ka", ObjLists[ids[i]]->GetMaterial(j).Ka);
-            m_BaseShader->SetUniformFloat3("u_Ks", ObjLists[ids[i]]->GetMaterial(j).Ks);
-            m_BaseShader->SetUniformFloat3("u_Kd", ObjLists[ids[i]]->GetMaterial(j).Kd);
-            m_BaseShader->SetUniformFloat("u_Ns", ObjLists[ids[i]]->GetMaterial(j).Ns);
-            m_BaseShader->SetUniformFloat("u_Ni", ObjLists[ids[i]]->GetMaterial(j).Ni);
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }

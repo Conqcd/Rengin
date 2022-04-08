@@ -1,4 +1,4 @@
-#version 330
+#version 450
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
@@ -7,8 +7,6 @@ layout(location = 2) in vec2 a_texCoords;
 uniform mat4 u_Transform;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
-uniform mat4 u_LightMVP; 
-
 
 out mat4 v_WorldToScreen;
 out vec4 v_PosWorld;
