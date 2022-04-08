@@ -37,7 +37,7 @@ void LocalBasis(vec3 n, out vec3 b1, out vec3 b2)
     b2 = vec3(b, sign_ + n.y * n.y * a, -n.y);
 }
 
-vec3 ApplyTangentNormalMap() 
+vec3 ApplyTangentNormalMap()
 {
     vec3 t, b;
     LocalBasis(v_NormalWorld, t, b);
