@@ -42,7 +42,7 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
     m_ShadowMap->BindTexture(0,31);
     m_GBufferShader->SetUniformInt("u_ShadowMap", 31);
     for (int i = 0; i < ids.size(); i++)
-    {    
+    {
         m_GBufferShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
         for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++) {
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));

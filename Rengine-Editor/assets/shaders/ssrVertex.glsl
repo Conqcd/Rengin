@@ -13,7 +13,8 @@ uniform mat4 u_LightMVP;
 out mat4 v_WorldToScreen;
 out vec4 v_PosWorld;
 
-void main(void) {
+void main(void) 
+{
     vec4 posWorld = u_Transform * vec4(a_position, 1.0);
     v_PosWorld = posWorld.xyzw / posWorld.w;
     v_WorldToScreen = u_Projection * u_View;
