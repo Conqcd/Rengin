@@ -92,6 +92,7 @@ float GetDepth(vec3 posWorld)
  * Transform point from world space to screen space([0, 1] x [0, 1])
  *
  */
+
 vec2 GetScreenCoordinate(vec3 posWorld)
 {
     vec2 uv = Project(v_WorldToScreen * vec4(posWorld, 1.0)).xy * 0.5 + 0.5;
@@ -139,6 +140,7 @@ vec3 GetGBufferDiffuse(vec2 uv)
  * uv is in screen space, [0, 1] x [0, 1].
  *
  */
+
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv)
 {
     vec3 L = vec3(0.0);
