@@ -21,6 +21,7 @@ namespace Rengin
 		inline void SetDistance(float distance) { m_Distance = distance; }
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
+		inline glm::vec2 GetViewportSize() const { return glm::vec2(m_ViewportWidth,m_ViewportHeight); }
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }

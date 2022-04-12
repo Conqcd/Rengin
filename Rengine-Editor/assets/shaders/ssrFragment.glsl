@@ -4,6 +4,8 @@ uniform vec3 u_LightDir;
 uniform vec3 u_LightPos;
 uniform vec3 u_CameraPos;
 uniform vec3 u_LightRadiance;
+uniform vec2 u_WindowSize;
+
 uniform sampler2D u_GDiffuse;
 uniform sampler2D u_GDepth;
 uniform sampler2D u_GNormalWorld;
@@ -128,30 +130,16 @@ float GetGBufferuShadow(vec2 uv)
 
 vec3 GetGBufferDiffuse(vec2 uv)
 {
-    vec3 diffuse = texture2D(u_GDiffuse, uv).xyz;
+    vec3 diffuse = texture2D(u_GDiffuse, uv, 0).xyz;
     diffuse = pow(diffuse, vec3(2.2));
     return diffuse;
 }
-
-/*
- * Evaluate diffuse bsdf value.
- *
- * wi, wo are all in world space.
- * uv is in screen space, [0, 1] x [0, 1].
- *
- */
 
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv)
 {
     vec3 L = GetGBufferDiffuse(uv) * max(0,dot(normalize(-wi),normalize(GetGBufferNormalWorld(uv))));// * INV_PI;
     return L;
 }
-
-/*
- * Evaluate directional light with shadow map
- * uv is in screen space, [0, 1] x [0, 1].
- *
- */
 
 vec3 EvalDirectionalLight(vec2 uv)
 {
@@ -162,17 +150,54 @@ vec3 EvalDirectionalLight(vec2 uv)
 
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
 {
+    vec3 sOri,sDir;
+    sOri = (v_WorldToScreen * vec4(ori,1.0)).xyz;
+    sDir = (v_WorldToScreen * vec4(dir,0.0)).xyz;
+    if(sDir.x == 0.0 && sDir.y == 0)
+        return false;
+    bool swapXY = false;
+    if(abs(sDir.y) * u_WindowSize.x > abs(sDir.x) * u_WindowSize.y)
+        swapXY = true;
+    vec3 dP = 
+    while(1)
+    {
+        vec2 uv = sOri.xy + dP.xy;
+        float depth = GetGBufferDepth(uv);
+        if(fract(uv) != uv)
+            return false;
+        if(depth < dP.z)
+        {
+            hitPos = vec3(1,1,depth);
+            return true;
+        }
+    }
     return false;
 }
 
-#define SAMPLE_NUM 1
+#define SAMPLE_NUM 10
 
 void main()
 {
     float s = InitRand(gl_FragCoord.xy);
 
     vec2 uv = GetScreenCoordinate(v_PosWorld.xyz);
-    vec3 L = EvalDirectionalLight(uv) * EvalDiffuse(u_LightDir,v_PosWorld.xyz - u_CameraPos,uv);
+    vec3 ori = v_PosWorld.xyz;
+    vec3 L = EvalDirectionalLight(uv) * EvalDiffuse(u_LightDir,ori - u_CameraPos,uv);
+    vec3 Lindirect = vec3(0.0);
+    vec3 b1,b2,b3 = normalize(GetGBufferNormalWorld(uv));
+    LocalBasis(b3,b1,b2);
+    for(int i = 0; i < SAMPLE_NUM;i++)
+    {
+        vec3 hitPos = vec3(0.0);
+        float pdf = 0.0;
+        vec3 dir = SampleHemisphereUniform(s,pdf);
+        dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+        if(RayMarch(ori,dir,hitPos))
+        {
+            vec2 uvi = GetScreenCoordinate(hitPos);
+            L += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
+        }
+    }
     vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     o_Color = vec4(vec3(color.rgb), 1.0);
     o_Entity = u_Entity;
