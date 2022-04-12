@@ -277,6 +277,7 @@ void EditorLayer::OnAttach()
     m_shader = Shader::Create("../../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
     m_RenderObj = CreateRef<RendererObject>();
     glm::mat4 transform1(1.0f);
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cave/cave.obj","./assets/objects/cave",transform1));
     transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
     // m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
     m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));

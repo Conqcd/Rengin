@@ -63,9 +63,11 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
-    m_BaseShader->SetUniformFloat3("u_LightDir", lights.LightIntensity);
+    m_BaseShader->SetUniformFloat3("u_LightDir", lights.Direction);
+    m_BaseShader->SetUniformFloat3("u_LightPos", lights.LightPos);
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
-    m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.Direction);
+    m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.LightIntensity);
+    m_BaseShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
     m_GBuffer->BindTexture(0,0);
     m_BaseShader->SetUniformInt("u_GDiffuse", 0);
     m_GBuffer->BindTexture(1,1);
