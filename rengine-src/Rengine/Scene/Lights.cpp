@@ -10,7 +10,7 @@ Lights::Lights()
     LightPos = glm::vec3(0,80,80);
     LightIntensity = glm::vec3(5000,5000,5000);
     LookAtPoint = glm::vec3(0.0,0.0,0.0);
-    Direction = LightPos - LookAtPoint;
+    Direction = LookAtPoint - LightPos;
     WorldUp = glm::vec3(0.0,1.0,0.0);
     Bound = glm::vec3(600.f,600.f,600.f);
     UpdateView();
