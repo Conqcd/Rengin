@@ -167,7 +167,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
             return false;
         if(depth < dP.z)
         {
-            hitPos = vec3(1,1,depth);
+            hitPos = GetGBufferPosWorld(uv);
             return true;
         }
     }
