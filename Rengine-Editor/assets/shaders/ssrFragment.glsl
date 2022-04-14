@@ -156,9 +156,10 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
     if(sDir.x == 0.0 && sDir.y == 0)
         return false;
     bool swapXY = false;
+    float dx = 1,dy = 0,dz = sDir.z;
     if(abs(sDir.y) * u_WindowSize.x > abs(sDir.x) * u_WindowSize.y)
         swapXY = true;
-    vec3 dP = 
+    vec3 dP = vec3(dx,dy,dz);
     while(1)
     {
         vec2 uv = sOri.xy + dP.xy;
