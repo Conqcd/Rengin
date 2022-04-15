@@ -156,19 +156,25 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
     if(sDir.x == 0.0 && sDir.y == 0)
         return false;
     bool swapXY = false;
-    float dx = 1,dy = 0,dz = sDir.z;
+    float dx = 1.0 / u_WindowSize.x,dy = dx * sDir.y / sDir.x,dz = sDir.z / sDir.x * dx;
     if(abs(sDir.y) * u_WindowSize.x > abs(sDir.x) * u_WindowSize.y)
-        swapXY = true;
-    vec3 dP = vec3(dx,dy,dz);
-    while(1)
     {
-        vec2 uv = sOri.xy + dP.xy;
-        float depth = GetGBufferDepth(uv);
-        if(fract(uv) != uv)
+        swapXY = true;
+        dy = 1.0 / u_WindowSize.y;
+        dx = dy * sDir.x / sDir.y;
+        dz = dy * sDir.z / sDir.y;
+    }
+    vec3 dP = vec3(dx,dy,dz);
+    vec3 uvw = sOri;
+    for(int i = 0;;i++)
+    {
+        uvw += dP;
+        float depth = GetGBufferDepth(uvw.xy);
+        if(fract(uvw.xy) != uvw.xy)
             return false;
-        if(depth < dP.z)
+        if(depth < uvw.z)
         {
-            hitPos = GetGBufferPosWorld(uv);
+            hitPos = GetGBufferPosWorld(uvw.xy);
             return true;
         }
     }
@@ -196,9 +202,10 @@ void main()
         if(RayMarch(ori,dir,hitPos))
         {
             vec2 uvi = GetScreenCoordinate(hitPos);
-            L += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
+            Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
         }
     }
+    L += Lindirect / SAMPLE_NUM;
     vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     o_Color = vec4(vec3(color.rgb), 1.0);
     o_Entity = u_Entity;
