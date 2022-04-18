@@ -173,11 +173,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
         float depth = GetGBufferDepth(uvw.xy);
         if(fract(uvw.xy) != uvw.xy)
             return false;
-<<<<<<< HEAD
-        if(depth < dP.z + sOri.z)
-=======
         if(depth < uvw.z)
->>>>>>> 1fd6c4a46a0d43a200380424c03b2b30e74db5a2
         {
             hitPos = GetGBufferPosWorld(uvw.xy);
             return true;
