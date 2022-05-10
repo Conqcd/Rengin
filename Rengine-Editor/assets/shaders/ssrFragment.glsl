@@ -51,7 +51,7 @@ vec3 SampleHemisphereUniform(inout float s, out float pdf)
     vec2 uv = Rand2(s);
     float z = uv.x;
     float phi = uv.y * TWO_PI;
-    float sinTheta = sqrt(1.0 - z*z);
+    float sinTheta = sqrt(1.0 - z * z);
     vec3 dir = vec3(sinTheta * cos(phi), sinTheta * sin(phi), z);
     pdf = INV_TWO_PI;
     return dir;
@@ -153,15 +153,18 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
     vec3 sOri,sDir;
     sOri = (v_WorldToScreen * vec4(ori,1.0)).xyz;
     sDir = (v_WorldToScreen * vec4(dir,0.0)).xyz;
-    if(sDir.x == 0.0 && sDir.y == 0)
+    if(sDir.x == 0.0 && sDir.y == 0.0)
+    {
+        hitPos = sOri;
         return false;
+    }
     bool swapXY = false;
-    float dx = 1.0 / u_WindowSize.x,dy = dx * sDir.y / sDir.x,dz = sDir.z / sDir.x * dx;
+    float dx = 1.0 / u_WindowSize.x,dy = dx * sDir.y / sDir.x * u_WindowSize.x / u_WindowSize.y,dz = sDir.z / sDir.x * dx;
     if(abs(sDir.y) * u_WindowSize.x > abs(sDir.x) * u_WindowSize.y)
     {
         swapXY = true;
         dy = 1.0 / u_WindowSize.y;
-        dx = dy * sDir.x / sDir.y;
+        dx = dy * sDir.x / sDir.y * u_WindowSize.y / u_WindowSize.x;
         dz = dy * sDir.z / sDir.y;
     }
     vec3 dP = vec3(dx,dy,dz);
@@ -197,8 +200,9 @@ void main()
     {
         vec3 hitPos = vec3(0.0);
         float pdf = 0.0;
-        vec3 dir = SampleHemisphereUniform(s,pdf);
-        dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+        // vec3 dir = SampleHemisphereUniform(s,pdf);
+        vec3 dir = dot(b3,u_CameraPos - ori) * 2 / length(b3) * b3 + ori - u_CameraPos;
+        // dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
         if(RayMarch(ori,dir,hitPos))
         {
             vec2 uvi = GetScreenCoordinate(hitPos);
