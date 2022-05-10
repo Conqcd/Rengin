@@ -263,7 +263,8 @@ void EditorLayer::OnAttach()
 
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
 
-    Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
+    // Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/alll.raw");
     
     // Entity
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
@@ -283,10 +284,14 @@ void EditorLayer::OnAttach()
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
     auto& texComF = m_CubeEntity.GetComponent<ForceComponent>();
     auto& texComC = m_CubeEntity.GetComponent<ConstraintComponent>();
-    texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
-    texCom.width = 512;
-    texCom.height = 512;
-    texCom.depth = 507;
+    // texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
+    texCom.Path = "E:\\Volume_Rendering\\raw_data\\alll.raw";
+    // texCom.width = 512;
+    texCom.width = 245;
+    // texCom.height = 512;
+    texCom.height = 335;
+    // texCom.depth = 507;
+    texCom.depth = 451;
     texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
     texComF.Texture->setData(texComF.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
     texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);

@@ -545,7 +545,8 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_Force", 2);
     s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);
     s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 4);
-    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
+    // s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
+    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 3.0f);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
 
     auto it = transfera.begin();
