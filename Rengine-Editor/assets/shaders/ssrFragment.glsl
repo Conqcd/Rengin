@@ -151,8 +151,13 @@ vec3 EvalDirectionalLight(vec2 uv)
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
 {
     vec3 sOri,sDir;
-    sOri = (v_WorldToScreen * vec4(ori,1.0)).xyz;
+    vec4 scOri = v_WorldToScreen * vec4(ori,1.0);
+    sOri = scOri.xyz / scOri.w;
+    sOri = (sOri + 1.0) * 0.5;
     sDir = (v_WorldToScreen * vec4(dir,0.0)).xyz;
+    sDir = normalize(sDir);
+    // hitPos = sDir;
+    // return true;
     if(sDir.x == 0.0 && sDir.y == 0.0)
     {
         hitPos = sOri;
@@ -174,7 +179,10 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
         uvw += dP;
         float depth = GetGBufferDepth(uvw.xy);
         if(fract(uvw.xy) != uvw.xy)
+        {
+            hitPos = GetGBufferPosWorld(fract(uvw.xy));
             return false;
+        }
         if(depth < uvw.z)
         {
             hitPos = GetGBufferPosWorld(uvw.xy);
@@ -184,7 +192,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos)
     return false;
 }
 
-#define SAMPLE_NUM 10
+#define SAMPLE_NUM 1
 
 void main()
 {
@@ -196,20 +204,25 @@ void main()
     vec3 Lindirect = vec3(0.0);
     vec3 b1,b2,b3 = normalize(GetGBufferNormalWorld(uv));
     LocalBasis(b3,b1,b2);
+    vec3 C2O = normalize(u_CameraPos - ori);
     for(int i = 0; i < SAMPLE_NUM;i++)
     {
         vec3 hitPos = vec3(0.0);
         float pdf = 0.0;
         // vec3 dir = SampleHemisphereUniform(s,pdf);
-        vec3 dir = dot(b3,u_CameraPos - ori) * 2 / length(b3) * b3 + ori - u_CameraPos;
+        vec3 dir = dot(b3,C2O) * 2 / length(b3) * b3 - C2O;
         // dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
         if(RayMarch(ori,dir,hitPos))
         {
             vec2 uvi = GetScreenCoordinate(hitPos);
             Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
+            // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
+            // Lindirect = hitPos;
+            // GetGBufferDiffuse(uvi);
         }
     }
     L += Lindirect / SAMPLE_NUM;
+    // L = Lindirect / SAMPLE_NUM;
     vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     o_Color = vec4(vec3(color.rgb), 1.0);
     o_Entity = u_Entity;
