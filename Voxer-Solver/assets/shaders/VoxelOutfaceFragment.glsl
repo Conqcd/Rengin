@@ -161,7 +161,8 @@ void main()
     while (ray_length > 0 && color.a < 1.0) {
         float intensity = texture(u_volume, position).r;
         vec4 c = color_transfer(intensity / maxvalue);
-        if(intensity > u_threshold * maxvalue)
+        // if(intensity > u_threshold * maxvalue)
+        if(intensity >= 1.0)
         {
             vec3 L = normalize(u_lightPosition - position);
             vec3 V = -normalize(ray);
@@ -176,12 +177,12 @@ void main()
             color.rgb = vec3(1.0);
             color.a = c.a + (1 - c.a) * color.a;
 
-            o_position.r = int(position.r * float(u_TWidth));
-            if(ray.r <= 0.0)  o_position.r -=1;
-            o_position.g = int(position.g * float(u_THeight));
-            if(ray.g <= 0.0)  o_position.g -=1;
-            o_position.b = int(position.b * float(u_TDepth));
-            if(ray.b <= 0.0)  o_position.b -=1;
+            o_position.r = int(position.r * float(u_TWidth - 1));
+            // if(ray.r <= 0.0)  o_position.r -= 1;
+            o_position.g = int(position.g * float(u_THeight - 1));
+            // if(ray.g <= 0.0)  o_position.g -= 1;
+            o_position.b = int(position.b * float(u_TDepth - 1));
+            // if(ray.b <= 0.0)  o_position.b -= 1;
             break;
         }
 

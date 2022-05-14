@@ -228,21 +228,23 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     : m_path(path)
 {
     RE_PROFILE_FUNCTION();
-    int width = 512,height = 512,depth = 507;
+    // int width = 512,height = 512,depth = 507;
+    int width = 245,height = 335,depth = 451;
+    // int width = 335,height = 451,depth = 245;
     
     FILE* f = fopen(path.c_str(), "rb");
     RE_ASSERT(f,"Can't Open the Texture file");
     
     int hw = height * width;
     m_tex.resize(hw * depth);
-    unsigned short *s = new unsigned short[width];
+    unsigned char *s = new unsigned char[width];
     float maxval = 0.0f;
     
     for (int k = 0; k < depth; k++)
     {
         for (int j = 0; j < height; j++)
         {
-            fread(s, sizeof(unsigned short), width, f);
+            fread(s, sizeof(unsigned char), width, f);
             for (int i = 0; i < width; i++)
             {
                 float vv = s[i];

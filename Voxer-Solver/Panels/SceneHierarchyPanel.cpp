@@ -203,9 +203,10 @@ void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::vector<float>& t
     {
         if(v[i] == -1)  continue;
         int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
-        target[id * 3] += x;
-        target[id * 3 + 1] += y;
-        target[id * 3 + 2] += z;
+        // printf("%d\t",id);
+        target[id * 3] = x;
+        target[id * 3 + 1] = y;
+        target[id * 3 + 2] = z;
     }
     v.clear();
 }
@@ -278,7 +279,7 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
                 id3 = id2 + 1;
                 if(forc[id1] || forc[id2] || forc[id3] || cons[id1] || cons[id2] || cons[id3])
                 {
-                    fprintf(f, "SELECT_NODE_3D %d %d %d %d %d %d %d %d %d\n", i, j, k,forc[id1],forc[id2],forc[id3],cons[id1],cons[id2],cons[id3]);
+                    fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", i, j, k,forc[id1],forc[id2],forc[id3],cons[id1] > 0,cons[id2] > 0,cons[id3] > 0);
                 }
 			}
 	    }
@@ -495,14 +496,14 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 auto& texCom = m_VolomeEntity.GetComponent<Texture3DComponent>();
                 auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
                 auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
-                // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
+                std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 // SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
-                // t.detach();
-                m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
+                t.detach();
+                // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();
             }
             if (ImGui::Button("Stop")) {
-                m_ExternalProcess->Terminate();
+                // m_ExternalProcess->Terminate();
             }
         });
     DrawComponent<ColorTransferFunctionComponent>(
