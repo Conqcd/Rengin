@@ -82,9 +82,18 @@ public:
     inline virtual uint32_t getHeight() const override {return m_height;}
     inline virtual uint32_t getDepth() const override {return m_depth;}
     inline virtual std::vector<float>& getTexture() override {return m_tex;}
+    inline virtual uint32_t getBPP() const override{
+        if(m_interFormat == GL_R32F)
+            return 1;
+        else if(m_interFormat == GL_RGBA8)
+            return 4;
+        else
+            return 3;
+    }
     
     virtual uint32_t getRendererID() const override {return m_render_id;}
     virtual void setData(void* data,uint32_t size) override;
+    virtual void setData(std::vector<float>& data) override;
 
     virtual void Bind(uint32_t slot = 0) const override;
     virtual void Unbind() const override;

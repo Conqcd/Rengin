@@ -297,6 +297,59 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
     // wpro->Terminate();
 }
 
+Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
+{
+    auto& oldTex = texture->getTexture();
+    uint32_t nWidth = texture->getWidth() / divided,nHeight = texture->getHeight() / divided,nDepth = texture->getDepth() / divided,bpp = texture->getBPP();
+    std::decay_t<decltype(oldTex)> newTex(nWidth * nHeight * nDepth * bpp);
+    int id = 0;
+    int id2 = 0;
+    for (int i = 0,ii = 0; i < nDepth; i++, ii += divided)
+    {
+        for (int j = 0,jj = 0; j < nHeight; j++, jj += divided)
+        {
+            for (int k = 0,kk = 0; k < nWidth; k++, kk += divided)
+            {
+                for (int l = 0; l < bpp; l++)
+                {
+                    int width = texture->getWidth(),height = texture->getHeight();
+                    std::unordered_map<int,int> mp;
+                    for (int iii = 0; iii < divided; iii++)
+                    {
+                        for (int jjj = 0; jjj < divided; jjj++)
+                        {
+                            for (int kkk = 0; kkk < divided; kkk++)
+                            {
+                                id2 = bpp * ((ii + iii) * width * height + (jj + jjj) * width + kk + kkk);
+                                mp[oldTex[id2 + l]]++;
+                            }
+                        }
+                    }
+                    int mostNumber,maxt = 0;
+                    for (auto &&kv : mp)
+                    {
+                        if(kv.second > maxt)
+                        {
+                            mostNumber = kv.first;
+                            maxt = kv.second;
+                        }else if(kv.second == maxt && kv.first != 0)
+                        {
+                            mostNumber = std::min(mostNumber,kv.first);
+                        }
+                    }
+                    
+                    newTex[id + l] = mostNumber;
+                    id ++;
+                }
+            }
+        }
+    }
+
+    auto newTexture = Texture3D::Create(nWidth,nHeight,nDepth,bpp);
+    newTexture->setData(newTex);
+    return newTexture;
+}
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
     if(entity.HasComponent<TagComponent>())
@@ -415,6 +468,19 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::Text(component.Path.c_str());
         ImGui::Text("width: %d, height: %d, depth: %d",component.width,component.height,component.depth);
         ImGui::DragFloat("threshold",&component.Threshold,0.001,0.0f,1.0f,"%.2f");
+        if(ImGui::Button("Coarsen"))
+        {
+            auto newTexture = Coarsen(component.Texture,2);
+            component.Texture = newTexture;
+            component.width /= 2;
+            component.height /= 2;
+            component.depth /= 2;
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Save New Texture"))
+        {
+
+        }
     });
 
     DrawComponent<ForceComponent>("Force",entity,[this](auto& component)

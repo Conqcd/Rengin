@@ -26,6 +26,6 @@ void main(void)
     v_WorldToLight = u_LightVP;
 
     gl_Position = u_Projection * u_View * u_Transform * vec4(a_position, 1.0);
-    // v_Depth = gl_Position.w;
-    v_Depth = gl_Position.z / gl_Position.w;
+    v_Depth = gl_Position.w;
+    // v_Depth = gl_Position.z / gl_Position.w;
 }

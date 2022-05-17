@@ -44,7 +44,10 @@ public:
     static Ref<Texture3D> Create(const std::string& path);
 
     virtual uint32_t getDepth() const = 0;
+    virtual uint32_t getBPP() const = 0;
     virtual std::vector<float>& getTexture() = 0;
+    virtual void setData(std::vector<float>& data) = 0;
+    virtual void setData(void* data,uint32_t size) = 0;
 };
 
 } // namespace Rengin
