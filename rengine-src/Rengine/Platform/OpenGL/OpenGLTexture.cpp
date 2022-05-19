@@ -302,7 +302,7 @@ void OpenGLTexture3D::setData(void* data,uint32_t size)
                           m_dataFormat, GL_FLOAT, data);
     else
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
-                          m_dataFormat, GL_UNSIGNED_BYTE, data);
+                          m_dataFormat, GL_FLOAT, data);
 }
 
 void OpenGLTexture3D::setData(std::vector<float>& data)
@@ -316,7 +316,7 @@ void OpenGLTexture3D::setData(std::vector<float>& data)
                           m_dataFormat, GL_FLOAT, data.data());
     else
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
-                          m_dataFormat, GL_UNSIGNED_BYTE, data.data());
+                          m_dataFormat, GL_FLOAT, data.data());
 }
 
 void OpenGLTexture3D::Bind(uint32_t slot) const

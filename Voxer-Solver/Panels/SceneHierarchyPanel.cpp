@@ -274,6 +274,8 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
 			for (int i = 0; i < width; i++)
 			{
                 int id1 = k * height * width + j * width  + i,id2,id3;
+                if(tex[id1] == 0)
+                    continue;
                 id1 *= 3;
                 id2 = id1 + 1;
                 id3 = id2 + 1;
@@ -419,7 +421,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                     currentProjectionTypeString = prjectionTypeStrings[i];
                     camera.SetProjectionType(static_cast<SceneCamera::ProjectionType>(i));
                 }
-                if (isSelected)
+                if(isSelected)
                     ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();
@@ -463,7 +465,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::ColorEdit4("Color",glm::value_ptr(component.Color));
     });
     
-    DrawComponent<Texture3DComponent>("Texture3D",entity,[](auto& component)
+    DrawComponent<Texture3DComponent>("Texture3D",entity,[this](auto& component)
     {
         ImGui::Text(component.Path.c_str());
         ImGui::Text("width: %d, height: %d, depth: %d",component.width,component.height,component.depth);
@@ -475,6 +477,18 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             component.width /= 2;
             component.height /= 2;
             component.depth /= 2;
+
+            auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
+            std::decay_t<decltype(texComF.Texture->getTexture())> newForce(component.width * component.height * component.depth * texComF.Texture->getBPP());
+            auto newTexF = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
+            newTexF->setData(newForce);
+            texComF.Texture = newTexF;
+            
+            auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
+            std::decay_t<decltype(texComC.Texture->getTexture())> newConstraint(component.width * component.height * component.depth * texComC.Texture->getBPP());
+            auto newTexC = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
+            newTexC->setData(newConstraint);
+            texComC.Texture = newTexC;
         }
         ImGui::SameLine();
         if(ImGui::Button("Save New Texture"))
