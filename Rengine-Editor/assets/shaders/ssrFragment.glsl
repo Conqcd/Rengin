@@ -194,7 +194,11 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
 
     vec2 dP = vec2(dx,dy),oriP = vec2(nOri.x,nOri.y);
 
-    for(int i = 0,t = 1;;i++)
+    // hitPos = vec3(0,0,dZW) * 50000;
+    hitPos = vec3(0,0,rayLen) / 1;
+    // hitPos = vEnd.xyz;
+    return true;
+    for(int i = 0,t = 0;;i++)
     {
         vec2 P = oriP + t * dP;
         double ZW = oriZW + t * dZW;
@@ -289,8 +293,8 @@ void main(void)
             vec2 uvi = GetScreenCoordinate(hitPos);
             // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
-            // Lindirect = hitPos;
-            Lindirect = GetGBufferDiffuse(UV);
+            Lindirect = hitPos;
+            // Lindirect = GetGBufferDiffuse(UV);
         }
     }
     // L += Lindirect / SAMPLE_NUM;
