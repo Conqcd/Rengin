@@ -180,7 +180,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
         pO2E = pO2E.yx;
     }
 
-    float dx = sign(nO2E.x) / (swapXY ? u_WindowSize.y :u_WindowSize.x);
+    float dx = sign(nO2E.x) / (swapXY ? u_WindowSize.y : u_WindowSize.x);
     dx *= abs(pO2E.x / length(pO2E));
     float dy = nO2E.y / nO2E.x * dx;
  
@@ -191,7 +191,11 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
 
     vec4 dP = vec4(dx,dy,dZW,dInvW),oriP = vec4(nOri.x,nOri.y,oriZW,oriInvW);
 
-    for(int i = 0,t = 1;;i++)
+    // hitPos = vec3(0,0,dZW) * 50000;
+    hitPos = vec3(0,0,rayLen) / 1;
+    // hitPos = vEnd.xyz;
+    return true;
+    for(int i = 0,t = 0;;i++)
     {
         vec4 P = oriP + t * dP;
         float ZW = oriZW + t * dZW;
@@ -207,7 +211,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
         }
         float depth = GetGBufferDepth(uv);
         float nowDepth = ZW / inW - 0.1;
-        if(nowDepth >= depth)
+        if(-nowDepth <= depth)
         {
             hitPos = GetGBufferPosWorld(uv);
             UV = uv;
@@ -245,8 +249,8 @@ void main()
             vec2 uvi = GetScreenCoordinate(hitPos);
             // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
-            // Lindirect = hitPos;
-            Lindirect = GetGBufferDiffuse(UV);
+            Lindirect = hitPos;
+            // Lindirect = GetGBufferDiffuse(UV);
         }
     }
     // L += Lindirect / SAMPLE_NUM;
