@@ -209,36 +209,35 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
   }
 
   // Render 2D
-  auto view = m_registry.view<TransformComponent, CameraComponent>();
-  Camera *MainCamera = nullptr;
-  glm::mat4 CameraTransform;
-  SceneCamera::ProjectionType CameraType;
-  float MainFOV;
-  for (auto entity : view) {
-    auto &&[transform, camera] =
-        view.get<TransformComponent, CameraComponent>(entity);
-    if (camera.Primary) {
-      MainCamera = &camera.Camera;
-      CameraTransform = transform.GetTransform();
-      CameraType = camera.Camera.GetProjectionType();
-      MainFOV = camera.Camera.GetPerspectiveFOV();
-      break;
+    auto view = m_registry.view<TransformComponent, CameraComponent>();
+    Camera *MainCamera = nullptr;
+    glm::mat4 CameraTransform;
+    SceneCamera::ProjectionType CameraType;
+    float MainFOV;
+    for (auto entity : view) {
+        auto &&[transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+        if (camera.Primary) {
+            MainCamera = &camera.Camera;
+            CameraTransform = transform.GetTransform();
+            CameraType = camera.Camera.GetProjectionType();
+            MainFOV = camera.Camera.GetPerspectiveFOV();
+            break;
+        }
     }
-  }
-  if (MainCamera) {
-    Renderer2D::BeginScene(MainCamera->getProjection(), CameraTransform);
+    if (MainCamera) {
+        Renderer2D::BeginScene(MainCamera->getProjection(), CameraTransform);
 
-    auto group = m_registry.group<TransformComponent>(
-        entt::get<SpriteRendererComponent>);
-    for (auto _entity : group) {
-      auto &&[transform, sprite] =
-        group.get<TransformComponent, SpriteRendererComponent>(_entity);
-        // Renderer2D::DrawQuad(transform.Translation, transform.Scale,sprite.Color);
-        Renderer2D::DrawSprite(transform.GetTransform(),sprite,(int)_entity);
-    }
-    Renderer2D::EndScene();
+        auto group = m_registry.group<TransformComponent>(
+            entt::get<SpriteRendererComponent>);
+        for (auto _entity : group) {
+        auto &&[transform, sprite] =
+            group.get<TransformComponent, SpriteRendererComponent>(_entity);
+            // Renderer2D::DrawQuad(transform.Translation, transform.Scale,sprite.Color);
+            Renderer2D::DrawSprite(transform.GetTransform(),sprite,(int)_entity);
+        }
+        Renderer2D::EndScene();
 
-    Renderer3D::BeginScene(MainCamera->getProjection(), CameraTransform);
+        Renderer3D::BeginScene(MainCamera->getProjection(), CameraTransform);
 
     if(CameraType == SceneCamera::ProjectionType::Perspective)
     {

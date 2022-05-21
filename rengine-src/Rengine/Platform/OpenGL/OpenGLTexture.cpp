@@ -295,14 +295,28 @@ OpenGLTexture3D::~OpenGLTexture3D()
 void OpenGLTexture3D::setData(void* data,uint32_t size)
 {
     RE_PROFILE_FUNCTION();
-    uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: (m_dataFormat == GL_RED? 1 : 0)); 
+    uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: (m_dataFormat == GL_RED? 1 : 0));
     RE_CORE_ASSERT((size == m_height * m_width * m_depth * bpp),"Can not match the size!");
     if(m_interFormat == GL_RGB32F)
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
                           m_dataFormat, GL_FLOAT, data);
     else
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
-                          m_dataFormat, GL_UNSIGNED_BYTE, data);
+                          m_dataFormat, GL_FLOAT, data);
+}
+
+void OpenGLTexture3D::setData(std::vector<float>& data)
+{
+    RE_PROFILE_FUNCTION();
+    uint32_t bpp = (m_dataFormat == GL_RGBA)? 4 : ((m_dataFormat == GL_RGB)? 3: (m_dataFormat == GL_RED? 1 : 0));
+    RE_CORE_ASSERT((data.size() == m_height * m_width * m_depth * bpp),"Can not match the size!");
+    m_tex = data;
+    if(m_interFormat == GL_RGB32F)
+      glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
+                          m_dataFormat, GL_FLOAT, data.data());
+    else
+      glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
+                          m_dataFormat, GL_FLOAT, data.data());
 }
 
 void OpenGLTexture3D::Bind(uint32_t slot) const

@@ -17,6 +17,7 @@ namespace Rengin
 		void OnEvent(Event& e);
 
 		inline float GetDistance() const { return m_Distance; }
+		inline float GetNear() const { return m_NearClip; }
 		inline float GetFOV() const { return m_FOV; }
 		inline void SetDistance(float distance) { m_Distance = distance; }
 
