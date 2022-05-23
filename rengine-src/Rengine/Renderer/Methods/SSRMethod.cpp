@@ -59,10 +59,10 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
 
     //          SSR
     m_MainFrame->Bind();
-    float values[3] = {0,0,0};
+    // float values[3] = {0,0,0};
     // RenderCommand::Clear(2);
     // RenderCommand::Clear();
-    m_MainFrame->ClearAttachment(2,values);
+    // m_MainFrame->ClearAttachment(2,values);
     RenderCommand::EnableAlpha();
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());

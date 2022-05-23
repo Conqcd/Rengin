@@ -45,9 +45,11 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     RenderCommand::Clear();
 
     //Clear framebuffer id to -1
-    int values = -1;
-    m_framebuffer->ClearAttachment(1,&values);
-
+    int value = -1;
+    m_framebuffer->ClearAttachment(1,&value);
+    float values[3] = {100,0,0};
+    m_framebuffer->ClearAttachment(2,values);
+    
     switch (m_SceneState)
     {
     case SceneState::Edit:
