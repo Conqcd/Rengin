@@ -23,6 +23,7 @@ in vec4 v_PosWorld;
 // Out
 layout(location = 0) out vec4 o_Color;
 layout(location = 1) out int o_Entity;
+layout(location = 2) out vec3 o_Test;
 
 #define M_PI 3.1415926535897932384626433832795
 #define TWO_PI 6.283185307
@@ -205,13 +206,9 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
             hitPos.xy = uv;
             return false;
         }
-<<<<<<< HEAD
-        if(depth <= uvw.z)
-=======
         float depth = GetGBufferDepth(uv);
         float nowDepth = ZW / inW - 0.1;
         if(nowDepth >= depth)
->>>>>>> 5d5af24ebe7f389a9a7bd11a01fd3828496c5372
         {
             hitPos = GetGBufferPosWorld(uv);
             UV = uv;
@@ -258,5 +255,7 @@ void main()
     // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     vec3 color = L;
     o_Color = vec4(vec3(color.rgb), 1.0);
+    o_Color = vec4(vec3(color.rgb), 1.0);
     o_Entity = u_Entity;
+    o_Test = vec3(1.0);
 }
