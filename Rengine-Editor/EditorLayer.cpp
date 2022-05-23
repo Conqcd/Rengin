@@ -47,8 +47,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     //Clear framebuffer id to -1
     int value = -1;
     m_framebuffer->ClearAttachment(1,&value);
-    float values[3] = {100,0,0};
-    m_framebuffer->ClearAttachment(2,values);
+    int values[4] = {0,0,0,0};
+    m_framebuffer->ClearAttachment(2,&value);
     
     switch (m_SceneState)
     {
@@ -301,10 +301,11 @@ void EditorLayer::OnAttach()
     m_texture = Texture2D::Create("assets/textures/France.jpg");
     m_IconPlay = Texture2D::Create("assets/textures/France.jpg");
     m_IconStop = Texture2D::Create("assets/textures/France.jpg");
-    
+
     //FrameBuffer
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::RGBF32, FramebufferTextureFormat::Depth};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER,FramebufferTextureFormat::RGBAI32, FramebufferTextureFormat::Depth};
+    // FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::RGBF32,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);

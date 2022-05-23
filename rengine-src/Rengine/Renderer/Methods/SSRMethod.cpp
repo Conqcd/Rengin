@@ -59,6 +59,9 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
 
     //          SSR
     m_MainFrame->Bind();
+    // RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
+    // RenderCommand::Clear();
+    
     // float values[3] = {0,0,0};
     // RenderCommand::Clear(2);
     // RenderCommand::Clear();

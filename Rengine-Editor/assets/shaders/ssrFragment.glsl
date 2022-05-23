@@ -23,7 +23,7 @@ in vec4 v_PosWorld;
 // Out
 layout(location = 0) out vec4 o_Color;
 layout(location = 1) out int o_Entity;
-layout(location = 2) out vec3 o_Test;
+layout(location = 2) out ivec4 o_Test;
 
 #define M_PI 3.1415926535897932384626433832795
 #define TWO_PI 6.283185307
@@ -156,6 +156,7 @@ vec3 EvalDirectionalLight(vec2 uv)
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
 {
     vec4 vOri = v_ViewMatrix * vec4(ori,1.0),vDir = v_ViewMatrix * vec4(dir,0.0);
+    vDir = normalize(vDir);
 
     float rayLen = (vOri.z + vDir.z < u_NearZ) ? (u_NearZ - vOri.z) / vDir.z : 1;
     vec4 vEnd = vOri + rayLen * vDir;
@@ -181,8 +182,8 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
         pO2E = pO2E.yx;
     }
 
-    float dx = sign(nO2E.x) / (swapXY ? u_WindowSize.y :u_WindowSize.x);
-    dx *= abs(pO2E.x / length(pO2E));
+    float dx = sign(nO2E.x) * 2 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
+    // dx *= abs(pO2E.x / length(pO2E));
     float dy = nO2E.y / nO2E.x * dx;
  
     float oriZW = vOri.z * oriInvW, endZW = vEnd.z * endInvW;
@@ -202,15 +203,33 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
         uv = uv * vec2(0.5,0.5) + vec2(0.5,0.5);
         if(fract(uv) != uv)
         {
-            // hitPos = GetGBufferPosWorld(fract(uvw.xy));
-            hitPos.xy = uv;
+            // hitPos = GetGBufferPosWorld(fract(uv));
+            // hitPos = normalize(vDir.xyz) * 100;
+            // hitPos.z = dZW * 100000;
+            // hitPos.x = dInvW * 100000;
+            hitPos.z = t;
+            // UV = uv;
             return false;
         }
         float depth = GetGBufferDepth(uv);
-        float nowDepth = ZW / inW - 0.1;
+        float nowDepth = -ZW / inW - 0.1;
+        // nowDepth = -nowDepth;
+        // hitPos.x = depth;
+        // hitPos.y = nowDepth;
+        // hitPos.xyz = ivec3(vDir);
+        // hitPos
+        // UV = uv;
+        // return true;
         if(nowDepth >= depth)
         {
-            hitPos = GetGBufferPosWorld(uv);
+            // hitPos = GetGBufferPosWorld(uv);
+            // hitPos = normalize(vDir.xyz) * 100;
+            // hitPos.x = depth;
+            // hitPos.y = nowDepth;
+            // hitPos.z = dZW * 100000;
+            // hitPos.x = dInvW * 100000;
+            hitPos.xy = dP.xy * 1000;
+            hitPos.z = (vEnd.z - vOri.z) * 100;
             UV = uv;
             return true;
         }
@@ -221,7 +240,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
 
 #define SAMPLE_NUM 1
 
-void main()
+void main(void)
 {
     float s = InitRand(gl_FragCoord.xy);
 
@@ -232,9 +251,10 @@ void main()
     vec3 b1,b2,b3 = normalize(GetGBufferNormalWorld(uv));
     LocalBasis(b3,b1,b2);
     vec3 C2O = normalize(u_CameraPos - ori);
+    vec3 hitPos = vec3(0.0);
+    vec2 uvs;
     for(int i = 0; i < SAMPLE_NUM;i++)
     {
-        vec3 hitPos = vec3(0.0);
         float pdf = 0.0;
         // vec3 dir = SampleHemisphereUniform(s,pdf);
         // vec3 dir = dot(b3,C2O) * 2 / length(b3) * b3 - C2O;
@@ -248,6 +268,7 @@ void main()
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
             // Lindirect = hitPos;
             Lindirect = GetGBufferDiffuse(UV);
+            uvs = UV;
         }
     }
     // L += Lindirect / SAMPLE_NUM;
@@ -255,7 +276,7 @@ void main()
     // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     vec3 color = L;
     o_Color = vec4(vec3(color.rgb), 1.0);
-    o_Color = vec4(vec3(color.rgb), 1.0);
+    // o_Color.xy = uvs;
     o_Entity = u_Entity;
-    o_Test = vec3(1.0);
+    o_Test.xyz = ivec3(hitPos);
 }
