@@ -289,8 +289,8 @@ void main(void)
             vec2 uvi = GetScreenCoordinate(hitPos);
             // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
-            Lindirect = hitPos;
-            // Lindirect = GetGBufferDiffuse(UV);
+            // Lindirect = hitPos;
+            Lindirect = GetGBufferDiffuse(UV);
         }
     }
     // L += Lindirect / SAMPLE_NUM;
