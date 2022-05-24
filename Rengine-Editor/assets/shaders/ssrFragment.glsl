@@ -194,7 +194,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
 
     vec2 dP = vec2(dx,dy),oriP = vec2(nOri.x,nOri.y);
 
-    for(int i = 0,t = 1;;i++)
+    for(int i = 0,t = 0;;i++)
     {
         vec2 P = oriP + t * dP;
         double ZW = oriZW + t * dZW;
