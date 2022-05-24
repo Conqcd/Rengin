@@ -24,6 +24,7 @@ in vec4 v_PosWorld;
 layout(location = 0) out vec4 o_Color;
 layout(location = 1) out int o_Entity;
 layout(location = 2) out ivec4 o_Test;
+layout(location = 3) out ivec4 o_Test2;
 
 #define M_PI 3.1415926535897932384626433832795
 #define TWO_PI 6.283185307
@@ -153,12 +154,12 @@ vec3 EvalDirectionalLight(vec2 uv)
     return Le;
 }
 
-bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
+bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
 {
     vec4 vOri = v_ViewMatrix * vec4(ori,1.0),vDir = v_ViewMatrix * vec4(dir,0.0);
     vDir = normalize(vDir);
 
-    float rayLen = (vOri.z + vDir.z < u_NearZ) ? (u_NearZ - vOri.z) / vDir.z : 1;
+    float rayLen = (vOri.z + vDir.z > -u_NearZ) ? (-u_NearZ - vOri.z) / vDir.z : 1;
     vec4 vEnd = vOri + rayLen * vDir;
 
     vec4 pOri = v_ProjectionMatrix * vOri,pEnd = v_ProjectionMatrix * vEnd;
@@ -216,8 +217,11 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos,out vec2 UV)
         // nowDepth = -nowDepth;
         // hitPos.x = depth;
         // hitPos.y = nowDepth;
-        // hitPos.xyz = ivec3(vDir);
-        // hitPos
+        // hitPos.xy = dP.xy;
+        // hitPos.z =  -ZW / inW + oriZW / oriInvW;
+        // hitPos = vDir.xyz * 100;
+        // hitPos2.xyz = vOri.xyz;
+        // hitPos2.w = rayLen;
         // UV = uv;
         // return true;
         if(nowDepth >= depth)
@@ -252,6 +256,7 @@ void main(void)
     LocalBasis(b3,b1,b2);
     vec3 C2O = normalize(u_CameraPos - ori);
     vec3 hitPos = vec3(0.0);
+    vec4 hitPos2 = vec4(0.0);
     vec2 uvs;
     for(int i = 0; i < SAMPLE_NUM;i++)
     {
@@ -261,7 +266,7 @@ void main(void)
         vec3 dir = -reflect(C2O,b3);
         // dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
         vec2 UV;
-        if(RayMarch(ori,dir,hitPos,UV))
+        if(RayMarch(ori,dir,hitPos,hitPos2,UV))
         {
             vec2 uvi = GetScreenCoordinate(hitPos);
             // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
@@ -279,4 +284,5 @@ void main(void)
     // o_Color.xy = uvs;
     o_Entity = u_Entity;
     o_Test.xyz = ivec3(hitPos);
+    o_Test2 = ivec4(hitPos2);
 }

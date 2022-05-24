@@ -304,7 +304,7 @@ void EditorLayer::OnAttach()
 
     //FrameBuffer
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER,FramebufferTextureFormat::RGBAI32, FramebufferTextureFormat::Depth};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER,FramebufferTextureFormat::RGBAI32,FramebufferTextureFormat::RGBAI32, FramebufferTextureFormat::Depth};
     // FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::RGBF32,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
