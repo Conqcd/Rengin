@@ -352,6 +352,43 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
     return newTexture;
 }
 
+#define MAX_LINE 1024
+
+Ref<Texture3D> LoadResult()
+{
+    FILE* f = fopen("temp/displacements.txt", "r");
+	if (!f)
+	{
+		printf("文件打开失败\n");
+		return 0;
+	}
+	char buf[512];
+	fgets(buf, MAX_LINE, f);
+	fgets(buf, MAX_LINE, f);
+	int maxX, maxY, maxZ;
+	sscanf(buf, "Nodes: %d  %d  %d", &maxX, &maxY, &maxZ);
+	fgets(buf, MAX_LINE, f);
+
+	std::vector<float> field(maxX * maxY * maxZ * 3);
+    int id = 0;
+	int num, x, y, z;
+	double dx, dy, dz;
+	while (fgets(buf, MAX_LINE, f) != NULL)
+	{
+		sscanf(buf, "%d   %d   %d   %d   %lf   %lf   %lf  ", &num, &x, &y, &z, &dx, &dy, &dz);
+        id = x + maxX * y + maxX * maxY * z;
+        id *= 3;
+		field[id++] = dx;
+		field[id++] = dy;
+		field[id++] = dz;
+		//field[x + maxX * y + maxX * maxY * z] = 1000;
+	}
+	fclose(f);
+    auto texture = Texture3D::Create(maxX,maxY,maxZ,3);
+    texture->setData(field);
+    return texture;
+}
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
     if(entity.HasComponent<TagComponent>())
@@ -582,8 +619,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();
             }
+            ImGui::SameLine();
             if (ImGui::Button("Stop")) {
                 // m_ExternalProcess->Terminate();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Show Result")) {
+                LoadResult();
             }
         });
     DrawComponent<ColorTransferFunctionComponent>(
