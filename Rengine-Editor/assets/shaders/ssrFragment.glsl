@@ -183,37 +183,42 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         pO2E = pO2E.yx;
     }
 
-    float dx = sign(nO2E.x) * 2 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
+    float dx = sign(nO2E.x) * 1 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
     // dx *= abs(pO2E.x / length(pO2E));
     float dy = nO2E.y / nO2E.x * dx;
  
-    float oriZW = vOri.z * oriInvW, endZW = vEnd.z * endInvW;
-    float dZW = (endZW - oriZW) / nO2E.x * dx;
+    double oriZW = double(vOri.z) * double(oriInvW), endZW = double(vEnd.z) * double(endInvW);
+    double dZW = (endZW - oriZW) / double(nO2E.x) * double(dx);
 
-    float dInvW = (endInvW - oriInvW) / nO2E.x * dx;
+    double dInvW = (endInvW - oriInvW) / double(nO2E.x) * double(dx);
 
-    vec4 dP = vec4(dx,dy,dZW,dInvW),oriP = vec4(nOri.x,nOri.y,oriZW,oriInvW);
+    vec2 dP = vec2(dx,dy),oriP = vec2(nOri.x,nOri.y);
 
     for(int i = 0,t = 1;;i++)
     {
-        vec4 P = oriP + t * dP;
-        float ZW = oriZW + t * dZW;
-        float inW = oriInvW + t * dInvW;
+        vec2 P = oriP + t * dP;
+        double ZW = oriZW + t * dZW;
+        double inW = oriInvW + t * dInvW;
 
-        vec2 uv = swapXY? P.yx : P.xy;
+        vec2 uv = swapXY? P.yx : P;
         uv = uv * vec2(0.5,0.5) + vec2(0.5,0.5);
+        double nowDepth = -ZW / inW - 0.1;
         if(fract(uv) != uv)
         {
             // hitPos = GetGBufferPosWorld(fract(uv));
             // hitPos = normalize(vDir.xyz) * 100;
             // hitPos.z = dZW * 100000;
             // hitPos.x = dInvW * 100000;
+            hitPos2.xy = (P - oriP) * 1000;
+            // hitPos2.z = nowDepth + oriZW / oriInvW;
+            hitPos2.w = rayLen;
+            // hitPos.xy = uv * 1000;
+            hitPos.xy = uv * u_WindowSize;
             hitPos.z = t;
             // UV = uv;
             return false;
         }
-        float depth = GetGBufferDepth(uv);
-        float nowDepth = -ZW / inW - 0.1;
+        double depth = GetGBufferDepth(uv);
         // nowDepth = -nowDepth;
         // hitPos.x = depth;
         // hitPos.y = nowDepth;
@@ -222,9 +227,13 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         // hitPos = vDir.xyz * 100;
         // hitPos2.xyz = vOri.xyz;
         // hitPos2.w = rayLen;
+        // hitPos.xy = uv * (swapXY ? u_WindowSize.yx :u_WindowSize);
+        // hitPos2.xy = (P.xy - oriP.xy) * 1000;
+        // hitPos2.z = nowDepth + oriZW / oriInvW;
         // UV = uv;
         // return true;
-        if(nowDepth >= depth)
+        double deltaZ = nowDepth - depth;
+        if(deltaZ >= 0 && deltaZ <= 0.7)
         {
             // hitPos = GetGBufferPosWorld(uv);
             // hitPos = normalize(vDir.xyz) * 100;
@@ -232,8 +241,17 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             // hitPos.y = nowDepth;
             // hitPos.z = dZW * 100000;
             // hitPos.x = dInvW * 100000;
-            hitPos.xy = dP.xy * 1000;
-            hitPos.z = (vEnd.z - vOri.z) * 100;
+            hitPos2.xy = (P - oriP) * 1000;
+            hitPos2.w = float(depth);
+            hitPos2.z = float(nowDepth);
+            // hitPos2.z = nowDepth + oriZW / oriInvW;
+            hitPos.xy = uv * u_WindowSize;
+
+            // hitPos2.xyz = vEnd.xyz;
+            // hitPos2.w = rayLen;
+            // hitPos.xy = uv * 1000;
+            // hitPos.z = (vEnd.z - vOri.z) * 100;
+            // hitPos.z = t;
             UV = uv;
             return true;
         }

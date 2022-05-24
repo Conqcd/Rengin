@@ -36,8 +36,8 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
     m_GBuffer->Bind();
     RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
     RenderCommand::Clear();
-    // float value = 0;
-    // m_GBuffer->ClearAttachment(1,&value);
+    float value = 1000;
+    m_GBuffer->ClearAttachment(1,&value);
     m_GBufferShader->Bind();
     m_GBufferShader->SetUniformMat4("u_LightVP", LightVP);
     m_GBufferShader->SetUniformMat4("u_View", camera.GetViewMatrix());
