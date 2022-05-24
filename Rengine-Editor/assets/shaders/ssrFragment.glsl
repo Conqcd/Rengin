@@ -194,11 +194,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
 
     vec2 dP = vec2(dx,dy),oriP = vec2(nOri.x,nOri.y);
 
-    // hitPos = vec3(0,0,dZW) * 50000;
-    hitPos = vec3(0,0,rayLen) / 1;
-    // hitPos = vEnd.xyz;
-    return true;
-    for(int i = 0,t = 0;;i++)
+    for(int i = 0,t = 1;;i++)
     {
         vec2 P = oriP + t * dP;
         double ZW = oriZW + t * dZW;
@@ -279,7 +275,6 @@ void main(void)
     vec3 C2O = normalize(u_CameraPos - ori);
     vec3 hitPos = vec3(0.0);
     vec4 hitPos2 = vec4(0.0);
-    vec2 uvs;
     for(int i = 0; i < SAMPLE_NUM;i++)
     {
         float pdf = 0.0;
@@ -293,16 +288,15 @@ void main(void)
             vec2 uvi = GetScreenCoordinate(hitPos);
             // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
-            Lindirect = hitPos;
-            // Lindirect = GetGBufferDiffuse(UV);
+            // Lindirect = hitPos;
+            Lindirect = GetGBufferDiffuse(UV);
         }
     }
     // L += Lindirect / SAMPLE_NUM;
     L = Lindirect / SAMPLE_NUM;
-    // vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-    vec3 color = L;
+    vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
+    // vec3 color = L;
     o_Color = vec4(vec3(color.rgb), 1.0);
-    // o_Color.xy = uvs;
     o_Entity = u_Entity;
     o_Test.xyz = ivec3(hitPos);
     o_Test2 = ivec4(hitPos2);
