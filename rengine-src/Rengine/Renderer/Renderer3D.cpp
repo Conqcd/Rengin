@@ -510,8 +510,8 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 }
 
 void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
-                            const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,
-                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold,int TWidth,int THeight,int TDepth)
+                            const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,float maxvalue,
+                            const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold,int TWidth,int THeight,int TDepth,int renderMode)
 {
     RE_PROFILE_FUNCTION();
 
@@ -540,13 +540,13 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_TWidth", TWidth);
     s_data_v.m_VolumeShader->SetUniformInt("u_THeight", THeight);
     s_data_v.m_VolumeShader->SetUniformInt("u_TDepth", TDepth);
-    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", 1);
+    s_data_v.m_VolumeShader->SetUniformInt("u_RenderMode", renderMode);
     s_data_v.m_VolumeShader->SetUniformInt("u_volume", 1);
     s_data_v.m_VolumeShader->SetUniformInt("u_Force", 2);
     s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);
     s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 4);
     // s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
-    s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 3.0f);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", maxvalue);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
 
     auto it = transfera.begin();

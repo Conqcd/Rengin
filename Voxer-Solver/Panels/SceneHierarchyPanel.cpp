@@ -354,13 +354,13 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
 
 #define MAX_LINE 1024
 
-Ref<Texture3D> LoadResult()
+std::pair<Ref<Texture3D>,float> LoadResult()
 {
     FILE* f = fopen("temp/displacements.txt", "r");
 	if (!f)
 	{
 		printf("文件打开失败\n");
-		return 0;
+		return {0,0};
 	}
 	char buf[512];
 	fgets(buf, MAX_LINE, f);
@@ -373,6 +373,7 @@ Ref<Texture3D> LoadResult()
     int id = 0;
 	int num, x, y, z;
 	double dx, dy, dz;
+    float maxx,maxy,maxz,maxd = 0;
 	while (fgets(buf, MAX_LINE, f) != NULL)
 	{
 		sscanf(buf, "%d   %d   %d   %d   %lf   %lf   %lf  ", &num, &x, &y, &z, &dx, &dy, &dz);
@@ -381,12 +382,13 @@ Ref<Texture3D> LoadResult()
 		field[id++] = dx;
 		field[id++] = dy;
 		field[id++] = dz;
+        maxd = std::max(maxd,static_cast<float>(std::sqrt(dx * dx + dy * dy + dz * dz)));
 		//field[x + maxX * y + maxX * maxY * z] = 1000;
 	}
 	fclose(f);
     auto texture = Texture3D::Create(maxX,maxY,maxZ,3);
     texture->setData(field);
-    return texture;
+    return {texture,maxd};
 }
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
@@ -532,6 +534,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         {
 
         }
+        if(ImGui::Button("Show Texture"))
+        {
+            auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+            texComR.showId = 1;
+        }
     });
 
     DrawComponent<ForceComponent>("Force",entity,[this](auto& component)
@@ -568,6 +575,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             fx = fy = fz = 0;
             ClearAttribute(m_PickedPixels,texComF.Texture->getTexture(),fx,fy,fz,texComF.Texture->getWidth(),texComF.Texture->getHeight(),texComF.Texture->getDepth());
             texComF.Texture->setData(texComF.Texture->getTexture().data(),texComF.Texture->getTexture().size());
+        }
+        if(ImGui::Button("Show Force"))
+        {
+            auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+            texComR.showId = 2;
         }
     });
 
@@ -607,6 +619,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             ClearAttribute(m_PickedPixels,texComC.Texture->getTexture(),0,0,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
             texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
+        if(ImGui::Button("Show Constraint"))
+        {
+            auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+            texComR.showId = 3;
+        }
     });
     DrawComponent<SolveComponent>("Solve!", entity, [this](auto &component) {
             if (ImGui::Button("Solve")) {
@@ -624,8 +641,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 // m_ExternalProcess->Terminate();
             }
             ImGui::SameLine();
+            if (ImGui::Button("Load Result")) {
+                auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+                auto [tex,value] = LoadResult(); 
+                texComR.Texture = tex;
+                texComR.maxvalue[3] = value;
+                texComR.showId = 4;
+            }
+            ImGui::SameLine();
             if (ImGui::Button("Show Result")) {
-                LoadResult();
+                auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+                texComR.showId = 4;
             }
         });
     DrawComponent<ColorTransferFunctionComponent>(

@@ -206,6 +206,9 @@ OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,u
     }else if(bpp == 4)
     {
         interFormat = GL_RGBA8, dataFormat = GL_RGBA;
+    }else
+    {
+        interFormat = GL_RGB32F,dataFormat = GL_RGB;
     }
     m_interFormat = interFormat;
     m_dataFormat = dataFormat;

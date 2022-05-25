@@ -164,6 +164,20 @@ struct SolveComponent
     SolveComponent(const SolveComponent&) = default;
 };
 
+struct ResultComponent
+{
+    Ref<Texture3D> Texture;
+    std::string Path;
+    float Threshold = 0.0f;
+    int width,height,depth;
+    int showId = 1;
+    glm::vec4 maxvalue;
+    ResultComponent() = default;
+    ResultComponent(const ResultComponent&) = default;
+    ResultComponent(const Ref<Texture3D> texture)
+        :Texture(texture)   {}
+};
+
 struct ObjectComponent
 {
     //TODO

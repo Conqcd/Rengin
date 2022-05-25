@@ -1,6 +1,6 @@
 #version 450 core
 
-uniform float maxvalue;
+uniform float u_maxvalue;
 uniform float u_threshold;
 uniform int u_TWidth;
 uniform int u_THeight;
@@ -158,12 +158,17 @@ void main()
     // gl_FragColor = vec4(-step_vector * 1000,1.0);
     vec4 color = vec4(0.0);
     // float cnt = 0;
-    while (ray_length > 0 && color.a < 1.0) {
-        float intensity = texture(u_volume, position).r;
-        vec4 c = color_transfer(intensity / maxvalue);
-        // if(intensity > u_threshold * maxvalue)
-        if(intensity >= 1.0)
-        {
+    if(u_RenderMode == 4)
+    {
+        while (ray_length > 0 && color.a < 1.0) {
+            float intensity = length(texture(u_ResultVolume, position).rgb);
+            vec4 c = color_transfer(intensity / u_maxvalue);
+            if(intensity > 0.0)
+            {
+                color = vec4(1.0);
+                break;
+            }
+
             vec3 L = normalize(u_lightPosition - position);
             vec3 V = -normalize(ray);
             vec3 N = normal(position, intensity);
@@ -174,28 +179,57 @@ void main()
             float Is = 8.0 * pow(max(0, dot(N, H)), 600);
 
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
-            color.rgb = vec3(1.0);
             color.a = c.a + (1 - c.a) * color.a;
 
-            o_position.r = int(position.r * float(u_TWidth - 1));
-            // if(ray.r <= 0.0)  o_position.r -= 1;
-            o_position.g = int(position.g * float(u_THeight - 1));
-            // if(ray.g <= 0.0)  o_position.g -= 1;
-            o_position.b = int(position.b * float(u_TDepth - 1));
-            // if(ray.b <= 0.0)  o_position.b -= 1;
-            break;
+            ray_length -= u_stepLength;
+            position += step_vector;
         }
+        
+        color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
+        color.a = 1.0;
+        color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+        // color.rgb = position;
+    }else
+    {
+        while (ray_length > 0 && color.a < 1.0) {
+            float intensity = texture(u_volume, position).r;
+            vec4 c = color_transfer(intensity / u_maxvalue);
+            // if(intensity > u_threshold * u_maxvalue)
+            if(intensity >= 1.0)
+            {
+                vec3 L = normalize(u_lightPosition - position);
+                vec3 V = -normalize(ray);
+                vec3 N = normal(position, intensity);
+                vec3 H = normalize(L + V);
 
-        ray_length -= u_stepLength;
-        position += step_vector;
+                float Ia = 0.1;
+                float Id = 1.0 * max(0, dot(N, L));
+                float Is = 8.0 * pow(max(0, dot(N, H)), 600);
+
+                color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
+                color.rgb = vec3(1.0);
+                color.a = c.a + (1 - c.a) * color.a;
+
+                o_position.r = int(position.r * float(u_TWidth - 1));
+                // if(ray.r <= 0.0)  o_position.r -= 1;
+                o_position.g = int(position.g * float(u_THeight - 1));
+                // if(ray.g <= 0.0)  o_position.g -= 1;
+                o_position.b = int(position.b * float(u_TDepth - 1));
+                // if(ray.b <= 0.0)  o_position.b -= 1;
+                break;
+            }
+
+            ray_length -= u_stepLength;
+            position += step_vector;
+        }
+        
+        color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
+        color.a = 1.0;
+        color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+        if(u_RenderMode == 2 && length(texture(u_Force, position).rgb) != 0.0)
+            color = vec4(0.0,1.0,0.0,1.0);
+        else if(u_RenderMode == 3 && length(texture(u_Constraint, position).rgb) != 0.0)
+            color = vec4(0.0,0.0,1.0,1.0);
     }
-    
-    color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
-    color.a = 1.0;
-    o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-    o_color.a = color.a;
-    if(u_RenderMode == 1 && length(texture(u_Force, position).rgb) != 0.0)
-        o_color = vec4(0.0,1.0,0.0,1.0);
-    else if(u_RenderMode == 2 && length(texture(u_Constraint, position).rgb) != 0.0)
-        o_color = vec4(0.0,0.0,1.0,1.0);
+    o_color = color;
 }

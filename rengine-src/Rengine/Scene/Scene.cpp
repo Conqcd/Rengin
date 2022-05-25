@@ -136,6 +136,10 @@ void Scene::OnComponentAdd<ConstraintComponent>(Entity entity,
                                                ConstraintComponent &component) {}
 
 template <>
+void Scene::OnComponentAdd<ResultComponent>(Entity entity,
+                                               ResultComponent &component) {}
+
+template <>
 void Scene::OnComponentAdd<SolveComponent>(Entity entity,
                                                SolveComponent &component) {}
 
@@ -170,12 +174,12 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
     Renderer3D::BeginScene(camera);
 
     auto viewv =
-        m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,
+        m_registry.view<TransformComponent, Texture3DComponent, ForceComponent, ResultComponent,
                         ConstraintComponent, OpacityTransferFunctionComponent,
                         ColorTransferFunctionComponent>();
     for (auto _entity : viewv) {
-      auto &&[transform, texture, force, constraint, transfera, transferc] =
-          viewv.get<TransformComponent, Texture3DComponent, ForceComponent,
+      auto &&[transform, texture, force, result, constraint, transfera, transferc] =
+          viewv.get<TransformComponent, Texture3DComponent, ForceComponent, ResultComponent,
                     ConstraintComponent, OpacityTransferFunctionComponent,
                     ColorTransferFunctionComponent>(_entity);
 
@@ -183,14 +187,17 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
       texture.Texture->Bind(1);
       force.Texture->Bind(2);
       constraint.Texture->Bind(3);
+      if(result.Texture)
+        result.Texture->Bind(4);
+      float mvalue = result.showId == 4 ? result.maxvalue[3]: 3.0f;
 
       auto Viewmatrix = camera.GetViewMatrix();
       Renderer3D::DrawVolume(camera.getProjection(), Viewmatrix,
           transform.GetTransform(), texture.Texture, transform.Scale,
           {m_ViewportWidth, m_ViewportHeight}, focalLength,
           camera.GetPosition(),camera.GetPosition(),
-          stepLength, transfera.Opacity, transferc.Color,texture.Threshold,
-          texture.width,texture.height,texture.depth);
+          stepLength, mvalue, transfera.Opacity, transferc.Color,texture.Threshold,
+          texture.width,texture.height,texture.depth,result.showId);
       Renderer3D::EndScene();
     }
 }
@@ -242,24 +249,27 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
     if(CameraType == SceneCamera::ProjectionType::Perspective)
     {
         auto viewv =
-            m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,
+            m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,ResultComponent,
                             ConstraintComponent, OpacityTransferFunctionComponent,
                             ColorTransferFunctionComponent>(); for (auto _entity : viewv) {
-            auto &&[transform, texture, force, constraint, transfera, transferc] =
-                viewv.get<TransformComponent, Texture3DComponent, ForceComponent,
+            auto &&[transform, texture, force, result, constraint, transfera, transferc] =
+                viewv.get<TransformComponent, Texture3DComponent, ForceComponent,ResultComponent,
                         ConstraintComponent, OpacityTransferFunctionComponent,
                         ColorTransferFunctionComponent>(_entity);
             float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
-            texture.Texture->Bind(0);
-            force.Texture->Bind(1);
-            constraint.Texture->Bind(2);
+            texture.Texture->Bind(1);
+            force.Texture->Bind(2);
+            constraint.Texture->Bind(3);
+            if(result.Texture)
+              result.Texture->Bind(4);
+            float mvalue = result.showId == 4 ? result.maxvalue[3]: 3.0f;
             
             Renderer3D::DrawVolume(
                 MainCamera->getProjection(), glm::inverse(CameraTransform),
                 transform.GetTransform(), texture.Texture,transform.Scale,
                 {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
-                {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, transfera.Opacity, transferc.Color,texture.Threshold,
-                texture.width,texture.height,texture.depth);
+                {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, mvalue, transfera.Opacity, transferc.Color,texture.Threshold,
+                texture.width,texture.height,texture.depth,result.showId);
       }
     }
 
