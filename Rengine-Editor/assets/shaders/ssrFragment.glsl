@@ -214,7 +214,6 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             hitPos2.w = rayLen;
             // hitPos.xy = uv * 1000;
             hitPos.xy = uv * u_WindowSize;
-            hitPos.z = t;
             // UV = uv;
             return false;
         }
@@ -246,6 +245,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             hitPos2.z = float(nowDepth);
             // hitPos2.z = nowDepth + oriZW / oriInvW;
             hitPos.xy = uv * u_WindowSize;
+            hitPos.z = float(-oriZW / oriInvW);
 
             // hitPos2.xyz = vEnd.xyz;
             // hitPos2.w = rayLen;
