@@ -183,8 +183,8 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         pO2E = pO2E.yx;
     }
 
-    float dx = sign(nO2E.x) * 1 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
-    // dx *= abs(pO2E.x / length(pO2E));
+    float dx = sign(nO2E.x) * 2 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
+    dx *= abs(pO2E.x / length(pO2E));
     float dy = nO2E.y / nO2E.x * dx;
  
     double oriZW = double(vOri.z) * double(oriInvW), endZW = double(vEnd.z) * double(endInvW);
@@ -193,8 +193,8 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
     double dInvW = (endInvW - oriInvW) / double(nO2E.x) * double(dx);
 
     vec2 dP = vec2(dx,dy),oriP = vec2(nOri.x,nOri.y);
-
-    for(int i = 0,t = 0;;i++)
+    double lastDepth = 0;
+    for(int i = 0,t = 1;;i++)
     {
         vec2 P = oriP + t * dP;
         double ZW = oriZW + t * dZW;
@@ -218,6 +218,14 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             return false;
         }
         double depth = GetGBufferDepth(uv);
+        if(t == 1)
+            lastDepth = depth;
+        if(abs(lastDepth - depth) > 1.0)
+        {
+            t++;
+            lastDepth = depth;
+            continue;
+        }
         // nowDepth = -nowDepth;
         // hitPos.x = depth;
         // hitPos.y = nowDepth;
@@ -256,6 +264,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             return true;
         }
         t++;
+        lastDepth = depth;
     }
     return false;
 }
