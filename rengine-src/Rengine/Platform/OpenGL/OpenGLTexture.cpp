@@ -197,19 +197,21 @@ OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,u
 {
     RE_PROFILE_FUNCTION();
 
-
     GLenum interFormat = GL_RGB32F , dataFormat = GL_RGB;
 
     if(bpp == 1)
     {
         interFormat = GL_R32F,dataFormat = GL_RED;
-    }else if(bpp == 4)
+    }
+    else if(bpp == 4)
     {
         interFormat = GL_RGBA8, dataFormat = GL_RGBA;
-    }else
+    }
+    else
     {
         interFormat = GL_RGB32F,dataFormat = GL_RGB;
     }
+
     m_interFormat = interFormat;
     m_dataFormat = dataFormat;
 
@@ -316,10 +318,10 @@ void OpenGLTexture3D::setData(std::vector<float>& data)
     m_tex = data;
     if(m_interFormat == GL_RGB32F)
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
-                          m_dataFormat, GL_FLOAT, data.data());
+                          m_dataFormat, GL_FLOAT, m_tex.data());
     else
       glTextureSubImage3D(m_render_id, 0, 0, 0, 0, m_width, m_height, m_depth,
-                          m_dataFormat, GL_FLOAT, data.data());
+                          m_dataFormat, GL_FLOAT, m_tex.data());
 }
 
 void OpenGLTexture3D::Bind(uint32_t slot) const

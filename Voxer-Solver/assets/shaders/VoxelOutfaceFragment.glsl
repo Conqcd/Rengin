@@ -34,6 +34,7 @@ uniform sampler3D u_ResultVolume;
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out ivec3 o_position;
+layout(location = 2) out vec3 o_displacement;
 
 struct Ray
 {
@@ -152,7 +153,7 @@ void main()
     vec3 ray = ray_stop - ray_start;
     float ray_length = length(ray);
     vec3 step_vector = u_stepLength * ray / ray_length;
-    
+
     vec3 position = ray_start;
 
     // gl_FragColor = vec4(-step_vector * 1000,1.0);
@@ -163,11 +164,6 @@ void main()
         while (ray_length > 0 && color.a < 1.0) {
             float intensity = length(texture(u_ResultVolume, position).rgb);
             vec4 c = color_transfer(intensity / u_maxvalue);
-            if(intensity > 0.0)
-            {
-                color = vec4(1.0);
-                break;
-            }
 
             vec3 L = normalize(u_lightPosition - position);
             vec3 V = -normalize(ray);
@@ -189,6 +185,7 @@ void main()
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
         // color.rgb = position;
+        o_displacement = vec3(10000);
     }else
     {
         while (ray_length > 0 && color.a < 1.0) {
@@ -222,7 +219,7 @@ void main()
             ray_length -= u_stepLength;
             position += step_vector;
         }
-        
+
         color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
@@ -232,4 +229,5 @@ void main()
             color = vec4(0.0,0.0,1.0,1.0);
     }
     o_color = color;
+    o_displacement = vec3(500000);
 }

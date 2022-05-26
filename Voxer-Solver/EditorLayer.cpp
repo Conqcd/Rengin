@@ -46,11 +46,13 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     m_framebuffer->Bind();
     RenderCommand::SetClearColor({0.1f,0.1f,0.1f,1});
     RenderCommand::Clear();
-    
+ 
 
     // GLubyte pixels[4] = {0,0,0,0};
     int pixels[4] = {-1,-1,-1,-1};
+    float pixels2[3] = {0,0,0};
     m_framebuffer->ClearAttachment(1,pixels);
+    m_framebuffer->ClearAttachment(2,pixels2);
 
     //Update Scene
     // m_ActiveScene->OnUpdateRuntime(timestep);
@@ -63,11 +65,10 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     my = viewportSize.y - my;
     int mouseX = static_cast<int>(mx);
     int mouseY = static_cast<int>(my);
-    
+ 
     if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
     {
-        int pixelData[3] = {0};
-        m_framebuffer->ReadPixel(1,mouseX,mouseY,pixelData);
+        m_framebuffer->ReadPixel(2,mouseX,mouseY,m_pixelDisplacement);
         // RE_CORE_WARN("pixel data {0}",pixelData);
     }
     if(m_MouseSize[0] && m_MouseSize[1])
@@ -242,6 +243,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::Text("Quads: %d",stats.QuadCount);
     ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
+    ImGui::Text("Disaplacements: x %f y %f z %f",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2]);
 
     ImGui::End();
 }
@@ -251,7 +253,7 @@ void EditorLayer::OnAttach()
     RE_PROFILE_FUNCTION();
 
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGBI32};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGBI32,FramebufferTextureFormat::RGB8};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);

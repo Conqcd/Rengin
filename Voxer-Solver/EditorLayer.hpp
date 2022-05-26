@@ -34,6 +34,9 @@ private:
 
     //Panels
     SceneHierarchyPanel m_panel;
+    
+    //Datas
+    float m_pixelDisplacement[3] = {0};
 private:
     bool OnKeyPressed(KeyPressEvent& e);
     bool OnMouseButtonPressed(MouseButtonPressEvent& e);

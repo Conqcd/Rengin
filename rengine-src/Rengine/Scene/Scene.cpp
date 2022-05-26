@@ -188,7 +188,7 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
       force.Texture->Bind(2);
       constraint.Texture->Bind(3);
       if(result.Texture)
-        result.Texture->Bind(4);
+        result.Texture->Bind(0);
       float mvalue = result.showId == 4 ? result.maxvalue[3]: 3.0f;
 
       auto Viewmatrix = camera.GetViewMatrix();
