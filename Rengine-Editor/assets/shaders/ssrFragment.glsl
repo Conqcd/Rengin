@@ -183,8 +183,8 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         pO2E = pO2E.yx;
     }
 
-    float dx = sign(nO2E.x) * 2 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
-    dx *= abs(pO2E.x / length(pO2E));
+    float dx = sign(nO2E.x) * 1 / (swapXY ? u_WindowSize.y :u_WindowSize.x);
+    // dx *= abs(pO2E.x / length(pO2E));
     float dy = nO2E.y / nO2E.x * dx;
  
     double oriZW = double(vOri.z) * double(oriInvW), endZW = double(vEnd.z) * double(endInvW);
@@ -209,11 +209,11 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             // hitPos = normalize(vDir.xyz) * 100;
             // hitPos.z = dZW * 100000;
             // hitPos.x = dInvW * 100000;
-            hitPos2.xy = (P - oriP) * 1000;
+            // hitPos2.xy = (P - oriP) * 1000;
             // hitPos2.z = nowDepth + oriZW / oriInvW;
-            hitPos2.w = rayLen;
+            // hitPos2.w = rayLen;
             // hitPos.xy = uv * 1000;
-            hitPos.xy = uv * u_WindowSize;
+            // hitPos.xy = uv * u_WindowSize;
             // UV = uv;
             return false;
         }
@@ -233,7 +233,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         // UV = uv;
         // return true;
         double deltaZ = nowDepth - depth;
-        if(deltaZ >= 0 && deltaZ <= 0.7)
+        if(deltaZ >= 0 && deltaZ <= 1.0)
         {
             // hitPos = GetGBufferPosWorld(uv);
             // hitPos = normalize(vDir.xyz) * 100;
@@ -241,12 +241,12 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             // hitPos.y = nowDepth;
             // hitPos.z = dZW * 100000;
             // hitPos.x = dInvW * 100000;
-            hitPos2.xy = (P - oriP) * 1000;
-            hitPos2.w = float(depth);
-            hitPos2.z = float(nowDepth);
+            // hitPos2.xy = (P - oriP) * 1000;
+            // hitPos2.w = float(depth);
+            // hitPos2.z = float(nowDepth);
             // hitPos2.z = nowDepth + oriZW / oriInvW;
-            hitPos.xy = uv * u_WindowSize;
-            hitPos.z = float(-oriZW / oriInvW);
+            // hitPos.xy = uv * u_WindowSize;
+            // hitPos.z = float(-oriZW / oriInvW);
 
             // hitPos2.xyz = vEnd.xyz;
             // hitPos2.w = rayLen;

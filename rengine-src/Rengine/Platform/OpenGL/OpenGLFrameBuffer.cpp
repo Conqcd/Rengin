@@ -133,12 +133,18 @@ static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GL
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,width,height,GL_FALSE);
     }else
     {
-        glTexImage2D(GL_TEXTURE_2D,Level,internalFormat,width,height,0,format,type,nullptr);
+        glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,nullptr);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,Interpolation);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,Interpolation);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+        if(Level > 0)
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAX_LEVEL,Level);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
     }
     glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + index,TextureTarget(multisampled),id,0);
 }
@@ -225,7 +231,7 @@ void OpenGLFrameBuffer::Invalidate()
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i);
                 break;
             case FramebufferTextureFormat::RF32_4_NEAREST:
-                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i,GL_NEAREST,0);
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i,GL_NEAREST,4);
                 break;
             default:
                 break;
