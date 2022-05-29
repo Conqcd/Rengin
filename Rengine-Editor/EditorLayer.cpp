@@ -361,7 +361,7 @@ void EditorLayer::OnAttach()
 
     // SSR
     FrameBufferSpecification FbSpecGBuffer;
-    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32,
+    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32_4_NEAREST,
                                 FramebufferTextureFormat::RGBF32,
                                 FramebufferTextureFormat::RF32,
                                 FramebufferTextureFormat::RGBF32,

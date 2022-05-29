@@ -71,6 +71,7 @@ static GLenum FBTextureFormat2GL(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
     case FramebufferTextureFormat::RF32 :
+    case FramebufferTextureFormat::RF32_4_NEAREST :
         return GL_R32F;
     }
     RE_CORE_ASSERT(false);
@@ -96,6 +97,7 @@ static GLenum FBTextureFormat2GLFormat(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RED_INTEGER :
         return GL_RED_INTEGER;
     case FramebufferTextureFormat::RF32 :
+    case FramebufferTextureFormat::RF32_4_NEAREST :
         return GL_RED;
     }
     RE_CORE_ASSERT(false);
@@ -112,6 +114,7 @@ static GLenum FBTextureFormat2GLType(FramebufferTextureFormat format)
     case FramebufferTextureFormat::RGBAF32 :
     case FramebufferTextureFormat::RGBF32 :
     case FramebufferTextureFormat::RF32 :
+    case FramebufferTextureFormat::RF32_4_NEAREST :
         return GL_FLOAT;
     case FramebufferTextureFormat::RGBI32 :
     case FramebufferTextureFormat::RGBAI32 :
@@ -122,7 +125,7 @@ static GLenum FBTextureFormat2GLType(FramebufferTextureFormat format)
     return 0;
 }
 
-static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GLenum format,GLenum type,uint32_t width,uint32_t height,int index)
+static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GLenum format,GLenum type,uint32_t width,uint32_t height,int index,int Interpolation = GL_LINEAR,int Level = 0)
 {
     bool multisampled = samples > 1;
     if(multisampled)
@@ -130,9 +133,9 @@ static void AttachColorTexture(uint32_t id,int samples,GLenum internalFormat, GL
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,samples,internalFormat,width,height,GL_FALSE);
     }else
     {
-        glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,nullptr);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D,Level,internalFormat,width,height,0,format,type,nullptr);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,Interpolation);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,Interpolation);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
@@ -220,6 +223,9 @@ void OpenGLFrameBuffer::Invalidate()
                 break;
             case FramebufferTextureFormat::RF32:
                 Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i);
+                break;
+            case FramebufferTextureFormat::RF32_4_NEAREST:
+                Utils::AttachColorTexture(m_ColorAttachments[i],m_specification.Samples,GL_R32F,GL_RED,GL_FLOAT,m_specification.Width,m_specification.Height,i,GL_NEAREST,0);
                 break;
             default:
                 break;

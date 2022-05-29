@@ -107,9 +107,9 @@ vec2 GetScreenCoordinate(vec3 posWorld)
     return uv;
 }
 
-float GetGBufferDepth(vec2 uv)
+float GetGBufferDepth(vec2 uv,int level)
 {
-    float depth = texture2D(u_GDepth, uv).x;
+    float depth = texture2D(u_GDepth, uv,level).x;
     if (depth < 1e-2) {
         depth = 1000.0;
     }
@@ -217,15 +217,8 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
             // UV = uv;
             return false;
         }
-        double depth = GetGBufferDepth(uv);
-        if(t == 1)
-            lastDepth = depth;
-        if(abs(lastDepth - depth) > 1.0)
-        {
-            t++;
-            lastDepth = depth;
-            continue;
-        }
+        double depth = GetGBufferDepth(uv,0);
+        
         // nowDepth = -nowDepth;
         // hitPos.x = depth;
         // hitPos.y = nowDepth;
