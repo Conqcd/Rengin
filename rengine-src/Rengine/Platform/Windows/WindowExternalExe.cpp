@@ -3,9 +3,10 @@
 
 namespace Rengin
 {
-    
+ 
 WindowExternalExe::WindowExternalExe()
 {
+
 }
 
 WindowExternalExe::~WindowExternalExe()

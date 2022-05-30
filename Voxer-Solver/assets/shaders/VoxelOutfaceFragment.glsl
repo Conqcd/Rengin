@@ -180,7 +180,7 @@ void main()
             ray_length -= u_stepLength;
             position += step_vector;
         }
-        
+
         color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
