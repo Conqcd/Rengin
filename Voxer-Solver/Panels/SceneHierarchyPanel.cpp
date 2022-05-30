@@ -291,7 +291,7 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
     // Command
     f = fopen((path + "vo.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
-    fprintf(f,"SET_SCRIPT_VERSION 2\nSET_VOXEL_SIZE %f %f %f %f\nLOAD_MATERIALS material.txt\nLOAD_MODEL %d %d %d %d model.txt\nSET_TOLERANCE 1e-9\nSET_MAX_ITER 2000\nSET_ALGORITHM_FEA 1 1\nSELECTION_OF_NODES\nLOAD_CONSTRAINTS constraint.txt\nSELECT_NODE_3D\nPRESERVE_NODE_3D\nCOMPUTE_SED\nSOLVE\nPRINT_DISPLACEMENTS displacements.txt\nFINISH",0.3,0.3,0.3,1.0,width,height,depth,nums);
+    fprintf(f,"SET_SCRIPT_VERSION 2\nSET_VOXEL_SIZE %f %f %f %f\nLOAD_MATERIALS temp/material.txt\nLOAD_MODEL %d %d %d %d temp/model.txt\nSET_TOLERANCE 1e-9\nSET_MAX_ITER 2000\nSET_ALGORITHM_FEA 1 1\nSELECTION_OF_NODES\nLOAD_CONSTRAINTS temp/constraint.txt\nSELECT_NODE_3D\nPRESERVE_NODE_3D\nCOMPUTE_SED\nSOLVE\nPRINT_DISPLACEMENTS temp/displacements.txt\nFINISH",0.3,0.3,0.3,1.0,width,height,depth,nums);
     fclose(f);
     // auto wpro = ExternalExe::Create();
     // wpro->CreateProcess("");
@@ -630,15 +630,15 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 auto& texCom = m_VolomeEntity.GetComponent<Texture3DComponent>();
                 auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
                 auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
-                std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
-                // SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
-                t.detach();
-                // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
+                // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
+                SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
+                // t.detach();
+                m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();
             }
             ImGui::SameLine();
             if (ImGui::Button("Stop")) {
-                // m_ExternalProcess->Terminate();
+                m_ExternalProcess->Terminate();
             }
             ImGui::SameLine();
             if (ImGui::Button("Load Result")) {
@@ -702,7 +702,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
           draw_list->PopClipRect();
 
           if (ImGui::Button("clear Color", {clip_board.x / 2, 20})) {
-            transferFun.Reset();
+                transferFun.Reset();
           }
           ImGui::SameLine();
           if (ImGui::Button("delete Color", {clip_board.x / 2, 20})) {
