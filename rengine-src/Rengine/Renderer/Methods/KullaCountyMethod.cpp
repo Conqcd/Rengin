@@ -1,21 +1,21 @@
 #include "repch.hpp"
-#include "PRTMethod.hpp"
+#include "KullaCountyMethod.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
 
 namespace Rengin
 {
  
-PRTMethod::PRTMethod(/* args */)
+KullaCountyMethod::KullaCountyMethod(/* args */)
 {
 
 }
 
-PRTMethod::~PRTMethod()
+KullaCountyMethod::~KullaCountyMethod()
 {
 
 }
 
-void PRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
+void KullaCountyMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
@@ -33,13 +33,13 @@ void PRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
 }
 
 template <typename... Args>
-void PRTMethod::AddResource(const Args&... resource) {
+void KullaCountyMethod::AddResource(const Args&... resource) 
+{
     static_assert(false);
 }
 
 template <> 
-void PRTMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& SkyBoxShader) {
+void KullaCountyMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base) {
     m_BaseShader = base;
-    m_SkyBoxShader = SkyBoxShader;
 }
 } // namespace Rengin

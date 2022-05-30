@@ -377,7 +377,12 @@ void EditorLayer::OnAttach()
     ssrMethod->AddResource(gBufferFrame,ShadowFrame,m_framebuffer);
     m_RenderObj->AddMethod("SSR",ssrMethod);
  
-
+    //PBR
+    auto pbrMethod = CreateRef<KullaCountyMethod>();
+    auto pbrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/KullaContyVertex.glsl","../../../Rengine-Editor/assets/shaders/KullaContyFragment.glsl");
+    pbrMethod->AddResource(pbrShader);
+    m_RenderObj->AddMethod("PBR",pbrMethod);
+ 
     class CameraController :public ScriptableEntity
     {
     public:

@@ -4,13 +4,13 @@
 
 namespace Rengin
 {
-class PRTMethod : public RenderMethod
+class KullaCountyMethod : public RenderMethod
 {
 private:
     Ref<Shader> m_SkyBoxShader;
 public:
-    PRTMethod();
-    virtual ~PRTMethod();
+    KullaCountyMethod();
+    virtual ~KullaCountyMethod();
 
     virtual void Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights) override;
 
