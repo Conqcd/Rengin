@@ -176,7 +176,8 @@ void main()
 
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
             color.a = c.a + (1 - c.a) * color.a;
-
+            if(intensity > 0.0)
+                break;
             ray_length -= u_stepLength;
             position += step_vector;
         }

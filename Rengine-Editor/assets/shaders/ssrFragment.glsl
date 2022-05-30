@@ -205,16 +205,6 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos, out vec4 hitPos2,out vec2 UV)
         double nowDepth = -ZW / inW - 0.1;
         if(fract(uv) != uv)
         {
-            // hitPos = GetGBufferPosWorld(fract(uv));
-            // hitPos = normalize(vDir.xyz) * 100;
-            // hitPos.z = dZW * 100000;
-            // hitPos.x = dInvW * 100000;
-            // hitPos2.xy = (P - oriP) * 1000;
-            // hitPos2.z = nowDepth + oriZW / oriInvW;
-            // hitPos2.w = rayLen;
-            // hitPos.xy = uv * 1000;
-            // hitPos.xy = uv * u_WindowSize;
-            // UV = uv;
             return false;
         }
         double depth = GetGBufferDepth(uv,0);
@@ -294,8 +284,8 @@ void main(void)
             Lindirect = GetGBufferDiffuse(UV);
         }
     }
-    // L += Lindirect / SAMPLE_NUM;
-    L = Lindirect / SAMPLE_NUM;
+    L += Lindirect / SAMPLE_NUM;
+    // L = Lindirect / SAMPLE_NUM;
     vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     // vec3 color = L;
     o_Color = vec4(vec3(color.rgb), 1.0);
