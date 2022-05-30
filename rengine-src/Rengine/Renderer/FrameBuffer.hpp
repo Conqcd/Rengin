@@ -18,6 +18,7 @@ enum class FramebufferTextureFormat
     RGBF32,
     RED_INTEGER,
     RF32,
+    RF32_4_NEAREST,
 
     //Depth,Stencil
     DEPTH24_STENCIL8,
