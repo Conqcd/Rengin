@@ -12,6 +12,8 @@ uniform sampler2D u_BRDFLut;
 uniform sampler2D u_EavgLut;
 uniform samplerCube u_CubeTexture;
 
+uniform int u_Entity;
+
 in vec2 v_TextureCoord;
 in vec3 v_FragPos;
 in vec3 v_Normal;
@@ -19,6 +21,7 @@ in vec3 v_Normal;
 const float PI = 3.14159265359;
 
 layout(location = 0) out vec4 o_Color;
+layout(location = 1) out int o_Entity;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -111,4 +114,5 @@ void main(void) {
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1.0/2.2));
     o_Color = vec4(color, 1.0);
+    o_Entity = u_Entity;
 }

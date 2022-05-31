@@ -11,6 +11,7 @@
 #include "Rengine/Renderer/Methods/ShadowMapMethod.hpp";
 #include "Rengine/Renderer/Methods/PRTMethod.hpp";
 #include "Rengine/Renderer/Methods/SSRMethod.hpp";
+#include "Rengine/Renderer/Methods/KullaCountyMethod.hpp";
 
 namespace Rengin
 {
