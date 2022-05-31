@@ -50,7 +50,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
 
     // GLubyte pixels[4] = {0,0,0,0};
     int pixels[4] = {-1,-1,-1,-1};
-    float pixels2[3] = {0,0,0};
+    float pixels2[4] = {0,0,0,0};
     m_framebuffer->ClearAttachment(1,pixels);
     m_framebuffer->ClearAttachment(2,pixels2);
 
@@ -243,7 +243,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::Text("Quads: %d",stats.QuadCount);
     ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
-    ImGui::Text("Disaplacements: x %f y %f z %f length",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2],m_pixelDisplacement[3]);
+    ImGui::Text("Disaplacements: x %f y %f z %f length %f",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2],m_pixelDisplacement[3]);
 
     ImGui::End();
 }

@@ -163,6 +163,7 @@ void main()
     // float cnt = 0;
     if(u_RenderMode == 4)
     {
+        vec4 result = vec4(0.0);
         while (ray_length > 0 && color.a < 1.0) {
             if(((1 << (int(texture(u_volume, position).r) - 1)) & u_Choose) == 0) 
             {
@@ -170,7 +171,9 @@ void main()
                 position += step_vector;
                 continue;
             }
-            float intensity = length(texture(u_ResultVolume, position).rgb) / u_maxvalue;
+            result.rgb = texture(u_ResultVolume, position).rgb;
+            result.a = length(result.rgb);
+            float intensity = result.w / u_maxvalue;
             vec4 c = color_transfer(intensity);
 
             vec3 L = normalize(u_lightPosition - position);
@@ -193,8 +196,7 @@ void main()
         color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-        // color.rgb = position;
-        o_displacement = vec4(10000);
+        o_displacement = result * 1000000000.0;
     }else
     {
         while (ray_length > 0 && color.a < 1.0) {
@@ -243,7 +245,7 @@ void main()
             color = vec4(0.0,1.0,0.0,1.0);
         else if(u_RenderMode == 3 && length(texture(u_Constraint, position).rgb) != 0.0)
             color = vec4(0.0,0.0,1.0,1.0);
+        o_displacement = vec4(0);
     }
     o_color = color;
-    o_displacement = vec4(500000);
 }
