@@ -58,7 +58,7 @@ Ref<TextureCube> TextureCube::Create(const std::string& negx,const std::string& 
     return nullptr;
 }
 
-Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp)
+Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp,int InorNe)
 {
     switch (Renderer::getRenderer())
     {
@@ -66,7 +66,7 @@ Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,u
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
     case RendererAPI::API::OpenGL :
-        return CreateRef<OpenGLTexture3D>(width,height,depth,bpp);
+        return CreateRef<OpenGLTexture3D>(width,height,depth,bpp,InorNe);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         return nullptr;
@@ -75,7 +75,7 @@ Ref<Texture3D> Texture3D::Create(uint32_t width,uint32_t height,uint32_t depth,u
     return nullptr;
 }
 
-Ref<Texture3D> Texture3D::Create(const std::string& path)
+Ref<Texture3D> Texture3D::Create(const std::string& path,int InorNe)
 {
     switch (Renderer::getRenderer())
     {
@@ -83,7 +83,7 @@ Ref<Texture3D> Texture3D::Create(const std::string& path)
         RE_CORE_ASSERT(false,"not support for No Render API");
         return nullptr;
     case RendererAPI::API::OpenGL :
-        return CreateRef<OpenGLTexture3D>(path);
+        return CreateRef<OpenGLTexture3D>(path,InorNe);
     case RendererAPI::API::Direct3D :
         RE_CORE_ASSERT(false,"not support for DirectX3D Render API");
         return nullptr;

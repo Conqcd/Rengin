@@ -306,6 +306,7 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
     std::decay_t<decltype(oldTex)> newTex(nWidth * nHeight * nDepth * bpp);
     int id = 0;
     int id2 = 0;
+    int width = texture->getWidth(),height = texture->getHeight();
     for (int i = 0,ii = 0; i < nDepth; i++, ii += divided)
     {
         for (int j = 0,jj = 0; j < nHeight; j++, jj += divided)
@@ -314,7 +315,6 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
             {
                 for (int l = 0; l < bpp; l++)
                 {
-                    int width = texture->getWidth(),height = texture->getHeight();
                     std::unordered_map<int,int> mp;
                     for (int iii = 0; iii < divided; iii++)
                     {
@@ -334,15 +334,18 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
                         {
                             mostNumber = kv.first;
                             maxt = kv.second;
-                        }else if(kv.second == maxt && kv.first != 0)
+                        }else if(kv.second == maxt /* && kv.first != 0*/)
                         {
                             mostNumber = std::min(mostNumber,kv.first);
                         }
                     }
-                    
+                    if(mostNumber > 0)
+                    {
+                        int dasd = 0;
+                    }
                     newTex[id + l] = mostNumber;
-                    id ++;
                 }
+                id ++;
             }
         }
     }
@@ -354,7 +357,7 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
 
 #define MAX_LINE 1024
 
-std::pair<Ref<Texture3D>,float> LoadResult()
+std::pair<Ref<Texture3D>,float> LoadResult(int width,int height,int depth,int scale,Ref<Texture3D> tex)
 {
     FILE* f = fopen("temp/displacements.txt", "r");
 	if (!f)
@@ -370,6 +373,7 @@ std::pair<Ref<Texture3D>,float> LoadResult()
 	fgets(buf, MAX_LINE, f);
 
 	std::vector<float> field(maxX * maxY * maxZ * 3);
+	std::vector<float> origin(width * height * depth * 3);
     int id = 0;
 	int num, x, y, z;
 	double dx, dy, dz;
@@ -385,9 +389,35 @@ std::pair<Ref<Texture3D>,float> LoadResult()
         maxd = std::max(maxd,static_cast<float>(std::sqrt(dx * dx + dy * dy + dz * dz)));
 		//field[x + maxX * y + maxX * maxY * z] = 1000;
 	}
+    auto temp = tex->getTexture();
+    for (int i = 0; i < depth; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            for (int k = 0; k < width; k++)
+            {
+                id = k + width * j + width * height * i;
+                if(temp[id] == 0)
+                {
+                    continue;
+                }
+                id *= 3;
+                
+                int id2 = k + maxX * j + maxX * maxY * i;
+                id2 *= 3;
+                id2 /= scale;
+                origin[id++] = field[id2++];  
+                origin[id++] = field[id2++];  
+                origin[id++] = field[id2++];  
+            }
+        }
+    }
+    
 	fclose(f);
-    auto texture = Texture3D::Create(maxX,maxY,maxZ,3);
+    auto texture = Texture3D::Create(maxX,maxY,maxZ,3,0x2601);
     texture->setData(field);
+    // auto texture = Texture3D::Create(width,height,depth,3);
+    // texture->setData(origin);
     return {texture,maxd};
 }
 
@@ -511,7 +541,15 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         ImGui::DragFloat("threshold",&component.Threshold,0.001,0.0f,1.0f,"%.2f");
         if(ImGui::Button("Coarsen"))
         {
+            if(component.inVscale = 1)
+            {
+                component.Origin = component.Texture;
+                component.Owidth= component.width;
+                component.Oheight= component.height;
+                component.Odepth= component.depth;
+            }
             auto newTexture = Coarsen(component.Texture,2);
+            component.inVscale *= 2;
             component.Texture = newTexture;
             component.width /= 2;
             component.height /= 2;
@@ -642,8 +680,9 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             }
             ImGui::SameLine();
             if (ImGui::Button("Load Result")) {
+                auto& texCom = m_VolomeEntity.GetComponent<Texture3DComponent>();
                 auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
-                auto [tex,value] = LoadResult(); 
+                auto [tex,value] = LoadResult(texCom.width,texCom.height,texCom.depth,4,texCom.Texture); 
                 texComR.Texture = tex;
                 texComR.maxvalue[3] = value;
                 texComR.showId = 4;
@@ -652,6 +691,28 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             if (ImGui::Button("Show Result")) {
                 auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
                 texComR.showId = 4;
+            }
+        });
+        DrawComponent<ToothChooseComponent>("Choose", entity, [this](auto &component) {
+            if (ImGui::Button("tooth")) {
+                if(component.Choose & 1)
+                    component.Choose &= ~1;
+                else
+                    component.Choose |= 1;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("alveolar bone")) {
+                if(component.Choose & 2)
+                    component.Choose &= ~2;
+                else
+                    component.Choose |= 2;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("periodontal ligament")) {
+                if(component.Choose & 4)
+                    component.Choose &= ~4;
+                else
+                    component.Choose |= 4;
             }
         });
     DrawComponent<ColorTransferFunctionComponent>(

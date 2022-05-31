@@ -40,8 +40,8 @@ class RE_API Texture3D :public Texture
 {
 public:
     virtual ~Texture3D() = default;
-    static Ref<Texture3D> Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp = 1);
-    static Ref<Texture3D> Create(const std::string& path);
+    static Ref<Texture3D> Create(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp = 1,int InorNe = 0x2600);
+    static Ref<Texture3D> Create(const std::string& path,int InorNe = 0x2600);
 
     virtual uint32_t getDepth() const = 0;
     virtual uint32_t getBPP() const = 0;

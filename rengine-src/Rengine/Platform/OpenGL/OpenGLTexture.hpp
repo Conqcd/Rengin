@@ -74,8 +74,8 @@ private:
     GLenum m_dataFormat;
     std::vector<float> m_tex;
 public:
-    OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp);
-    OpenGLTexture3D(const std::string& path);
+    OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp,int InorNe = GL_NEAREST);
+    OpenGLTexture3D(const std::string& path,int InorNe = GL_NEAREST);
     virtual ~OpenGLTexture3D();
     
     inline virtual uint32_t getWidth() const override {return m_width;}

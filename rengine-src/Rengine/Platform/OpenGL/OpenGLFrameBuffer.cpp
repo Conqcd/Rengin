@@ -303,7 +303,7 @@ void OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex,int x,int y,void* pix
     auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     glReadPixels(x,y,1,1,Utils::FBTextureFormat2GLFormat(spec.TextureFormat),Utils::FBTextureFormat2GLType(spec.TextureFormat),pixel);
-    GLCheckError();
+    // GLCheckError();
 }
 
 void OpenGLFrameBuffer::ReadRangePixel(uint32_t attachmentIndex,int x,int y,int w,int h,void* pixels)

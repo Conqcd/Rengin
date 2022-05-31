@@ -107,10 +107,12 @@ struct Texture2DComponent
 
 struct Texture3DComponent
 {
-    Ref<Texture3D> Texture;
+    Ref<Texture3D> Texture,Origin;
     std::string Path;
     float Threshold = 0.0f;
     int width,height,depth;
+    int Owidth,Oheight,Odepth;
+    int inVscale = 1;
     Texture3DComponent() = default;
     Texture3DComponent(const Texture3DComponent&) = default;
     Texture3DComponent(const Ref<Texture3D> texture)
@@ -176,6 +178,15 @@ struct ResultComponent
     ResultComponent(const ResultComponent&) = default;
     ResultComponent(const Ref<Texture3D> texture)
         :Texture(texture)   {}
+};
+
+struct ToothChooseComponent
+{
+    int Choose = 0x7fffffff;
+    ToothChooseComponent() = default;
+    ToothChooseComponent(const ToothChooseComponent&) = default;
+    ToothChooseComponent(int choose)
+        :Choose(choose)   {}
 };
 
 struct ObjectComponent

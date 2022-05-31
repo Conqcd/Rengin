@@ -192,7 +192,7 @@ void OpenGLTextureCube::Unbind() const
 //////////////////////////////////////3D///////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
 
-OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp)
+OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,uint32_t bpp,int InorNe)
         :m_width(width), m_height(height), m_depth(depth)
 {
     RE_PROFILE_FUNCTION();
@@ -219,17 +219,17 @@ OpenGLTexture3D::OpenGLTexture3D(uint32_t width,uint32_t height,uint32_t depth,u
 
     glTextureStorage3D(m_render_id,1,interFormat,m_width,m_height,m_depth);
 
-    glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTextureParameteri(m_render_id,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_REPEAT);
-    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_REPEAT);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
 
     m_tex.resize(width * height * depth * bpp);
 }
 
-OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
+OpenGLTexture3D::OpenGLTexture3D(const std::string& path,int InorNe)
     : m_path(path)
 {
     RE_PROFILE_FUNCTION();
@@ -280,7 +280,7 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path)
     
     glTextureStorage3D(m_render_id,1,interFormat,m_width,m_height,m_depth);
 
-    glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTextureParameteri(m_render_id,GL_TEXTURE_MIN_FILTER,InorNe);
     glTextureParameteri(m_render_id,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);

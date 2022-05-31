@@ -140,6 +140,9 @@ void Scene::OnComponentAdd<ResultComponent>(Entity entity,
                                                ResultComponent &component) {}
 
 template <>
+void Scene::OnComponentAdd<ToothChooseComponent>(Entity entity,
+                                               ToothChooseComponent &component) {}
+template <>
 void Scene::OnComponentAdd<SolveComponent>(Entity entity,
                                                SolveComponent &component) {}
 
@@ -175,12 +178,12 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
 
     auto viewv =
         m_registry.view<TransformComponent, Texture3DComponent, ForceComponent, ResultComponent,
-                        ConstraintComponent, OpacityTransferFunctionComponent,
+                        ConstraintComponent, OpacityTransferFunctionComponent,ToothChooseComponent,
                         ColorTransferFunctionComponent>();
     for (auto _entity : viewv) {
-      auto &&[transform, texture, force, result, constraint, transfera, transferc] =
+      auto &&[transform, texture, force, result, constraint, transfera,choosen, transferc] =
           viewv.get<TransformComponent, Texture3DComponent, ForceComponent, ResultComponent,
-                    ConstraintComponent, OpacityTransferFunctionComponent,
+                    ConstraintComponent, OpacityTransferFunctionComponent,ToothChooseComponent,
                     ColorTransferFunctionComponent>(_entity);
 
       float stepLength = 0.01, focalLength = 1.0 / tan(glm::radians(camera.GetFOV()) / 2.0);
@@ -196,7 +199,7 @@ void Scene::OnUpdateEditor(TimeStep ts, EditorCamera &camera)
           transform.GetTransform(), texture.Texture, transform.Scale,
           {m_ViewportWidth, m_ViewportHeight}, focalLength,
           camera.GetPosition(),camera.GetPosition(),
-          stepLength, mvalue, transfera.Opacity, transferc.Color,texture.Threshold,
+          stepLength, mvalue,choosen.Choose, transfera.Opacity, transferc.Color,texture.Threshold,
           texture.width,texture.height,texture.depth,result.showId);
       Renderer3D::EndScene();
     }
@@ -250,11 +253,11 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
     {
         auto viewv =
             m_registry.view<TransformComponent, Texture3DComponent, ForceComponent,ResultComponent,
-                            ConstraintComponent, OpacityTransferFunctionComponent,
+                            ConstraintComponent, OpacityTransferFunctionComponent,ToothChooseComponent,
                             ColorTransferFunctionComponent>(); for (auto _entity : viewv) {
-            auto &&[transform, texture, force, result, constraint, transfera, transferc] =
+            auto &&[transform, texture, force, result, constraint, transfera, choosen, transferc] =
                 viewv.get<TransformComponent, Texture3DComponent, ForceComponent,ResultComponent,
-                        ConstraintComponent, OpacityTransferFunctionComponent,
+                        ConstraintComponent, OpacityTransferFunctionComponent,ToothChooseComponent,
                         ColorTransferFunctionComponent>(_entity);
             float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
             texture.Texture->Bind(1);
@@ -268,7 +271,7 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
                 MainCamera->getProjection(), glm::inverse(CameraTransform),
                 transform.GetTransform(), texture.Texture,transform.Scale,
                 {m_ViewportWidth, m_ViewportHeight}, focalLength, {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]},
-                {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, mvalue, transfera.Opacity, transferc.Color,texture.Threshold,
+                {CameraTransform[3][0],CameraTransform[3][1],CameraTransform[3][2]}, stepLength, mvalue,choosen.Choose, transfera.Opacity, transferc.Color,texture.Threshold,
                 texture.width,texture.height,texture.depth,result.showId);
       }
     }

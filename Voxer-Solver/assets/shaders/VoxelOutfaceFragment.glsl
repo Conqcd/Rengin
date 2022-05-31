@@ -21,6 +21,7 @@ uniform vec3 u_materialColor;
 uniform vec3 u_lightPosition;
 
 uniform float u_stepLength;
+uniform int u_Choose;
 
 uniform int u_RenderMode;
 uniform sampler3D u_volume;
@@ -34,7 +35,7 @@ uniform sampler3D u_ResultVolume;
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out ivec3 o_position;
-layout(location = 2) out vec3 o_displacement;
+layout(location = 2) out vec4 o_displacement;
 
 struct Ray
 {
@@ -156,14 +157,21 @@ void main()
 
     vec3 position = ray_start;
 
-    // gl_FragColor = vec4(-step_vector * 1000,1.0);
+    // o_color = vec4(ray_length);
+    // discard;
     vec4 color = vec4(0.0);
     // float cnt = 0;
     if(u_RenderMode == 4)
     {
         while (ray_length > 0 && color.a < 1.0) {
-            float intensity = length(texture(u_ResultVolume, position).rgb);
-            vec4 c = color_transfer(intensity / u_maxvalue);
+            if(((1 << (int(texture(u_volume, position).r) - 1)) & u_Choose) == 0) 
+            {
+                ray_length -= u_stepLength;
+                position += step_vector;
+                continue;
+            }
+            float intensity = length(texture(u_ResultVolume, position).rgb) / u_maxvalue;
+            vec4 c = color_transfer(intensity);
 
             vec3 L = normalize(u_lightPosition - position);
             vec3 V = -normalize(ray);
@@ -186,15 +194,22 @@ void main()
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
         // color.rgb = position;
-        o_displacement = vec3(10000);
+        o_displacement = vec4(10000);
     }else
     {
         while (ray_length > 0 && color.a < 1.0) {
             float intensity = texture(u_volume, position).r;
+            if(((1 << (int(intensity) - 1)) & u_Choose) == 0) 
+            {
+                ray_length -= u_stepLength;
+                position += step_vector;
+                continue;
+            }
             vec4 c = color_transfer(intensity / u_maxvalue);
             // if(intensity > u_threshold * u_maxvalue)
             if(intensity >= 1.0)
             {
+                
                 vec3 L = normalize(u_lightPosition - position);
                 vec3 V = -normalize(ray);
                 vec3 N = normal(position, intensity);
@@ -230,5 +245,5 @@ void main()
             color = vec4(0.0,0.0,1.0,1.0);
     }
     o_color = color;
-    o_displacement = vec3(500000);
+    o_displacement = vec4(500000);
 }

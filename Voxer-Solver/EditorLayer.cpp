@@ -243,7 +243,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::Text("Quads: %d",stats.QuadCount);
     ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
-    ImGui::Text("Disaplacements: x %f y %f z %f",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2]);
+    ImGui::Text("Disaplacements: x %f y %f z %f length",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2],m_pixelDisplacement[3]);
 
     ImGui::End();
 }
@@ -253,7 +253,7 @@ void EditorLayer::OnAttach()
     RE_PROFILE_FUNCTION();
 
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGBI32,FramebufferTextureFormat::RGB8};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGBI32,FramebufferTextureFormat::RGBAF32};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
@@ -272,7 +272,7 @@ void EditorLayer::OnAttach()
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
     m_CubeEntity.AddComponent<Texture3DComponent>(texture_v);
     std::vector<float> l1{0.f,1.f},l2{0.f,1.f},l3{0.0f,0.5f,1.0f};
-    std::vector<glm::vec3> l4{{1.0f,0.0f,0.0f},{1.0f,1.0f,1.0f},{0.0f,0.0f,1.0f}};
+    std::vector<glm::vec3> l4{{0.0f,0.0f,1.0f},{1.0f,1.0f,1.0f},{1.0f,0.0f,0.0f}};
     TransferFunction<float, float> t1{l1,l2};
     TransferFunction<float, glm::vec3> t2{l3,l4};
 
@@ -284,6 +284,7 @@ void EditorLayer::OnAttach()
     m_CubeEntity.AddComponent<ConstraintComponent>();
     m_CubeEntity.AddComponent<SolveComponent>();
     m_CubeEntity.AddComponent<ResultComponent>();
+    m_CubeEntity.AddComponent<ToothChooseComponent>();
     auto& texCom = m_CubeEntity.GetComponent<Texture3DComponent>();
     auto& texComF = m_CubeEntity.GetComponent<ForceComponent>();
     auto& texComC = m_CubeEntity.GetComponent<ConstraintComponent>();
@@ -295,6 +296,9 @@ void EditorLayer::OnAttach()
     texCom.height = 335;
     // texCom.depth = 507;
     texCom.depth = 451;
+    auto& transform = m_CubeEntity.GetComponent<TransformComponent>();
+    float maxsc = 1.0 / std::max(std::max(texCom.width,texCom.height),texCom.depth);
+    transform.Scale = glm::vec3(texCom.width * maxsc,texCom.height * maxsc,texCom.depth * maxsc);
     texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
     texComF.Texture->setData(texComF.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
     texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);

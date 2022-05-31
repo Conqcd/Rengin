@@ -510,14 +510,15 @@ void Renderer3D::DrawRotatedCube(const glm::vec3& position,const glm::vec3& size
 }
 
 void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &viewMatrix,const glm::mat4 &transforms,const Ref<Texture> &texture,const glm::vec3& scale,
-                            const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,float maxvalue,
+                            const glm::vec2& viewPortSize,float focalLength,const glm::vec3& rayOrigin,const glm::vec3& lightPosition,float stepLength,float maxvalue,int choose,
                             const TransferFunction<float,float>& transfera,const TransferFunction<float,glm::vec3>& transferc,float threshold,int TWidth,int THeight,int TDepth,int renderMode)
 {
     RE_PROFILE_FUNCTION();
 
     s_data_v.m_VolumeShader->Bind();
-    float maxsc = 1.0 / std::max(std::max(scale.x,scale.y),scale.z);
-    glm::vec3 extent(scale.x * maxsc,scale.y * maxsc,scale.z * maxsc),top = glm::vec3(0.5) * extent,bottom = glm::vec3(0.5) * -extent;
+    // float maxsc = 1.0 / std::max(std::max(scale.x,scale.y),scale.z);
+    // glm::vec3 extent(scale.x * maxsc,scale.y * maxsc,scale.z * maxsc),top = glm::vec3(0.5) * extent,bottom = glm::vec3(0.5) * -extent;
+    glm::vec3 top = glm::vec3(0.5) * scale,bottom = glm::vec3(0.5) * -scale;
 
     s_data_v.m_VolumeShader->SetUniformMat4("u_ViewMatrix", viewMatrix);
     s_data_v.m_VolumeShader->SetUniformMat4("u_TransformViewProjection",ProjectionMatrix * viewMatrix * transforms);
@@ -545,6 +546,7 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_Force", 2);
     s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);
     s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 0);
+    s_data_v.m_VolumeShader->SetUniformInt("u_Choose", choose);
     // s_data_v.m_VolumeShader->SetUniformFloat("maxvalue", 4964.0f);
     s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", maxvalue);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
