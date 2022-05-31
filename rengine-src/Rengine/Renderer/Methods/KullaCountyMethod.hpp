@@ -1,5 +1,6 @@
 #pragma once
 #include "Rengine/Core/core.hpp"
+#include "Rengine/Platform/OpenGL/OpenGLTexture.hpp"
 #include "BaseMethod.hpp"
 
 namespace Rengin
@@ -8,6 +9,8 @@ class KullaCountyMethod : public RenderMethod
 {
 private:
     Ref<Shader> m_SkyBoxShader;
+    //LUT
+    Ref<Texture2D> m_BRDFLUT,m_Eavg;
 public:
     KullaCountyMethod();
     virtual ~KullaCountyMethod();
