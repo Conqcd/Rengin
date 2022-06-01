@@ -86,11 +86,12 @@ void SSRMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMana
     m_BaseShader->SetUniformInt("u_GShadow", 3);
     m_GBuffer->BindTexture(4,4);
     m_BaseShader->SetUniformInt("u_GPosWorld", 4);
-
+    float KS[3] = {0,0,0.8};
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
         m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
+        m_BaseShader->SetUniformFloat("u_Ks",KS[i]);
         for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
         {
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));

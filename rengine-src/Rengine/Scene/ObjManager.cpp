@@ -16,12 +16,18 @@ const int SHOrder = 2;
 ObjManager::ObjManager(const std::string& path,const std::string& material_path,const glm::mat4& transform)
            : m_transform(transform), m_Path(material_path)
 {
+    std::unordered_map<std::string,int> MatNameId;
     std::string* warn = new std::string(),*err = new std::string();
     auto attrib = new tinyobj::attrib_t();
     auto shapes = new std::vector<tinyobj::shape_t>();
     auto material = new std::vector<tinyobj::material_t>();
 
     tinyobj::LoadObj(attrib, shapes, material, warn, err, path.c_str(), material_path.c_str());
+    
+    for (int i = 0; i < material->size(); i++)
+    {
+        MatNameId[(*material)[i].name] = i;
+    }
  
     tinyobj::real_t* vertices = new tinyobj::real_t[attrib->vertices.size() / 3 * 8];
     memset(vertices,0,sizeof(tinyobj::real_t) * attrib->vertices.size() / 3 * 8);
@@ -34,25 +40,26 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
             vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
             vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
         }
+        // int maId = MatNameId[(*shapes)[i].name];
+        int maId = (*shapes)[i].mesh.material_ids[0];
         Material materiall;
-        materiall.Ka.r = (*material)[i].ambient[0];
-        materiall.Ka.g = (*material)[i].ambient[1];
-        materiall.Ka.b = (*material)[i].ambient[2];
-        materiall.Ks.r = (*material)[i].specular[0];
-        materiall.Ks.g = (*material)[i].specular[1];
-        materiall.Ks.b = (*material)[i].specular[2];
-        materiall.Kd.r = (*material)[i].diffuse[0];
-        materiall.Kd.g = (*material)[i].diffuse[1];
-        materiall.Kd.b = (*material)[i].diffuse[2];
-        materiall.Ns = (*material)[i].shininess;
-        materiall.Ni = (*material)[i].ior;
+        materiall.Ka.r = (*material)[maId].ambient[0];
+        materiall.Ka.g = (*material)[maId].ambient[1];
+        materiall.Ka.b = (*material)[maId].ambient[2];
+        materiall.Ks.r = (*material)[maId].specular[0];
+        materiall.Ks.g = (*material)[maId].specular[1];
+        materiall.Ks.b = (*material)[maId].specular[2];
+        materiall.Kd.r = (*material)[maId].diffuse[0];
+        materiall.Kd.g = (*material)[maId].diffuse[1];
+        materiall.Kd.b = (*material)[maId].diffuse[2];
+        materiall.Ns = (*material)[maId].shininess;
+        materiall.Ni = (*material)[maId].ior;
         m_Materials.emplace_back(std::move(materiall));
-        int maId = 0;
-        for (; maId < material->size(); maId++)
-        {
-            if(strcmp((*material)[maId].name.c_str(),(*shapes)[i].name.c_str()) == 0)
-                break;
-        }
+        // for (; maId < material->size(); maId++)
+        // {
+        //     if(strcmp((*material)[maId].name.c_str(),(*shapes)[i].name.c_str()) == 0)
+        //         break;
+        // }
             
         if(maId < material->size() && (*material)[maId].diffuse_texname != "")
             m_Textures.push_back(Texture2D::Create(material_path + "/" + (*material)[maId].diffuse_texname));

@@ -6,6 +6,7 @@ uniform vec3 u_CameraPos;
 uniform vec3 u_LightRadiance;
 uniform vec2 u_WindowSize;
 uniform float u_NearZ;
+uniform float u_Ks;
 
 uniform sampler2D u_GDiffuse;
 uniform sampler2D u_GDepth;
@@ -278,13 +279,14 @@ void main(void)
         if(RayMarch(ori,dir,hitPos,hitPos2,UV))
         {
             vec2 uvi = GetScreenCoordinate(hitPos);
-            // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(uvi) * EvalDiffuse(u_LightDir,hitPos - ori,uvi);
+            // Lindirect += EvalDiffuse(ori - hitPos,ori - u_CameraPos,uv) / pdf * EvalDirectionalLight(UV) * EvalDiffuse(u_LightDir,hitPos - ori,UV);
+            Lindirect += EvalDiffuse(u_LightDir,ori - u_CameraPos,uv) * EvalDirectionalLight(UV) * EvalDiffuse(u_LightDir,hitPos - ori,UV);
             // Lindirect = normalize(GetGBufferNormalWorld(hitPos.xy));
             // Lindirect = hitPos;
-            Lindirect = GetGBufferDiffuse(UV);
+            // Lindirect = GetGBufferDiffuse(UV);
         }
     }
-    L += Lindirect / SAMPLE_NUM;
+    L += Lindirect * u_Ks / SAMPLE_NUM;
     // L = Lindirect / SAMPLE_NUM;
     vec3 color = pow(clamp(L, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     // vec3 color = L;

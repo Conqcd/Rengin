@@ -7,8 +7,10 @@ namespace Rengin
 
 Lights::Lights()
 {
-    LightPos = glm::vec3(0,80,80);
-    LightIntensity = glm::vec3(5000,5000,5000);
+    // LightPos = glm::vec3(0,80,80);
+    // LightIntensity = glm::vec3(5000,5000,5000);
+    LightPos = glm::vec3(15,10,10);
+    LightIntensity = glm::vec3(50,50,50);
     LookAtPoint = glm::vec3(0.0,0.0,0.0);
     Direction = LookAtPoint - LightPos;
     WorldUp = glm::vec3(0.0,1.0,0.0);
