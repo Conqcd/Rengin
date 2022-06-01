@@ -95,7 +95,7 @@ void main(void) {
     float attenuation = 1.0 / (distance * distance);
     vec3 radiance = u_LightRadiance;
 
-    float NDF = DistributionGGX(N, H, u_Roughness);   
+    float NDF = DistributionGGX(N, H, u_Roughness);
     float G   = GeometrySmith(N, V, L, u_Roughness);
     vec3 F = fresnelSchlick(F0, V, H);
         
