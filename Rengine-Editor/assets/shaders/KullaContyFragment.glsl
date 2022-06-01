@@ -25,28 +25,28 @@ layout(location = 1) out int o_Entity;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-   // TODO: To calculate GGX NDF here
-    
+    float alpha = roughness * roughness;
+    float NdotH = dot(N,H);
+    float etc = (alpha * alpha - 1);
+    float etc2 = (NdotH * NdotH * etc + 1);
+    return alpha * alpha / PI / etc2 / etc2;
 }
 
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    // TODO: To calculate Schlick G1 here
-    
-    return 1.0;
+    float k = (roughness + 1) * (roughness + 1) / 8;
+    return NdotV / (NdotV * (1 - k) + k);
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
-    // TODO: To calculate Smith G here
-
-    return 1.0;
+    return GeometrySchlickGGX(dot(N,L),roughness) * GeometrySchlickGGX(dot(N,V),roughness);
 }
 
 vec3 fresnelSchlick(vec3 F0, vec3 V, vec3 H)
 {
-    // TODO: To calculate Schlick F here
-    return vec3(1.0);
+    float VdotH = dot(V,H);
+    return F0 + (1 - F0) * pow(VdotH,5);
 }
 
 
@@ -70,10 +70,10 @@ vec3 MultiScatterBRDF(float NdotL, float NdotV)
     vec3 edgetint = vec3(0.827, 0.792, 0.678);
     vec3 F_avg = AverageFresnel(albedo, edgetint);
     
-    // TODO: To calculate fms and missing energy here
+    vec3 Fms = (1 - E_o) * (1 - E_i) / PI / (1 - E_avg);
+    vec3 Fadd = F_avg * E_avg / (1 - F_avg * (1 - E_avg));
 
-
-    return vec3(1.0);
+    return Fms * Fadd;
 }
 
 void main(void) {
@@ -93,7 +93,8 @@ void main(void) {
     vec3 H = normalize(V + L);
     float distance = length(u_LightPos - v_FragPos);
     float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = u_LightRadiance;
+    // vec3 radiance = u_LightRadiance;
+    vec3 radiance = u_LightRadiance * attenuation;
 
     float NDF = DistributionGGX(N, H, u_Roughness);
     float G   = GeometrySmith(N, V, L, u_Roughness);
