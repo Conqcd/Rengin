@@ -24,19 +24,32 @@ glm::vec2 Hammersley(uint32_t i, uint32_t N) { // 0-1
 
 glm::vec3 ImportanceSampleGGX(glm::vec2 Xi, glm::vec3 N, float roughness) {
     float a = roughness * roughness;
-
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> rng(0.0, 1.0);
     //TODO: in spherical space - Bonus 1
-
+    float s1 = rng(gen),s2 = rng(gen);
+    float theta_m = std::atan(a * std::sqrt(s1) / std::sqrt(1 - s1));
+    float phi_h = 2 * M_PI * s2;
 
     //TODO: from spherical space to cartesian space - Bonus 1
- 
+    glm::vec3 H = Math::ToVector(phi_h,theta_m); 
 
     //TODO: tangent coordinates - Bonus 1
+    glm::vec3 b3 = glm::normalize(N);
+    float sign_ = b3.z > 0.0 ? 1.0 : -1.0;
+    if (b3.z == 0.0) {
+        sign_ = 1.0;
+    }
+    float aa = -1.0 / (sign_ + b3.z);
+    float b = N.x * N.y * aa;
 
+    glm::vec3 b1(1.0 + sign_ * b3.x * b3.x * aa, sign_ * b, -sign_ * b3.x);
+    glm::vec3 b2(b, sign_ + b3.y * b3.y * aa, -b3.y);
 
     //TODO: transform H to tangent space - Bonus 1
-    
-    return glm::vec3(1.0f);
+    H = H.x * b1 + H.y * b2 + H.z * b3;
+    return H;
 }
 
 float GeometrySchlickGGX(float NdotV, float roughness) {
@@ -47,12 +60,10 @@ float GeometrySchlickGGX(float NdotV, float roughness) {
 float GeometrySmith(float roughness, float NoV, float NoL) {
     float ggx2 = GeometrySchlickGGX(NoV, roughness);
     float ggx1 = GeometrySchlickGGX(NoL, roughness);
-
     return ggx1 * ggx2;
 }
 
 glm::vec3 IntegrateBRDF(glm::vec3 V, float roughness) {
-
     const int sample_count = 1024;
     glm::vec3 N(0.0, 0.0, 1.0);
     for (int i = 0; i < sample_count; i++) {
@@ -62,11 +73,11 @@ glm::vec3 IntegrateBRDF(glm::vec3 V, float roughness) {
 
         float NoL = std::max(L.z, 0.0f);
         float NoH = std::max(H.z, 0.0f);
-        float VoH = std::max(dot(V, H), 0.0f);
-        float NoV = std::max(dot(N, V), 0.0f);
+        float VoH = std::max(glm::dot(V, H), 0.0f);
+        float NoV = std::max(glm::dot(N, V), 0.0f);
         
         // TODO: To calculate (fr * ni) / p_o here - Bonus 1
-
+        float weight = NoL * GeometrySmith(roughness,NoV,NoL) / NoV / NoH;
 
         // Split Sum - Bonus 2
         
@@ -114,10 +125,11 @@ glm::vec3 IntegrateEmu(glm::vec3 V, float roughness, float NdotV, glm::vec3 Ei) 
         float NoV = std::max(dot(N, V), 0.0f);
 
         // TODO: To calculate Eavg here - Bonus 1
-        
+        Eavg += Ei * NoV * NoL;
     }
-
-    return glm::vec3(1.0);
+    Eavg /= sample_count;
+    Eavg *= 2;
+    return Eavg;
 }
 
 void setRGB(int x, int y, float alpha, unsigned char *data,int resolution) {
