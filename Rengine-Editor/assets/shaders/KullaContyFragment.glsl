@@ -110,9 +110,9 @@ void main(void) {
     float NdotL = max(dot(N, L), 0.0);
 
     vec3 Fms = MultiScatterBRDF(NdotL, NdotV);
-    vec3 BRDF = Fmicro + Fms;
+    // vec3 BRDF = Fmicro + Fms;
     // vec3 BRDF = Fmicro;
-    // vec3 BRDF = Fms;
+    vec3 BRDF = Fms;
 
     Lo += BRDF * radiance * NdotL;
     vec3 color = Lo;

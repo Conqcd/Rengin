@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Rengine/Utils/PlatformUtils.hpp"
+#include "Rengine/Utils/PbrCompute.hpp"
 #include <ImGuizmo.h>
 #include <Rengine/Math/Math.hpp>
 #include "Rengine/Renderer/Methods/PhongMethod.hpp";
@@ -276,6 +277,8 @@ void EditorLayer::OnImGuiRender()
 void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
+    PreComputeEmu_IS("../../../Rengine-Editor/assets/LUT/GGX_E_LUT.png");
+    // PreComputeEavg_IS("../../../Rengine-Editor/assets/LUT/GGX_Eavg_LUT.png","../../../Rengine-Editor/assets/LUT/GGX_E_LUT.png");
 
     m_shader = Shader::Create("../../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
     m_RenderObj = CreateRef<RendererObject>();

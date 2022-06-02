@@ -65,26 +65,29 @@ float GeometrySmith(float roughness, float NoV, float NoL) {
 
 glm::vec3 IntegrateBRDF(glm::vec3 V, float roughness) {
     const int sample_count = 1024;
+    glm::vec3 Emu(0.0f);
     glm::vec3 N(0.0, 0.0, 1.0);
     for (int i = 0; i < sample_count; i++) {
         glm::vec2 Xi = Hammersley(i, sample_count);
         glm::vec3 H = ImportanceSampleGGX(Xi, N, roughness);
-        glm::vec3 L = normalize(H * 2.0f * dot(V, H) - V);
+        glm::vec3 L = glm::normalize(H * 2.0f * dot(V, H) - V);
 
         float NoL = std::max(L.z, 0.0f);
         float NoH = std::max(H.z, 0.0f);
         float VoH = std::max(glm::dot(V, H), 0.0f);
         float NoV = std::max(glm::dot(N, V), 0.0f);
-        
+
         // TODO: To calculate (fr * ni) / p_o here - Bonus 1
         float weight = NoL * GeometrySmith(roughness,NoV,NoL) / NoV / NoH;
 
         // Split Sum - Bonus 2
-        
+        Emu += glm::vec3(weight);
     }
+    Emu /= sample_count;
 
-    return glm::vec3(1.0f);
+    return Emu;
 }
+
 void PreComputeEmu_IS(const std::string& path)
 {
     unsigned char data[Resolution * Resolution * 3];
