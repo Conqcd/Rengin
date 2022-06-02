@@ -31,8 +31,8 @@ void KullaCountyMethod::Render(const std::vector<int>& ids,const std::vector<Ref
     m_BaseShader->SetUniformInt("u_BRDFLut", 0);
     m_BaseShader->SetUniformInt("u_EavgLut", 1);
     int tidx = 2;
-    float Metalics[5] = {0.2,0.4,0.6,0.8,1.0};
-    float Roughnesses[5] = {0.2,0.4,0.6,0.8,1.0};
+    float Metalics[5] = {0.1,0.3,0.5,0.7,0.9};
+    float Roughnesses[5] = {0.1,0.3,0.5,0.7,0.9};
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);

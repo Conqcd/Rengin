@@ -10,7 +10,7 @@
 namespace Rengin
 {
 
-const unsigned int Resolution = 256;
+const unsigned int Resolution = 128;
 
 glm::vec2 Hammersley(uint32_t i, uint32_t N) { // 0-1
     uint32_t bits = (i << 16u) | (i >> 16u);
@@ -24,16 +24,16 @@ glm::vec2 Hammersley(uint32_t i, uint32_t N) { // 0-1
 
 glm::vec3 ImportanceSampleGGX(glm::vec2 Xi, glm::vec3 N, float roughness) {
     float a = roughness * roughness;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> rng(0.0, 1.0);
+    // std::random_device rd;
+    // std::mt19937 gen(rd());
+    // std::uniform_real_distribution<> rng(0.0, 1.0);
     //TODO: in spherical space - Bonus 1
-    float s1 = rng(gen),s2 = rng(gen);
-    float theta_m = std::atan(a * std::sqrt(s1) / std::sqrt(1 - s1));
-    float phi_h = 2 * M_PI * s2;
+    // float s1 = rng(gen),s2 = rng(gen);
+    float theta_m = std::atan(a * std::sqrt(Xi.x) / std::sqrt(1 - Xi.x));
+    float phi_h = 2 * M_PI * Xi.y;
 
     //TODO: from spherical space to cartesian space - Bonus 1
-    glm::vec3 H = Math::ToVector(phi_h,theta_m); 
+    glm::vec3 H = Math::ToVector(phi_h,theta_m);
 
     //TODO: tangent coordinates - Bonus 1
     glm::vec3 b3 = glm::normalize(N);
@@ -47,13 +47,18 @@ glm::vec3 ImportanceSampleGGX(glm::vec2 Xi, glm::vec3 N, float roughness) {
     glm::vec3 b1(1.0 + sign_ * b3.x * b3.x * aa, sign_ * b, -sign_ * b3.x);
     glm::vec3 b2(b, sign_ + b3.y * b3.y * aa, -b3.y);
 
+    // auto sq = sqrtf(N.x*N.x+N.z*N.z);
+    // glm::vec3 T(N.x * N.y / sq, sq, N.y * N.z / sq);
+    // glm::vec3 B = glm::cross(N,T);
+    // return glm::vec3(dot(T, H), dot(B, H), dot(N, H));
+
     //TODO: transform H to tangent space - Bonus 1
     H = H.x * b1 + H.y * b2 + H.z * b3;
     return H;
 }
 
 float GeometrySchlickGGX(float NdotV, float roughness) {
-    float k = (roughness + 1) * (roughness + 1) / 8;
+    float k = (roughness) * (roughness) / 2;
     return NdotV / (NdotV * (1 - k) + k);
 }
 
@@ -65,7 +70,7 @@ float GeometrySmith(float roughness, float NoV, float NoL) {
 
 glm::vec3 IntegrateBRDF(glm::vec3 V, float roughness) {
     const int sample_count = 1024;
-    glm::vec3 Emu(0.0f);
+    float Emu(0.0f);
     glm::vec3 N(0.0, 0.0, 1.0);
     for (int i = 0; i < sample_count; i++) {
         glm::vec2 Xi = Hammersley(i, sample_count);
@@ -76,16 +81,18 @@ glm::vec3 IntegrateBRDF(glm::vec3 V, float roughness) {
         float NoH = std::max(H.z, 0.0f);
         float VoH = std::max(glm::dot(V, H), 0.0f);
         float NoV = std::max(glm::dot(N, V), 0.0f);
+        if(L.z < 0)
+            continue;
 
         // TODO: To calculate (fr * ni) / p_o here - Bonus 1
-        float weight = NoL * GeometrySmith(roughness,NoV,NoL) / NoV / NoH;
+        float weight = VoH * GeometrySmith(roughness,NoV,NoL) / NoV / NoH;
 
         // Split Sum - Bonus 2
-        Emu += glm::vec3(weight);
+        if(std::isfinite(weight))
+            Emu += weight;
     }
     Emu /= sample_count;
-
-    return Emu;
+    return glm::vec3(std::min(Emu,1.0f));
 }
 
 void PreComputeEmu_IS(const std::string& path)
@@ -100,9 +107,9 @@ void PreComputeEmu_IS(const std::string& path)
 
             glm::vec3 irr = IntegrateBRDF(V, roughness);
 
-            data[(i * Resolution + j) * 3 + 0] = uint8_t(irr.x * 255.0);
-            data[(i * Resolution + j) * 3 + 1] = uint8_t(irr.y * 255.0);
-            data[(i * Resolution + j) * 3 + 2] = uint8_t(irr.z * 255.0);
+            data[(i * Resolution + j) * 3 + 0] = unsigned char(irr.x * 255.0);
+            data[(i * Resolution + j) * 3 + 1] = unsigned char(irr.y * 255.0);
+            data[(i * Resolution + j) * 3 + 2] = unsigned char(irr.z * 255.0);
         }
     }
     stbi_flip_vertically_on_write(true);
@@ -128,7 +135,8 @@ glm::vec3 IntegrateEmu(glm::vec3 V, float roughness, float NdotV, glm::vec3 Ei) 
         float NoV = std::max(dot(N, V), 0.0f);
 
         // TODO: To calculate Eavg here - Bonus 1
-        Eavg += Ei * NoV * NoL;
+        // Eavg += Ei * NoV * NoL;
+        Eavg += Ei * NoL;
     }
     Eavg /= sample_count;
     Eavg *= 2;
@@ -136,15 +144,15 @@ glm::vec3 IntegrateEmu(glm::vec3 V, float roughness, float NdotV, glm::vec3 Ei) 
 }
 
 void setRGB(int x, int y, float alpha, unsigned char *data,int resolution) {
-	data[3 * (resolution * x + y) + 0] = uint8_t(alpha);
-    data[3 * (resolution * x + y) + 1] = uint8_t(alpha);
-    data[3 * (resolution * x + y) + 2] = uint8_t(alpha);
+	data[3 * (resolution * x + y) + 0] = unsigned char(alpha);
+    data[3 * (resolution * x + y) + 1] = unsigned char(alpha);
+    data[3 * (resolution * x + y) + 2] = unsigned char(alpha);
 }
 
 void setRGB(int x, int y, glm::vec3 alpha, unsigned char *data,int resolution) {
-	data[3 * (resolution * x + y) + 0] = uint8_t(alpha.x);
-    data[3 * (resolution * x + y) + 1] = uint8_t(alpha.y);
-    data[3 * (resolution * x + y) + 2] = uint8_t(alpha.z);
+	data[3 * (resolution * x + y) + 0] = unsigned char(alpha.x);
+    data[3 * (resolution * x + y) + 1] = unsigned char(alpha.y);
+    data[3 * (resolution * x + y) + 2] = unsigned char(alpha.z);
 }
 
 glm::vec3 getEmu(int x, int y, int alpha, unsigned char *data, float NdotV, float roughness,int resolution) {
@@ -159,17 +167,20 @@ void PreComputeEavg_IS(const std::string& path,const std::string& EuPath)
     RE_CORE_ASSERT(Edata,"ERROE_FILE_NOT_LOAD");
     unsigned char* data = new unsigned char[resolution * resolution * 3];
     float step = 1.0 / resolution;
-    glm::vec3 Eavg(0.0);
     for (int i = 0; i < resolution; i++) 
     {
+        glm::vec3 Eavg(0.0);
         float roughness = step * (static_cast<float>(i) + 0.5f);
         for (int j = 0; j < resolution; j++) 
         {
             float NdotV = step * (static_cast<float>(j) + 0.5f);
             glm::vec3 V(std::sqrt(1.f - NdotV * NdotV), 0.f, NdotV);
 
-            glm::vec3 Ei = getEmu((resolution - 1 - i), j, 0, Edata, NdotV, roughness,resolution);
+            // glm::vec3 Ei = getEmu((resolution - 1 - i), j, 0, Edata, NdotV, roughness,resolution);
+            glm::vec3 Ei = getEmu(i, j, 0, Edata, NdotV, roughness,resolution);
             Eavg += IntegrateEmu(V, roughness, NdotV, Ei) * step;
+            // Eavg += NdotV * Ei * step;
+            // Eavg += Ei * step;
             setRGB(i, j, 0.0, data,resolution);
         }
 
@@ -177,12 +188,11 @@ void PreComputeEavg_IS(const std::string& path,const std::string& EuPath)
         {
             setRGB(i, k, Eavg, data,resolution);
         }
-
-        Eavg = glm::vec3(0.0);
     }
     stbi_flip_vertically_on_write(true);
     stbi_write_png(path.c_str(), resolution, resolution, channel, data, 0);
 	stbi_image_free(Edata);
+    delete data;
     RE_CORE_INFO("Finished Eavg Importance Sampling precomputed!");
 }
 

@@ -36,7 +36,8 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    float k = (roughness + 1) * (roughness + 1) / 8;
+    // float k = (roughness + 1) * (roughness + 1) / 8;
+    float k = (roughness) * (roughness) / 2;
     return NdotV / (NdotV * (1 - k) + k);
 }
 
@@ -111,8 +112,8 @@ void main(void) {
 
     vec3 Fms = MultiScatterBRDF(NdotL, NdotV);
     // vec3 BRDF = Fmicro + Fms;
-    // vec3 BRDF = Fmicro;
-    vec3 BRDF = Fms;
+    vec3 BRDF = Fmicro;
+    // vec3 BRDF = Fms;
 
     Lo += BRDF * radiance * NdotL;
     vec3 color = Lo;

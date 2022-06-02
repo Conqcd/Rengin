@@ -277,7 +277,7 @@ void EditorLayer::OnImGuiRender()
 void EditorLayer::OnAttach()
 {
     RE_PROFILE_FUNCTION();
-    PreComputeEmu_IS("../../../Rengine-Editor/assets/LUT/GGX_E_LUT.png");
+    // PreComputeEmu_IS("../../../Rengine-Editor/assets/LUT/GGX_E_LUT.png");
     // PreComputeEavg_IS("../../../Rengine-Editor/assets/LUT/GGX_Eavg_LUT.png","../../../Rengine-Editor/assets/LUT/GGX_E_LUT.png");
 
     m_shader = Shader::Create("../../../Rengine-Editor/assets/shaders/BaseVertex.glsl","../../../Rengine-Editor/assets/shaders/BaseFragment.glsl");
