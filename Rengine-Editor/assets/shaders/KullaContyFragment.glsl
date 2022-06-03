@@ -82,7 +82,6 @@ vec3 MultiScatterBRDF(float NdotL, float NdotV)
 void main(void) {
     vec3 albedo = pow(texture2D(u_AlbedoMap, v_TextureCoord).rgb, vec3(2.2));
 
-
     vec3 N = normalize(v_Normal);
     vec3 V = normalize(u_CameraPos - v_FragPos);
     float NdotV = max(dot(N, V), 0.0);
@@ -104,15 +103,15 @@ void main(void) {
     float G   = GeometrySmith(N, V, L, u_Roughness);
     vec3 F = fresnelSchlick(F0, V, H);
 
-    vec3 numerator    = NDF * G * F; 
+    vec3 numerator    = NDF * G * F;
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-    vec3 Fmicro = numerator / max(denominator, 0.001); 
+    vec3 Fmicro = numerator / max(denominator, 0.001);
 
     float NdotL = max(dot(N, L), 0.0);
 
     vec3 Fms = MultiScatterBRDF(NdotL, NdotV);
-    // vec3 BRDF = Fmicro + Fms;
-    vec3 BRDF = Fmicro;
+    vec3 BRDF = Fmicro + Fms;
+    // vec3 BRDF = Fmicro;
     // vec3 BRDF = Fms;
 
     Lo += BRDF * radiance * NdotL;
