@@ -13,6 +13,7 @@
 #include "Rengine/Renderer/Methods/PRTMethod.hpp";
 #include "Rengine/Renderer/Methods/SSRMethod.hpp";
 #include "Rengine/Renderer/Methods/KullaCountyMethod.hpp";
+#include "Rengine/Renderer/Methods/RTRTMethod.hpp";
 
 namespace Rengin
 {
@@ -402,6 +403,14 @@ void EditorLayer::OnAttach()
     auto pbrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/KullaContyVertex.glsl","../../../Rengine-Editor/assets/shaders/KullaContyFragment.glsl");
     pbrMethod->AddResource(pbrShader);
     m_RenderObj->AddMethod("PBR",pbrMethod);
+
+    // RealTime Ray Tracing
+    auto rtrtMethod = CreateRef<KullaCountyMethod>();
+    auto rtrtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
+    rtrtMethod->AddResource(rtrtShader);
+    m_RenderObj->AddMethod("RTRT",rtrtMethod);
+
+
  
     class CameraController :public ScriptableEntity
     {
