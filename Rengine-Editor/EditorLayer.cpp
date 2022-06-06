@@ -62,7 +62,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("PBR",{0,1,2,3,4},m_EditorCamera);
+        m_RenderObj->DrawObject("RTRT",{0},m_EditorCamera);
         break;
     case SceneState::Play:
         m_ActiveScene->OnUpdateRuntime(timestep);
@@ -301,18 +301,29 @@ void EditorLayer::OnAttach()
     // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
 
     // ****************************************** Scene 2 ***************************************************************
-    glm::mat4 transform3(1.0f);
+    // glm::mat4 transform3(1.0f);
     // transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
-    glm::mat4 transform1 = glm::translate(transform3,glm::vec3(-20.f,0.f,0.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform1));
+    // glm::mat4 transform1 = glm::translate(transform3,glm::vec3(-20.f,0.f,0.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform1));
 
-    glm::mat4 transform2 = glm::translate(transform3,glm::vec3(-10.f,0.f,0.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform2));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform3));
-    glm::mat4 transform4 = glm::translate(transform3,glm::vec3(10.f,0.f,0.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform4));
-    glm::mat4 transform5 = glm::translate(transform3,glm::vec3(20.f,0.f,0.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform5));
+    // glm::mat4 transform2 = glm::translate(transform3,glm::vec3(-10.f,0.f,0.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform2));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform3));
+    // glm::mat4 transform4 = glm::translate(transform3,glm::vec3(10.f,0.f,0.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform4));
+    // glm::mat4 transform5 = glm::translate(transform3,glm::vec3(20.f,0.f,0.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/ball/TestObj.obj","./assets/objects/ball",transform5));
+
+
+    // ****************************************** Scene 3 ***************************************************************
+
+    glm::mat4 transform1(1.0f);
+    transform1 = glm::scale(transform1,glm::vec3(10.f,10.f,10.f));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
+
+
+
+    // ****************************************** END  ******************************************************************
     
     auto phongMethod = CreateRef<PhongMethod>();
     phongMethod->AddResource(m_shader);
@@ -405,9 +416,10 @@ void EditorLayer::OnAttach()
     m_RenderObj->AddMethod("PBR",pbrMethod);
 
     // RealTime Ray Tracing
-    auto rtrtMethod = CreateRef<KullaCountyMethod>();
+    auto rtrtMethod = CreateRef<RTRTMethod>();
     auto rtrtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
     rtrtMethod->AddResource(rtrtShader);
+    rtrtMethod->AddResource(m_framebuffer);
     m_RenderObj->AddMethod("RTRT",rtrtMethod);
 
 
