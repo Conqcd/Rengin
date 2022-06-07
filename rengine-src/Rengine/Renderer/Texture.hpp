@@ -44,6 +44,7 @@ public:
     static Ref<Texture3D> Create(const std::string& path,int InorNe = 0x2600);
 
     virtual uint32_t getDepth() const = 0;
+    virtual const std::string& getPath() const = 0;
     virtual uint32_t getBPP() const = 0;
     virtual std::vector<float>& getTexture() = 0;
     virtual void setData(std::vector<float>& data) = 0;

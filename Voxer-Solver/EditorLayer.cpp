@@ -266,7 +266,7 @@ void EditorLayer::OnAttach()
     m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewPortSize.x),static_cast<uint32_t>(m_ViewPortSize.y));
 
     // Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
-    Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/alll.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_tooth_245_335_451_uint8.raw");
     
     // Entity
     auto m_CubeEntity = m_ActiveScene->CreateEntity("Volume");
@@ -289,13 +289,13 @@ void EditorLayer::OnAttach()
     auto& texComF = m_CubeEntity.GetComponent<ForceComponent>();
     auto& texComC = m_CubeEntity.GetComponent<ConstraintComponent>();
     // texCom.Path = "E:\\Volume_Rendering\\raw_data\\cbct_sample_z=507_y=512_x=512.raw";
-    texCom.Path = "E:\\Volume_Rendering\\raw_data\\alll.raw";
+    texCom.Path = texture_v->getPath();
     // texCom.width = 512;
-    texCom.width = 245;
+    texCom.width = texture_v->getWidth();
     // texCom.height = 512;
-    texCom.height = 335;
+    texCom.height = texture_v->getHeight();
     // texCom.depth = 507;
-    texCom.depth = 451;
+    texCom.depth = texture_v->getDepth();
     auto& transform = m_CubeEntity.GetComponent<TransformComponent>();
     float maxsc = 1.0 / std::max(std::max(texCom.width,texCom.height),texCom.depth);
     transform.Scale = glm::vec3(texCom.width * maxsc,texCom.height * maxsc,texCom.depth * maxsc);

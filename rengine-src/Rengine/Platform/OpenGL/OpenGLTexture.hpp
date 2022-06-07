@@ -78,6 +78,7 @@ public:
     OpenGLTexture3D(const std::string& path,int InorNe = GL_NEAREST);
     virtual ~OpenGLTexture3D();
     
+    inline virtual const std::string& getPath() const override {return m_path;}
     inline virtual uint32_t getWidth() const override {return m_width;}
     inline virtual uint32_t getHeight() const override {return m_height;}
     inline virtual uint32_t getDepth() const override {return m_depth;}

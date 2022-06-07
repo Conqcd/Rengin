@@ -1,5 +1,6 @@
 #include "repch.hpp"
 #include "OpenGLTexture.hpp"
+#include "Rengine/Utils/IO/RawReader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -234,40 +235,32 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path,int InorNe)
 {
     RE_PROFILE_FUNCTION();
     // int width = 512,height = 512,depth = 507;
-    int width = 245,height = 335,depth = 451;
+    // int width = 245,height = 335,depth = 451;
     // int width = 335,height = 451,depth = 245;
+    RawReader reader(path);
+    m_width = reader.dimensions[0];
+    m_height = reader.dimensions[1];
+    m_depth = reader.dimensions[2];
     
-    FILE* f = fopen(path.c_str(), "rb");
-    RE_ASSERT(f,"Can't Open the Texture file");
-    
-    int hw = height * width;
-    m_tex.resize(hw * depth);
-    unsigned char *s = new unsigned char[width];
+    int hw = m_height * m_width;
+    m_tex.resize(hw * m_depth);
     float maxval = 0.0f;
-    
-    for (int k = 0; k < depth; k++)
+
+    auto data = reader.load();
+ 
+    for (int k = 0; k < m_depth; k++)
     {
-        for (int j = 0; j < height; j++)
+        for (int j = 0; j < m_height; j++)
         {
-            fread(s, sizeof(unsigned char), width, f);
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < m_width; i++)
             {
-                float vv = s[i];
-                if(s[i] > 0)
-                    vv = s[i];
-                m_tex[k * hw + j * width + i] = s[i];
-                // if (s[i] > max_number)
-                maxval = std::max(maxval,m_tex[k * hw + j * width + i]);
-                //     max_number = s[i];
+                int id = k * hw + j * m_width + i;
+                m_tex[id] = data[id];
+                maxval = std::max(maxval,m_tex[id]);
             }
         }
     }
-    delete[] s;
 
-    // RE_CORE_ASSERT(data,"fail to load image!");
-    m_width = static_cast<uint32_t>(width);
-    m_height = static_cast<uint32_t>(height);
-    m_depth = static_cast<uint32_t>(depth);
 
     GLenum interFormat = GL_R32F , dataFormat = GL_RED;
 
