@@ -62,6 +62,49 @@ void OpenGLVertexBuffer::SetData(const void* data,uint32_t size)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//StorageBuffer //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+OpenGLStorageBuffer::OpenGLStorageBuffer(uint32_t size)
+{
+    RE_PROFILE_FUNCTION();
+ 
+    glCreateBuffers(1,&m_render_id);
+}
+
+OpenGLStorageBuffer::OpenGLStorageBuffer(float *vertices,uint32_t size)
+{
+    RE_PROFILE_FUNCTION();
+    glCreateBuffers(1,&m_render_id);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
+    glBufferData(GL_SHADER_STORAGE_BUFFER,size,vertices,GL_DYNAMIC_DRAW);
+}
+
+OpenGLStorageBuffer::~OpenGLStorageBuffer()
+{
+    RE_PROFILE_FUNCTION();
+    glDeleteBuffers(1,&m_render_id);
+}
+
+void OpenGLStorageBuffer::Bind()const
+{
+    RE_PROFILE_FUNCTION();
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
+}
+
+void OpenGLStorageBuffer::Unbind()const
+{
+    RE_PROFILE_FUNCTION();
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,0);
+}
+
+void OpenGLStorageBuffer::SetData(const void* data,uint32_t size)
+{
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
+    glBufferData(GL_SHADER_STORAGE_BUFFER,size,data,GL_DYNAMIC_DRAW);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //IndexBuffer ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

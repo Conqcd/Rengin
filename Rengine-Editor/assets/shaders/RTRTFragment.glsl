@@ -29,28 +29,37 @@ uniform vec3 u_Ka;
 uniform float u_Ns;
 uniform float u_Ni;
 
+struct Triangle
+{
+    float Vertex[3];
+    float Normal[3];
+    float Texture[3];
+};
+
+struct Material
+{
+    float Ks[3];
+    float Kd[3];
+    bool is_specular;
+};
+
+struct Light
+{
+    float Vertex[3];
+    float Le[3];
+};
+
 // Triangle
-layout(std430,binding = 1) buffer TriangleV
+layout(std430,binding = 1) buffer Triangles
 {
-    float m_Vertex[];
+    Triangle m_Vertex[];
 };
 
-// Normal
-layout(std430,binding = 2) buffer TriangleN
-{
-    float m_Normal[];
-};
 
-// Texture
-layout(std430,binding = 3) buffer TriangleT
+// Light Source
+layout(std430,binding = 4) buffer Lights
 {
-    int m_Texture[];
-};
-
-// Texture
-layout(std430,binding = 3) buffer Light
-{
-    int m_LightsTri[];
+    Light m_Lights[];
 };
 
 

@@ -321,6 +321,7 @@ void EditorLayer::OnAttach()
     transform1 = glm::scale(transform1,glm::vec3(10.f,10.f,10.f));
     m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
 
+    m_RenderObj->GenerateLightBuffer();
 
 
     // ****************************************** END  ******************************************************************

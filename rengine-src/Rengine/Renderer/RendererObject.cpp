@@ -1,6 +1,7 @@
 #include "repch.hpp"
 #include "RendererObject.hpp"
 #include "Rengine/Renderer/RenderCommand.hpp"
+#include "Rengine/Renderer/Buffer.hpp"
 
 namespace Rengin
 
@@ -55,6 +56,18 @@ bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::
         if(std::dynamic_pointer_cast<PRTObjManager>(ObjLists[i])->hit(v,wi,bary,t,value))   flag = true;
     }
     return flag;
+}
+
+void RendererObject::GenerateLightBuffer()
+{
+    std::vector<float> lightsVer;
+    int id = 0;
+    for (auto &&obj : ObjLists)
+    {
+        lightsVer.insert(lightsVer.begin(),obj->GetLights().begin(),obj->GetLights().end());
+    }
+    lights.LightTriNum = lightsVer.size() / 3;
+    lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
 }
 
 } // namespace Rengin

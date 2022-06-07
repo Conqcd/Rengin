@@ -25,6 +25,7 @@ protected:
     std::vector<Ref<VertexArray>> m_VertexArrays;
     std::vector<Material> m_Materials;
     std::vector<Ref<Texture2D>> m_Textures;
+    std::vector<float> m_LightsVertex;
     glm::mat4 m_transform;
     bool isPrt = false;
     std::string m_Path;
@@ -37,6 +38,7 @@ public:
     size_t GetVertexArraySize() const {return m_VertexArrays.size();}
     const Material& GetMaterial(int i) const {return m_Materials[i];}
     const glm::mat4& GetTransform() const {return m_transform;}
+    const const std::vector<float>& GetLights() const {return m_LightsVertex;}
     void BindTexture(int id,int slot = 0) const;
     virtual ~ObjManager();
     bool UsePrt() const {return isPrt;}

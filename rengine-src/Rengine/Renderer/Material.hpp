@@ -6,7 +6,7 @@ namespace Rengin
 {
 struct Material
 {
-    glm::vec3 Ks,Kd,Ka;
+    glm::vec3 Ks,Kd,Ka,Le;
     double Ns,Ni;
 };
 } // namespace Rengin

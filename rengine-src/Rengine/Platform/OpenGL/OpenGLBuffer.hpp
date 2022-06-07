@@ -23,6 +23,20 @@ public:
     virtual void SetData(const void* data,uint32_t size) override;
 };
 
+class RE_API OpenGLStorageBuffer : public StorageBuffer
+{
+private:
+    uint32_t m_render_id;
+public:
+    OpenGLStorageBuffer(uint32_t size);
+    OpenGLStorageBuffer(float *vertices,uint32_t size);
+    virtual ~OpenGLStorageBuffer();
+
+    virtual void Bind()const override;
+    virtual void Unbind()const override;
+
+    virtual void SetData(const void* data,uint32_t size) override;
+};
 class RE_API OpenGLIndexBuffer : public IndexBuffer
 {
 private:

@@ -36,9 +36,17 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         m_VertexArrays.push_back(VertexArray::Create());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j ++) {
             int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 3] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3];
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 4] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 1];
-            vertices[(*shapes)[i].mesh.indices[j].vertex_index * 8 + 5] = attrib->normals[(*shapes)[i].mesh.indices[j].normal_index * 3 + 2];
+            vertices[idv * 8 + 3] = attrib->normals[idn * 3];
+            vertices[idv * 8 + 4] = attrib->normals[idn * 3 + 1];
+            vertices[idv * 8 + 5] = attrib->normals[idn * 3 + 2];
+            if((*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter.find("Le") != (*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter.end())
+            {
+                glm::vec4 v(attrib->vertices[idv * 3],attrib->vertices[idv * 3 + 1],attrib->vertices[idv * 3 + 2],1.0);
+                v = v * transform;
+                m_LightsVertex.push_back(v[0]);
+                m_LightsVertex.push_back(v[1]);
+                m_LightsVertex.push_back(v[2]);
+            }
         }
         // int maId = MatNameId[(*shapes)[i].name];
         int maId = (*shapes)[i].mesh.material_ids[0];
