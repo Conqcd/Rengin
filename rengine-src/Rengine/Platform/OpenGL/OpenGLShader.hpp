@@ -32,6 +32,8 @@ public:
     virtual void SetUniformFloat3(const std::string& name,const glm::vec3& vec) override;
     virtual void SetUniformFloat4(const std::string& name,const glm::vec4& vec) override;
 
+    virtual void SetSSBOBinding(const std::string& name,const glm::vec4& vec) override;
+
     void UpLoadUniformInt(const std::string& name, int value);
     void UpLoadUniformUint(const std::string& name, unsigned int value);
     void UpLoadUniformIntArray(const std::string& name,int* values,uint32_t count);
