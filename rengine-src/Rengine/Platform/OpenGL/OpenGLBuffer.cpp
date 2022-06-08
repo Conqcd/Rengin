@@ -88,10 +88,11 @@ OpenGLStorageBuffer::~OpenGLStorageBuffer()
     glDeleteBuffers(1,&m_render_id);
 }
 
-void OpenGLStorageBuffer::Bind()const
+void OpenGLStorageBuffer::Bind(int index)const
 {
     RE_PROFILE_FUNCTION();
     glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, m_render_id);
 }
 
 void OpenGLStorageBuffer::Unbind()const

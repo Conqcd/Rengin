@@ -119,7 +119,7 @@ class RE_API StorageBuffer
 public:
     virtual ~StorageBuffer() {}
 
-    virtual void Bind()const = 0;
+    virtual void Bind(int index)const = 0;
     virtual void Unbind()const = 0;
 
     virtual void SetData(const void* data,uint32_t size) = 0;

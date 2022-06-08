@@ -66,8 +66,24 @@ void RendererObject::GenerateLightBuffer()
     {
         lightsVer.insert(lightsVer.begin(),obj->GetLights().begin(),obj->GetLights().end());
     }
-    lights.LightTriNum = lightsVer.size() / 3;
+    lights.LightTriNum = lightsVer.size() / 18;
     lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
+    lights.LightBuffer->Bind(3);
+}
+
+void RendererObject::GenerateMaterialBuffer()
+{
+
+}
+
+void RendererObject::GenerateTriangleBaseBuffer()
+{
+
+}
+
+void RendererObject::GenerateTriangleAttributeBuffer()
+{
+
 }
 
 } // namespace Rengin

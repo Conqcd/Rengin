@@ -37,6 +37,7 @@ private:
     
     //Datas
     float m_pixelDisplacement[4] = {0};
+    int m_pixelPosition[4] = {0};
 private:
     bool OnKeyPressed(KeyPressEvent& e);
     bool OnMouseButtonPressed(MouseButtonPressEvent& e);

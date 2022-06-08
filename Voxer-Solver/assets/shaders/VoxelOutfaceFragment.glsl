@@ -187,6 +187,10 @@ void main()
 
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
             color.a = c.a + (1 - c.a) * color.a;
+
+            o_position.r = int(position.r * float(u_TWidth - 1));
+            o_position.g = int(position.g * float(u_THeight - 1));
+            o_position.b = int(position.b * float(u_TDepth - 1));
             if(intensity > 0.0)
                 break;
             ray_length -= u_stepLength;
@@ -245,7 +249,6 @@ void main()
             color = vec4(0.0,1.0,0.0,1.0);
         else if(u_RenderMode == 3 && length(texture(u_Constraint, position).rgb) != 0.0)
             color = vec4(0.0,0.0,1.0,1.0);
-        o_displacement = vec4(0);
     }
     o_color = color;
 }

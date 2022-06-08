@@ -55,9 +55,14 @@ layout(std430,binding = 1) buffer Triangles
     Triangle m_Vertex[];
 };
 
+// Triangle Index
+layout(std430,binding = 2) buffer Triangles
+{
+    Triangle m_Vertex[];
+};
 
 // Light Source
-layout(std430,binding = 4) buffer Lights
+layout(std430,binding = 3) buffer Lights
 {
     Light m_Lights[];
 };
@@ -84,6 +89,11 @@ vec3 Rand3(inout float p)
 vec4 Rand4(inout float p)
 {
     return vec4(Rand2(p), Rand2(p));
+}
+
+float TriangleArea(vec3 v1,vec3 v2,vec3 v3)
+{
+    return length(cross(v1 - v2,v1 - v3)) / 2;
 }
 
 float InitRand(vec2 uv)
@@ -122,6 +132,38 @@ bool hit(vec3 position,vec3 direction,out vec3 hitbary)
     return true;
 }
 
+vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
+{
+    vec3 color = vec3(0.0);
+    for(int i = 0;i < u_LightNums;i++)
+    {
+        vec3 uv;
+        uv.xy = Rand2(s);
+        uv.y *= (1 - uv.x);
+        uv.z = 1 - uv.x - uv.y;
+        vec3 LV1 = vec3(m_Lights[i * 3].Vertex[0],m_Lights[i * 3].Vertex[1],m_Lights[i * 3].Vertex[2]);
+        vec3 LV2 = vec3(m_Lights[i * 3 + 1].Vertex[0],m_Lights[i * 3 + 1].Vertex[1],m_Lights[i * 3 + 1].Vertex[2]);
+        vec3 LV3 = vec3(m_Lights[i * 3 + 2].Vertex[0],m_Lights[i * 3 + 2].Vertex[1],m_Lights[i * 3 + 2].Vertex[2]);
+
+        vec3 LE1 = vec3(m_Lights[i * 3].Le[0],m_Lights[i * 3].Le[1],m_Lights[i * 3].Le[2]);
+        vec3 LE2 = vec3(m_Lights[i * 3 + 1].Le[0],m_Lights[i * 3 + 1].Le[1],m_Lights[i * 3 + 1].Le[2]);
+        vec3 LE3 = vec3(m_Lights[i * 3 + 2].Le[0],m_Lights[i * 3 + 2].Le[1],m_Lights[i * 3 + 2].Le[2]);
+
+        vec3 LV = LV1 * uv.x + LV2 * uv.y + LV3 * uv.z;
+        vec3 LE = LE1 * uv.x + LE2 * uv.y + LE3 * uv.z;
+
+        float distance_s = length(LV - ray_point) * length(LV - ray_point);
+        float area = TriangleArea(LV1,LV2,LV3);
+        float pdf = distance_s / area; 
+        float pdf2 = max(dot(normalize(LV - ray_point),normalize(normal)),0.0); 
+
+        vec3 halfDir = normalize((LV - ray_point + ray_dir));
+        float spec = pow(max(dot(halfDir, normal), 0.0), ns);
+        color += LE * pdf2 / pdf * (kd + ks * spec);
+    }
+    return color;
+}
+
 bool ray_tracing(vec3 position,vec3 direction,out vec3 color)
 {
     vec3 albedo[MAXBOUNCE];
@@ -136,7 +178,9 @@ bool ray_tracing(vec3 position,vec3 direction,out vec3 color)
 void main()
 {
     float s = InitRand(gl_FragCoord.xy);
-    vec4 color = vec4(BlinnPhong(),1.0);
+    // vec4 color = vec4(BlinnPhong(),1.0);
+    vec4 color = vec4(light_color(u_CameraPos - v_position,v_position,v_normal,u_Ks,u_Kd,u_Ns,s),1.0);
     o_color = color;
     o_Entity = u_Entity;
+    // o_Entity = int(m_Lights[0].Vertex[1]);
 }

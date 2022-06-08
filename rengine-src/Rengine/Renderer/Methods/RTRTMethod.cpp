@@ -29,14 +29,17 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_BaseShader->SetUniformFloat3("u_LightPos", lights.LightPos);
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
     m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.LightIntensity);
-    float KS[3] = {0,0,0.8};
+    m_BaseShader->SetUniformInt("u_LightNums", lights.LightTriNum);
+    lights.LightBuffer->Bind(2);
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);
         m_BaseShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
-        m_BaseShader->SetUniformFloat("u_Ks",KS[i]);
         for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
         {
+            m_BaseShader->SetUniformFloat3("u_Ks",ObjLists[ids[i]]->GetMaterial(j).Ks);
+            m_BaseShader->SetUniformFloat3("u_Kd",ObjLists[ids[i]]->GetMaterial(j).Kd);
+            m_BaseShader->SetUniformFloat("u_Ns",ObjLists[ids[i]]->GetMaterial(j).Ns);
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }

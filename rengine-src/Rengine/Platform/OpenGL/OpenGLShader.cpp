@@ -115,6 +115,11 @@ void OpenGLShader::SetUniformFloat4(const std::string &name,
   UpLoadUniformFloat4(name, vec);
 }
 
+void OpenGLShader::SetSSBOBinding(const std::string& name,const glm::vec4& vec)
+{
+
+}
+
 void OpenGLShader::UpLoadUniformMat3(const std::string &name,
                                      const glm::mat3 &matrix) {
   GLint location = glGetUniformLocation(m_render_id, name.c_str());

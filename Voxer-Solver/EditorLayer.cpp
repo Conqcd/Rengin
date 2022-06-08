@@ -69,6 +69,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
     {
         m_framebuffer->ReadPixel(2,mouseX,mouseY,m_pixelDisplacement);
+        m_framebuffer->ReadPixel(1,mouseX,mouseY,m_pixelPosition);
         // RE_CORE_WARN("pixel data {0}",pixelData);
     }
     if(m_MouseSize[0] && m_MouseSize[1])
@@ -238,12 +239,9 @@ void EditorLayer::OnImGuiRender()
     ImGui::Begin("Settings");
 
     auto stats = Rengin::Renderer2D::getStats();
-    ImGui::Text("Renderer2D Stats:");
-    ImGui::Text("Call Draw: %d",stats.DrawCall);
-    ImGui::Text("Quads: %d",stats.QuadCount);
-    ImGui::Text("Vertices: %d",stats.GetTotalVertexCount());
-    ImGui::Text("Indices: %d",stats.GetTotalIndexCount());
-    ImGui::Text("Disaplacements: x %f y %f z %f length %f",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2],m_pixelDisplacement[3]);
+    ImGui::Text("Voxel Stats:");
+    ImGui::Text("Disaplacements: x %f y %f z %f total %f",m_pixelDisplacement[0],m_pixelDisplacement[1],m_pixelDisplacement[2],m_pixelDisplacement[3]);
+    ImGui::Text("Position: x %d y %d z %d",m_pixelPosition[0],m_pixelPosition[1],m_pixelPosition[2]);
 
     ImGui::End();
 }

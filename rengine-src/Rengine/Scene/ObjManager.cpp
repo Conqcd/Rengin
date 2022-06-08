@@ -46,6 +46,12 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
                 m_LightsVertex.push_back(v[0]);
                 m_LightsVertex.push_back(v[1]);
                 m_LightsVertex.push_back(v[2]);
+                m_LightsVertex.push_back(10);
+                m_LightsVertex.push_back(10);
+                m_LightsVertex.push_back(10);
+                // m_LightsVertex.push_back((*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter["Le"][0]);
+                // m_LightsVertex.push_back((*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter["Le"][1]);
+                // m_LightsVertex.push_back((*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter["Le"][2]);
             }
         }
         // int maId = MatNameId[(*shapes)[i].name];
