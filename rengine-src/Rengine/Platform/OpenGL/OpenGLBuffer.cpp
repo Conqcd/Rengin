@@ -19,7 +19,7 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
     glBufferData(GL_ARRAY_BUFFER,size,nullptr,GL_DYNAMIC_DRAW);
 }
 
-OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices,uint32_t size)
+OpenGLVertexBuffer::OpenGLVertexBuffer(void *vertices,uint32_t size)
 {
     RE_PROFILE_FUNCTION();
     glCreateBuffers(1,&m_render_id);
@@ -74,7 +74,7 @@ OpenGLStorageBuffer::OpenGLStorageBuffer(uint32_t size)
     glBufferData(GL_SHADER_STORAGE_BUFFER,size,nullptr,GL_DYNAMIC_DRAW);
 }
 
-OpenGLStorageBuffer::OpenGLStorageBuffer(float *vertices,uint32_t size)
+OpenGLStorageBuffer::OpenGLStorageBuffer(void *vertices,uint32_t size)
 {
     RE_PROFILE_FUNCTION();
     glCreateBuffers(1,&m_render_id);

@@ -11,7 +11,7 @@ private:
     BufferLayout m_layout;
 public:
     OpenGLVertexBuffer(uint32_t size);
-    OpenGLVertexBuffer(float *vertices,uint32_t size);
+    OpenGLVertexBuffer(void *vertices,uint32_t size);
     virtual ~OpenGLVertexBuffer();
 
     virtual void Bind()const override;
@@ -29,7 +29,7 @@ private:
     uint32_t m_render_id;
 public:
     OpenGLStorageBuffer(uint32_t size);
-    OpenGLStorageBuffer(float *vertices,uint32_t size);
+    OpenGLStorageBuffer(void *vertices,uint32_t size);
     virtual ~OpenGLStorageBuffer();
 
     virtual void Bind(int index)const override;

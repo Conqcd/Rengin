@@ -4,7 +4,7 @@
 
 namespace Rengin
 {
-class PhongMethod : public RenderMethod
+class RE_API PhongMethod : public RenderMethod
 {
 private:
 

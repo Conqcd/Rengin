@@ -15,13 +15,14 @@
 namespace Rengin
 {
 
-class RendererObject
+class RE_API RendererObject
 {
 private:
     std::vector<Ref<ObjManager>> ObjLists;
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
     PRTType m_PrtType = PRTType::Interreflection;
     Lights lights;
+    Ref<StorageBuffer> MaterialID,VertexBuffer,IndexBuffer,MaterialBuffer;
 public:
     RendererObject();
     ~RendererObject() = default;
@@ -34,7 +35,7 @@ public:
     void GenerateLightBuffer();
     void GenerateMaterialBuffer();
     void GenerateTriangleBaseBuffer();
-    void GenerateTriangleAttributeBuffer();
+    void GenerateTriangleMaterialIdBuffer();
 };
 
 } // namespace Rengin

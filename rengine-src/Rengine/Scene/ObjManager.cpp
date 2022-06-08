@@ -27,18 +27,36 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
     for (int i = 0; i < material->size(); i++)
     {
         MatNameId[(*material)[i].name] = i;
+        Material materiall;
+        materiall.Ka.r = (*material)[i].ambient[0];
+        materiall.Ka.g = (*material)[i].ambient[1];
+        materiall.Ka.b = (*material)[i].ambient[2];
+        materiall.Ks.r = (*material)[i].specular[0];
+        materiall.Ks.g = (*material)[i].specular[1];
+        materiall.Ks.b = (*material)[i].specular[2];
+        materiall.Kd.r = (*material)[i].diffuse[0];
+        materiall.Kd.g = (*material)[i].diffuse[1];
+        materiall.Kd.b = (*material)[i].diffuse[2];
+        materiall.Ns = (*material)[i].shininess;
+        materiall.Ni = (*material)[i].ior;
+        if((*material)[i].unknown_parameter.find("Le") != (*material)[i].unknown_parameter.end())
+        {
+            materiall.Le = glm::vec3(10,10,10);
+        }
+        m_Materials.emplace_back(std::move(materiall));
     }
  
-    tinyobj::real_t* vertices = new tinyobj::real_t[attrib->vertices.size() / 3 * 8];
-    memset(vertices,0,sizeof(tinyobj::real_t) * attrib->vertices.size() / 3 * 8);
+    m_Vertices.resize(attrib->vertices.size() / 3 * 8);
+    m_MaterialId.resize(attrib->vertices.size() / 3);
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays.push_back(VertexArray::Create());
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j ++) {
             int idv = (*shapes)[i].mesh.indices[j].vertex_index,idn = (*shapes)[i].mesh.indices[j].normal_index;
-            vertices[idv * 8 + 3] = attrib->normals[idn * 3];
-            vertices[idv * 8 + 4] = attrib->normals[idn * 3 + 1];
-            vertices[idv * 8 + 5] = attrib->normals[idn * 3 + 2];
+            m_Vertices[idv * 8 + 3] = attrib->normals[idn * 3];
+            m_Vertices[idv * 8 + 4] = attrib->normals[idn * 3 + 1];
+            m_Vertices[idv * 8 + 5] = attrib->normals[idn * 3 + 2];
+            m_MaterialId[idv] = (*shapes)[i].mesh.material_ids[j / 3];
             if((*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter.find("Le") != (*material)[(*shapes)[i].mesh.material_ids[j / 3]].unknown_parameter.end())
             {
                 glm::vec4 v(attrib->vertices[idv * 3],attrib->vertices[idv * 3 + 1],attrib->vertices[idv * 3 + 2],1.0);
@@ -46,6 +64,7 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
                 m_LightsVertex.push_back(v[0]);
                 m_LightsVertex.push_back(v[1]);
                 m_LightsVertex.push_back(v[2]);
+                m_LightsIndex.push_back(j);
                 m_LightsVertex.push_back(10);
                 m_LightsVertex.push_back(10);
                 m_LightsVertex.push_back(10);
@@ -56,19 +75,19 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         }
         // int maId = MatNameId[(*shapes)[i].name];
         int maId = (*shapes)[i].mesh.material_ids[0];
-        Material materiall;
-        materiall.Ka.r = (*material)[maId].ambient[0];
-        materiall.Ka.g = (*material)[maId].ambient[1];
-        materiall.Ka.b = (*material)[maId].ambient[2];
-        materiall.Ks.r = (*material)[maId].specular[0];
-        materiall.Ks.g = (*material)[maId].specular[1];
-        materiall.Ks.b = (*material)[maId].specular[2];
-        materiall.Kd.r = (*material)[maId].diffuse[0];
-        materiall.Kd.g = (*material)[maId].diffuse[1];
-        materiall.Kd.b = (*material)[maId].diffuse[2];
-        materiall.Ns = (*material)[maId].shininess;
-        materiall.Ni = (*material)[maId].ior;
-        m_Materials.emplace_back(std::move(materiall));
+        // Material materiall;
+        // materiall.Ka.r = (*material)[maId].ambient[0];
+        // materiall.Ka.g = (*material)[maId].ambient[1];
+        // materiall.Ka.b = (*material)[maId].ambient[2];
+        // materiall.Ks.r = (*material)[maId].specular[0];
+        // materiall.Ks.g = (*material)[maId].specular[1];
+        // materiall.Ks.b = (*material)[maId].specular[2];
+        // materiall.Kd.r = (*material)[maId].diffuse[0];
+        // materiall.Kd.g = (*material)[maId].diffuse[1];
+        // materiall.Kd.b = (*material)[maId].diffuse[2];
+        // materiall.Ns = (*material)[maId].shininess;
+        // materiall.Ni = (*material)[maId].ior;
+        // m_Materials.emplace_back(std::move(materiall));
         // for (; maId < material->size(); maId++)
         // {
         //     if(strcmp((*material)[maId].name.c_str(),(*shapes)[i].name.c_str()) == 0)
@@ -93,17 +112,22 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
     int size = attrib->vertices.size() / 3;
     for (size_t i = 0; i < size; i++)
     {
-        vertices[i * 8] = attrib->vertices[i * 3];
-        vertices[i * 8 + 1] = attrib->vertices[i * 3 + 1];
-        vertices[i * 8 + 2] = attrib->vertices[i * 3 + 2];
+        m_Vertices[i * 8] = attrib->vertices[i * 3];
+        m_Vertices[i * 8 + 1] = attrib->vertices[i * 3 + 1];
+        m_Vertices[i * 8 + 2] = attrib->vertices[i * 3 + 2];
 
-        vertices[i * 8 + 6] = attrib->texcoords[i * 2];
-        vertices[i * 8 + 7] = attrib->texcoords[i * 2 + 1];
+        m_Vertices[i * 8 + 6] = attrib->texcoords[i * 2];
+        m_Vertices[i * 8 + 7] = attrib->texcoords[i * 2 + 1];
     }
     
-    auto VertexBuffer = VertexBuffer::Create(vertices,attrib->vertices.size() / 3 * 8 * sizeof(tinyobj::real_t));
+    auto VertexBuffer = VertexBuffer::Create(m_Vertices.data(),attrib->vertices.size() / 3 * 8 * sizeof(tinyobj::real_t));
     VertexBuffer->SetLayout(layout_v);
-
+    BufferLayout layout_m = {
+        {ShadeDataType::Int , "a_MaterialId"}
+    };
+    auto MaterialIDBuffer = VertexBuffer::Create(m_MaterialId.data(),m_MaterialId.size() * sizeof(int));
+    MaterialIDBuffer->SetLayout(layout_m);
+    int Ioffset = 0;
     for (size_t i = 0; i < shapes->size(); i++)
     {
         m_VertexArrays[i]->Bind();
@@ -111,16 +135,31 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         indices = new uint32_t[(*shapes)[i].mesh.indices.size()];
         for (size_t j = 0; j < (*shapes)[i].mesh.indices.size(); j++) {
             indices[j] = (*shapes)[i].mesh.indices[j].vertex_index;
+            m_Indices.push_back(indices[j] + Ioffset);
         }
+        Ioffset += (*shapes)[i].mesh.indices.size();
         auto IndexBuf = IndexBuffer::Create(indices, (*shapes)[i].mesh.indices.size());
         m_VertexArrays[i]->SetIndexBuffer(IndexBuf);
         m_VertexArrays[i]->AddVertexBuffer(VertexBuffer);
+        m_VertexArrays[i]->AddVertexBuffer(MaterialIDBuffer);
         delete[] indices;
     }
+    for (size_t i = 0; i < size; i++)
+    {
+        glm::vec4 v(m_Vertices[i * 8],m_Vertices[i * 8 + 1],m_Vertices[i * 8 + 2],1.0);
+        v = v * transform;
+        m_Vertices[i * 8] = v[0];
+        m_Vertices[i * 8 + 1] = v[1];
+        m_Vertices[i * 8 + 2] = v[2];
 
+        glm::vec4 n(m_Vertices[i * 8 + 3],m_Vertices[i * 8 + 4],m_Vertices[i * 8 + 5],1.0);
+        n = n * transform;
+        m_Vertices[i * 8 + 3] = n[0];
+        m_Vertices[i * 8 + 4] = n[1];
+        m_Vertices[i * 8 + 5] = n[2];
+    }
     RE_CORE_WARN("{0}",(*warn).c_str());
     RE_CORE_ERROR("{0}",(*err).c_str());
-    delete[] vertices;
     delete warn;
     delete err;
     delete attrib;

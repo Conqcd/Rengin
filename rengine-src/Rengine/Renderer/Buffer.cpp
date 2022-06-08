@@ -28,7 +28,7 @@ Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
     return nullptr;
 }
 
-Ref<VertexBuffer> VertexBuffer::Create(float *vertices,uint32_t size)
+Ref<VertexBuffer> VertexBuffer::Create(void *vertices,uint32_t size)
 {
     switch (Renderer::getRenderer())
     {
@@ -62,7 +62,7 @@ Ref<StorageBuffer> StorageBuffer::Create(uint32_t size)
     return nullptr;
 }
 
-Ref<StorageBuffer> StorageBuffer::Create(float *vertices,uint32_t size)
+Ref<StorageBuffer> StorageBuffer::Create(void *vertices,uint32_t size)
 {
     switch (Renderer::getRenderer())
     {

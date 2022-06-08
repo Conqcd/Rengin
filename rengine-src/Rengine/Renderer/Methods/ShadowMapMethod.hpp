@@ -6,7 +6,7 @@
 namespace Rengin
 {
 
-class ShadowMapMethod : public RenderMethod
+class RE_API ShadowMapMethod : public RenderMethod
 {
 private:
     Ref<FrameBuffer> m_ShadowMap;

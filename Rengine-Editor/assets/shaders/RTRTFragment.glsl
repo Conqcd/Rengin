@@ -4,6 +4,7 @@
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texCoords;
+flat in int v_MaterialId;
 
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out int o_Entity;
@@ -40,7 +41,11 @@ struct Material
 {
     float Ks[3];
     float Kd[3];
-    bool is_specular;
+    float Ka[3];
+    float Le[3];
+    float Ns;
+    float Ni;
+    // bool is_specular;
 };
 
 struct Light
@@ -50,15 +55,20 @@ struct Light
 };
 
 // Triangle
-layout(std430,binding = 1) buffer Triangles
+layout(std430,binding = 0) buffer Triangles
 {
     Triangle m_Vertex[];
 };
 
-// Triangle Index
-layout(std430,binding = 2) buffer Triangles
+layout(std430,binding = 1) buffer MaterialId
 {
-    Triangle m_Vertex[];
+    int m_MId[];
+};
+
+// Triangle Index
+layout(std430,binding = 2) buffer Indices
+{
+    int m_index[];
 };
 
 // Light Source
@@ -67,6 +77,11 @@ layout(std430,binding = 3) buffer Lights
     Light m_Lights[];
 };
 
+// Material
+layout(std430,binding = 4) buffer Materials
+{
+    Material m_Materials[];
+};
 
 float Rand1(inout float p)
 {

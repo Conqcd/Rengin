@@ -322,6 +322,9 @@ void EditorLayer::OnAttach()
     m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
 
     m_RenderObj->GenerateLightBuffer();
+    m_RenderObj->GenerateMaterialBuffer();
+    m_RenderObj->GenerateTriangleBaseBuffer();
+    m_RenderObj->GenerateTriangleMaterialIdBuffer();
 
 
     // ****************************************** END  ******************************************************************

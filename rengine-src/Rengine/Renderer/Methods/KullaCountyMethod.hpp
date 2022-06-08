@@ -5,7 +5,7 @@
 
 namespace Rengin
 {
-class KullaCountyMethod : public RenderMethod
+class RE_API KullaCountyMethod : public RenderMethod
 {
 private:
     Ref<Shader> m_SkyBoxShader;

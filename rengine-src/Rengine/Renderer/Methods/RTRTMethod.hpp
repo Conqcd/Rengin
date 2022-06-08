@@ -6,7 +6,7 @@
 namespace Rengin
 {
 
-class RTRTMethod : public RenderMethod
+class RE_API RTRTMethod : public RenderMethod
 {
 private:
     Ref<FrameBuffer> m_GBuffer;
