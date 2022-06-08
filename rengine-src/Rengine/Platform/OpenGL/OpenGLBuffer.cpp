@@ -70,6 +70,8 @@ OpenGLStorageBuffer::OpenGLStorageBuffer(uint32_t size)
     RE_PROFILE_FUNCTION();
  
     glCreateBuffers(1,&m_render_id);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
+    glBufferData(GL_SHADER_STORAGE_BUFFER,size,nullptr,GL_DYNAMIC_DRAW);
 }
 
 OpenGLStorageBuffer::OpenGLStorageBuffer(float *vertices,uint32_t size)
@@ -101,7 +103,7 @@ void OpenGLStorageBuffer::Unbind()const
 void OpenGLStorageBuffer::SetData(const void* data,uint32_t size)
 {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER,m_render_id);
-    glBufferData(GL_SHADER_STORAGE_BUFFER,size,data,GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER,0,size,data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
