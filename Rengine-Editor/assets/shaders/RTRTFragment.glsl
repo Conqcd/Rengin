@@ -1,5 +1,12 @@
 #version 450
 #define MAXBOUNCE 5
+#define EPS 1e-3
+#define M_PI 3.1415926535897932384626433832795
+#define TWO_PI 6.283185307
+#define INV_PI 0.31830988618
+#define INV_TWO_PI 0.15915494309
+
+
 
 in vec3 v_position;
 in vec3 v_normal;
@@ -8,12 +15,15 @@ flat in int v_MaterialId;
 
 layout(location = 0) out vec4 o_color;
 layout(location = 1) out int o_Entity;
+layout(location = 2) out ivec4 o_T1;
+layout(location = 3) out ivec4 o_T2;
 
 uniform int u_Entity;
 uniform int u_Bounce;
 uniform sampler2D u_texture[32];
 uniform int u_TexId;
 uniform int u_trianglenums;
+uniform float u_TimeSeed;
 
 //Camera
 uniform vec3 u_CameraPos;
@@ -105,6 +115,40 @@ float TriangleArea(vec3 v1,vec3 v2,vec3 v3)
     return length(cross(v1 - v2,v1 - v3)) / 2;
 }
 
+void LocalBasis(vec3 n, out vec3 b1, out vec3 b2)
+{
+    float sign_ = sign(n.z);
+    if (n.z == 0.0) {
+        sign_ = 1.0;
+    }
+    float a = -1.0 / (sign_ + n.z);
+    float b = n.x * n.y * a;
+    b1 = vec3(1.0 + sign_ * n.x * n.x * a, sign_ * b, -sign_ * n.x);
+    b2 = vec3(b, sign_ + n.y * n.y * a, -n.y);
+}
+
+vec3 SampleHemisphereUniform(inout float s, out float pdf)
+{
+    vec2 uv = Rand2(s);
+    float z = uv.x;
+    float phi = uv.y * TWO_PI;
+    float sinTheta = sqrt(1.0 - z * z);
+    vec3 dir = vec3(sinTheta * cos(phi), sinTheta * sin(phi), z);
+    pdf = INV_TWO_PI;
+    return dir;
+}
+
+vec3 SampleHemisphereCos(inout float s, out float pdf)
+{
+    vec2 uv = Rand2(s);
+    float z = sqrt(1.0 - uv.x);
+    float phi = uv.y * TWO_PI;
+    float sinTheta = sqrt(uv.x);
+    vec3 dir = vec3(sinTheta * cos(phi), sinTheta * sin(phi), z);
+    pdf = z * INV_PI;
+    return dir;
+}
+
 float InitRand(vec2 uv)
 {
 	vec3 p3  = fract(vec3(uv.xyx) * .1031);
@@ -112,89 +156,183 @@ float InitRand(vec2 uv)
     return fract((p3.x + p3.y) * p3.z);
 }
 
-vec3 BlinnPhong()
+bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out vec3 oNormal,out vec3 hitpos)
 {
-    vec3 color = texture2D(u_texture[u_TexId],v_texCoords).rgb;
-    color = pow(color, vec3(2.2));
+    int id1 = m_index[id * 3],id2 = m_index[id * 3 + 1],id3 = m_index[id * 3 + 2];
+    vec3 v0 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
+    vec3 v1 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
+    vec3 v2 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
 
-    vec3 ambient = 0.05 * color;
+	vec3 E1 = v1 - v0;
+	vec3 E2 = v2 - v0;
+	vec3 S = position - v0;
+	vec3 S1 = cross(direction, E2);
+	vec3 S2 = cross(S, E1);
+	float coeff = 1.0 / dot(S1, E1);
+	float tt = coeff * dot(S2, E2);
+	float b1 = coeff * dot(S1, S);
+	float b2 = coeff * dot(S2, direction);
+	float b0 = 1 - b1 - b2;
+    t = tt;
+	if (b1 >= 0 && b2 >= 0 && b0 >= 0)
+	{
+        hitpos = v0 * b0 + v1 * b1 + v2 * b2;
+        vec3 n0 = vec3(m_Vertex[id1].Normal[0],m_Vertex[id1].Normal[1],m_Vertex[id1].Normal[2]);
+        vec3 n1 = vec3(m_Vertex[id2].Normal[0],m_Vertex[id2].Normal[1],m_Vertex[id2].Normal[2]);
+        vec3 n2 = vec3(m_Vertex[id3].Normal[0],m_Vertex[id3].Normal[1],m_Vertex[id3].Normal[2]);
 
-    vec3 lightDir = normalize(u_LightPos);
-    vec3 normal = normalize(v_normal);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 light_atten_coff = u_LightIntensity / pow(length(u_LightPos - v_position), 2.0);
-    vec3 diffuse = diff * light_atten_coff * color;
-
-    vec3 viewDir = normalize(u_CameraPos - v_position);
-    vec3 halfDir = normalize((lightDir + viewDir));
-    float spec = pow(max(dot(halfDir, normal), 0.0), u_Ns);
-    vec3 specular = u_Ks * light_atten_coff * spec;
-
-    vec3 radiance = (ambient + diffuse + specular);
- 
-    vec3 phongColor = pow(radiance, vec3(1.0 / 2.2));
-    return phongColor;
+        oNormal = n0 * b0 + n1 * b1 + n2 * b2;
+        return true;
+	}
+	return false;
 }
 
-bool hit(vec3 position,vec3 direction,out vec3 hitbary)
+bool RayTriangleIntersect_Easy(vec3 position,vec3 direction,inout float t,int id)
 {
+    int id1 = m_index[id * 3],id2 = m_index[id * 3 + 1],id3 = m_index[id * 3 + 2];
+    vec3 v0 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
+    vec3 v1 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
+    vec3 v2 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
 
+	vec3 E1 = v1 - v0;
+	vec3 E2 = v2 - v0;
+	vec3 S = position - v0;
+	vec3 S1 = cross(direction, E2);
+	vec3 S2 = cross(S, E1);
+	float coeff = 1.0 / dot(S1, E1);
+	float tt = coeff * dot(S2, E2);
+	float b1 = coeff * dot(S1, S);
+	float b2 = coeff * dot(S2, direction);
+	float b0 = 1 - b1 - b2;
+    t = tt;
+	if (b1 >= 0 && b2 >= 0 && b0 >= 0)
+	{
+        return true;
+	}
+	return false;
+}
+
+bool hit(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNormal,out vec3 hitpos,out int hitMatId)
+{
+    float t = 0,min_t = t_max;
+    vec3 normal,hitposition;
+    int hitMaterialId;
+    bool ishit = false;
     for(int i = 0; i < u_trianglenums; i++) {
-        
+        if(RayTriangleIntersect(position,direction,t,i,normal,hitposition) && t < min_t && t >= t_min)
+        {
+            min_t = t;
+            oNormal = normal;
+            hitpos = hitposition;
+            hitMaterialId = m_MId[i];
+            ishit = true;
+        }
     }
-    return true;
+    return ishit && dot(oNormal,direction) < 0;
+}
+
+bool hit_light(float t_min,float t_max,vec3 position,vec3 direction,float lightt)
+{
+    float t = 0,min_t = t_max;
+    for(int i = 0; i < u_trianglenums; i++) {
+        if(RayTriangleIntersect_Easy(position,direction,t,i) && t < min_t && t >= t_min)
+            min_t = t;
+    }
+    return abs(lightt - min_t) < EPS;
 }
 
 vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
 {
     vec3 color = vec3(0.0);
-    for(int i = 0;i < u_LightNums;i++)
+    int i = int(Rand1(s) * u_LightNums);
+
+    vec3 uv;
+    uv.xy = Rand2(s);
+    uv.y *= (1 - uv.x);
+    uv.z = 1 - uv.x - uv.y;
+    int id1 = m_index[m_LightsID[i] * 3],id2 = m_index[m_LightsID[i] * 3 + 1],id3 = m_index[m_LightsID[i] * 3 + 2];
+    vec3 LV1 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
+    vec3 LV2 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
+    vec3 LV3 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
+    
+    vec3 LE1 = vec3(m_Materials[m_MId[id1]].Le[0],m_Materials[m_MId[id1]].Le[1],m_Materials[m_MId[id1]].Le[2]);
+    vec3 LE2 = vec3(m_Materials[m_MId[id2]].Le[0],m_Materials[m_MId[id2]].Le[1],m_Materials[m_MId[id2]].Le[2]);
+    vec3 LE3 = vec3(m_Materials[m_MId[id3]].Le[0],m_Materials[m_MId[id3]].Le[1],m_Materials[m_MId[id3]].Le[2]);
+    
+    vec3 LV = LV1 * uv.x + LV2 * uv.y + LV3 * uv.z;
+    vec3 LE = LE1 * uv.x + LE2 * uv.y + LE3 * uv.z;
+
+    vec3 Rdir = LV - ray_point;
+
+    if(!hit_light(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
+        return color;
+    
+
+    float distance_s = length(Rdir)* length(Rdir);
+    float area = TriangleArea(LV1,LV2,LV3);
+    float pdf = distance_s / area; 
+    float pdf2 = max(dot(normalize(Rdir),normalize(normal)),0.0); 
+
+    vec3 halfDir = normalize((Rdir + ray_dir));
+    float spec = pow(max(dot(halfDir, normal), 0.0), ns);
+    color += LE * pdf2 / pdf * (kd + ks * spec);
+    return color;
+}
+
+vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
+{
+    vec3 albedo[MAXBOUNCE];
+    vec3 emit[MAXBOUNCE];
+    vec3 color = vec3(0.0);
+    int actI = 0;
+    for(int i = 0;i < u_Bounce ;i++)
     {
-        vec3 uv;
-        uv.xy = Rand2(s);
-        uv.y *= (1 - uv.x);
-        uv.z = 1 - uv.x - uv.y;
-        int id1 = m_index[m_LightsID[i] * 3],id2 = m_index[m_LightsID[i] * 3 + 1],id3 = m_index[m_LightsID[i] * 3 + 2];
-        vec3 LV1 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
-        vec3 LV2 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
-        vec3 LV3 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
-        
-        vec3 LE1 = vec3(m_Materials[m_MId[id1]].Le[0],m_Materials[m_MId[id1]].Le[1],m_Materials[m_MId[id1]].Le[2]);
-        vec3 LE2 = vec3(m_Materials[m_MId[id2]].Le[0],m_Materials[m_MId[id2]].Le[1],m_Materials[m_MId[id2]].Le[2]);
-        vec3 LE3 = vec3(m_Materials[m_MId[id3]].Le[0],m_Materials[m_MId[id3]].Le[1],m_Materials[m_MId[id3]].Le[2]);
-        
-        vec3 LV = LV1 * uv.x + LV2 * uv.y + LV3 * uv.z;
-        vec3 LE = LE1 * uv.x + LE2 * uv.y + LE3 * uv.z;
+        vec3 b1,b2,b3 = normalize(normal);
+        LocalBasis(b3,b1,b2);
+        float pdf;
+        vec3 dir = SampleHemisphereUniform(s,pdf);
+        dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+        vec3 hitpos;
+        int hitMatId;
+        vec3 oNormal;
+        if(!hit(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
+            break;
+        vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
+        vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
 
-        
-        float distance_s = length(LV - ray_point) * length(LV - ray_point);
-        float area = TriangleArea(LV1,LV2,LV3);
-        float pdf = distance_s / area; 
-        float pdf2 = max(dot(normalize(LV - ray_point),normalize(normal)),0.0); 
-
-        vec3 halfDir = normalize((LV - ray_point + ray_dir));
-        float spec = pow(max(dot(halfDir, normal), 0.0), ns);
-        color += LE * pdf2 / pdf * (kd + ks * spec);
+        vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
+        if(length(Le) > 0.0)
+        {
+            emit[i] += Le;
+            break;
+        }
+        else
+        {
+            vec3 halfDir = normalize((dir - direction));
+            float spec = pow(max(dot(halfDir, normal), 0.0), ns);
+            float pdf2 = max(dot(normalize(dir),normalize(normal)),0.0); 
+            emit[i] = light_color(dir,hitpos,normal,Ks,Kd,m_Materials[hitMatId].Ns,s);
+            albedo[i] = (kd + ks * spec) * pdf2 / pdf;
+        }
+        actI++;
+        position = hitpos;
+        direction = dir;
+        normal = oNormal;
+        ks = Ks;
+        kd = Kd;
+        ns = m_Materials[hitMatId].Ns;
+    }
+    for(int i = actI - 1;i >= 0 ;i--)
+    {
+        color = (color + emit[i]) * albedo[i];
     }
     return color;
 }
 
-bool ray_tracing(vec3 position,vec3 direction,out vec3 color)
-{
-    vec3 albedo[MAXBOUNCE];
-    for(int i = 0;i < u_Bounce;i++)
-    {
-
-    }
-
-    return true;
-}
-
 void main()
 {
-    float s = InitRand(gl_FragCoord.xy);
-    // vec4 color = vec4(BlinnPhong(),1.0);
-    vec4 color = vec4(0.0,0.0,0.0,1.0);
+    float s = InitRand(gl_FragCoord.xy) + u_TimeSeed;
+    vec3 color = vec3(0.0);
     if(dot(v_normal,u_CameraPos - v_position) > 0.0)
     {
         vec3 Ks = vec3(m_Materials[v_MaterialId].Ks[0],m_Materials[v_MaterialId].Ks[1],m_Materials[v_MaterialId].Ks[2]);
@@ -202,11 +340,15 @@ void main()
 
         vec3 Le = vec3(m_Materials[v_MaterialId].Le[0],m_Materials[v_MaterialId].Le[1],m_Materials[v_MaterialId].Le[2]);
         if(length(Le) > 0.0)
-            color = vec4(Le,1.0);
+            color = Le;
         else
-            color = vec4(light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s),1.0);
+        {
+            color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+            // color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+        }
+        
     }
-    o_color = color;
+    o_color = vec4(color,1.0);
     o_Entity = u_Entity;
     // o_Entity = m_LightsID[0];
 }

@@ -52,6 +52,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     m_framebuffer->ClearAttachment(1,&value);
     int values[4] = {0,0,0,0};
     m_framebuffer->ClearAttachment(2,&value);
+    m_framebuffer->ClearAttachment(3,&value);
     
     switch (m_SceneState)
     {

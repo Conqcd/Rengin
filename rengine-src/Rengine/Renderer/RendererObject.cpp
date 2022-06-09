@@ -76,7 +76,7 @@ void RendererObject::GenerateLightBuffer()
     lights.LightTriNum = LightIndices.size();
     // lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
     // lights.LightBuffer->Bind(3);
-    LightIndicesBuffer = StorageBuffer::Create(LightIndices.data(),LightIndices.size()); 
+    LightIndicesBuffer = StorageBuffer::Create(LightIndices.data(),LightIndices.size() * sizeof(int)); 
     LightIndicesBuffer->Bind(4);
 }
 
@@ -95,7 +95,7 @@ void RendererObject::GenerateTriangleBaseBuffer()
 {
     std::vector<float> Vertex;
     std::vector<int> Indices;
-    int Ioffset = 0,Voffset = 0;
+    int Ioffset = 0;
     for (auto &&obj : ObjLists)
     {
         Vertex.insert(Vertex.begin(),obj->GetVertex().begin(),obj->GetVertex().end());
@@ -105,10 +105,11 @@ void RendererObject::GenerateTriangleBaseBuffer()
         }
         Ioffset += obj->GetIndex().size();
     }
-    VertexBuffer = StorageBuffer::Create(Vertex.data(),Vertex.size()); 
+    int size = Vertex.size();
+    VertexBuffer = StorageBuffer::Create(Vertex.data(),Vertex.size() * sizeof(float)); 
     VertexBuffer->Bind(0);
 
-    IndexBuffer = StorageBuffer::Create(Indices.data(),Indices.size()); 
+    IndexBuffer = StorageBuffer::Create(Indices.data(),Indices.size() * sizeof(int)); 
     IndexBuffer->Bind(2);
 }
 
@@ -125,7 +126,7 @@ void RendererObject::GenerateTriangleMaterialIdBuffer()
         // offset +=  obj->GetMaterialID().size();
         Moffset += obj->GetMaterialSize();
     }
-    MaterialID = StorageBuffer::Create(MatId.data(),MatId.size()); 
+    MaterialID = StorageBuffer::Create(MatId.data(),MatId.size() * sizeof(int)); 
     MaterialID->Bind(1);
 }
 

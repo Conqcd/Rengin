@@ -41,6 +41,7 @@ public:
     const Ref<VertexArray> GetVertexArray(int i) const {return m_VertexArrays[i];}
     size_t GetVertexArraySize() const {return m_VertexArrays.size();}
     size_t GetMaterialSize() const {return m_Materials.size();}
+    size_t GetTriangleNums() const {return m_Indices.size() / 3;}
 
     const Material& GetMaterial(int i) const {return m_Materials[i];}
     const std::vector<Material>& GetMaterials() const {return m_Materials;}

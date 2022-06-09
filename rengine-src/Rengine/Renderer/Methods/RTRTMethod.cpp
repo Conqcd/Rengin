@@ -19,9 +19,13 @@ RTRTMethod::~RTRTMethod()
 
 void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjManager>>& ObjLists,const EditorCamera& camera,const Lights& lights)
 {
+    int TriNums = 0;
+    for (int i = 0; i < ids.size(); i++)
+        TriNums += ObjLists[ids[i]]->GetTriangleNums();
+
     //          RTRT
     m_MainFrame->Bind();
-    
+    static float timeseed = 0;
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
@@ -30,6 +34,10 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
     m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.LightIntensity);
     m_BaseShader->SetUniformInt("u_LightNums", lights.LightTriNum);
+    m_BaseShader->SetUniformInt("u_trianglenums", TriNums);
+    m_BaseShader->SetUniformInt("u_TimeSeed", timeseed);
+    m_BaseShader->SetUniformInt("u_Bounce", 1);
+    timeseed += 0.5;
     // lights.LightBuffer->Bind(2);
     for (int i = 0; i < ids.size(); i++)
     {
