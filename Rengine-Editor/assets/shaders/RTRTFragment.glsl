@@ -224,10 +224,11 @@ bool hit(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNormal,o
             min_t = t;
             oNormal = normal;
             hitpos = hitposition;
-            hitMaterialId = m_MId[i];
+            hitMaterialId = m_MId[m_index[i * 3]];
             ishit = true;
         }
     }
+    hitMatId = hitMaterialId;
     return ishit && dot(oNormal,direction) < 0;
 }
 
@@ -279,7 +280,7 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
     return color;
 }
 
-vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
+vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s,inout vec3 debug)
 {
     vec3 albedo[MAXBOUNCE];
     vec3 emit[MAXBOUNCE];
@@ -292,27 +293,29 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         float pdf;
         vec3 dir = SampleHemisphereUniform(s,pdf);
         dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+        // dir = b3;
         vec3 hitpos;
         int hitMatId;
         vec3 oNormal;
         if(!hit(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
             break;
+        debug = hitpos * 10;
         vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
         vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
 
         vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
         if(length(Le) > 0.0)
         {
-            emit[i] += Le;
+            emit[i] = Le;
             break;
         }
         else
         {
             vec3 halfDir = normalize((dir - direction));
             float spec = pow(max(dot(halfDir, normal), 0.0), ns);
-            float pdf2 = max(dot(normalize(dir),normalize(normal)),0.0); 
-            emit[i] = light_color(dir,hitpos,normal,Ks,Kd,m_Materials[hitMatId].Ns,s);
-            albedo[i] = (kd + ks * spec) * pdf2 / pdf;
+            float cosine = max(dot(normalize(dir),normalize(normal)),0.0); 
+            emit[i] = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
+            albedo[i] = (kd + ks * spec) * cosine / pdf;
         }
         actI++;
         position = hitpos;
@@ -343,8 +346,12 @@ void main()
             color = Le;
         else
         {
+            vec3 debug;
             color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+            color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s,debug);
+            o_T1.x = int(debug.x);
+            o_T1.y = int(debug.y);
+            o_T1.z = int(debug.z);
         }
         
     }
