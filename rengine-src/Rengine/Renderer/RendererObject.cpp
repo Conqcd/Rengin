@@ -61,15 +61,23 @@ bool RendererObject::rayIntersect(const glm::vec3 &v, const glm::vec3 &wi, glm::
 
 void RendererObject::GenerateLightBuffer()
 {
-    std::vector<float> lightsVer;
-    int id = 0;
+    // std::vector<float> lightsVer;
+    std::vector<int> LightIndices;
+    int Ioffset = 0;
     for (auto &&obj : ObjLists)
     {
-        lightsVer.insert(lightsVer.begin(),obj->GetLights().begin(),obj->GetLights().end());
+        // lightsVer.insert(lightsVer.begin(),obj->GetLights().begin(),obj->GetLights().end());
+        for (int i = 0; i < obj->GetLightId().size(); i++)
+        {
+            LightIndices.push_back(Ioffset + obj->GetLightId()[i]);
+        }
+        Ioffset += obj->GetIndex().size();
     }
-    lights.LightTriNum = lightsVer.size() / 18;
-    lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
-    lights.LightBuffer->Bind(3);
+    lights.LightTriNum = LightIndices.size();
+    // lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
+    // lights.LightBuffer->Bind(3);
+    LightIndicesBuffer = StorageBuffer::Create(LightIndices.data(),LightIndices.size()); 
+    LightIndicesBuffer->Bind(4);
 }
 
 void RendererObject::GenerateMaterialBuffer()
@@ -80,7 +88,7 @@ void RendererObject::GenerateMaterialBuffer()
         Materials.insert(Materials.begin(),obj->GetMaterials().begin(),obj->GetMaterials().end());
     }
     MaterialBuffer = StorageBuffer::Create(Materials.data(),Materials.size() * sizeof(Material)); 
-    MaterialBuffer->Bind(4);
+    MaterialBuffer->Bind(3);
 }
 
 void RendererObject::GenerateTriangleBaseBuffer()

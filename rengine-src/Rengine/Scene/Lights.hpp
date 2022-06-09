@@ -11,7 +11,6 @@ public:
     glm::vec3 LightPos,LightIntensity,LookAtPoint,WorldUp,Bound,Direction;
     glm::mat4 m_Projection,m_ViewMatrix;
     uint32_t LightTriNum;
-    Ref<StorageBuffer> LightBuffer;
 public:
     Lights(/* args */);
     ~Lights();

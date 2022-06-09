@@ -39,6 +39,7 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         materiall.Kd.b = (*material)[i].diffuse[2];
         materiall.Ns = (*material)[i].shininess;
         materiall.Ni = (*material)[i].ior;
+        materiall.Le = glm::vec3(0,0,0);
         if((*material)[i].unknown_parameter.find("Le") != (*material)[i].unknown_parameter.end())
         {
             materiall.Le = glm::vec3(10,10,10);
@@ -64,7 +65,8 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
                 m_LightsVertex.push_back(v[0]);
                 m_LightsVertex.push_back(v[1]);
                 m_LightsVertex.push_back(v[2]);
-                m_LightsIndex.push_back(j);
+                if(j % 3 == 0)
+                    m_LightsIndex.push_back(j / 3);
                 m_LightsVertex.push_back(10);
                 m_LightsVertex.push_back(10);
                 m_LightsVertex.push_back(10);

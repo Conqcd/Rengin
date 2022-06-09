@@ -30,7 +30,7 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_BaseShader->SetUniformFloat3("u_CameraPos", camera.GetPosition());
     m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.LightIntensity);
     m_BaseShader->SetUniformInt("u_LightNums", lights.LightTriNum);
-    lights.LightBuffer->Bind(2);
+    // lights.LightBuffer->Bind(2);
     for (int i = 0; i < ids.size(); i++)
     {
         m_BaseShader->SetUniformInt("u_Entity", ids[i]);

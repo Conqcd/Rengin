@@ -34,7 +34,7 @@ struct Triangle
 {
     float Vertex[3];
     float Normal[3];
-    float Texture[3];
+    float Texture[2];
 };
 
 struct Material
@@ -46,12 +46,6 @@ struct Material
     float Ns;
     float Ni;
     // bool is_specular;
-};
-
-struct Light
-{
-    float Vertex[3];
-    float Le[3];
 };
 
 // Triangle
@@ -71,16 +65,16 @@ layout(std430,binding = 2) buffer Indices
     int m_index[];
 };
 
-// Light Source
-layout(std430,binding = 3) buffer Lights
-{
-    Light m_Lights[];
-};
-
 // Material
-layout(std430,binding = 4) buffer Materials
+layout(std430,binding = 3) buffer Materials
 {
     Material m_Materials[];
+};
+
+// Material ID
+layout(std430,binding = 4) buffer LightID
+{
+    int m_LightsID[];
 };
 
 float Rand1(inout float p)
@@ -144,6 +138,10 @@ vec3 BlinnPhong()
 
 bool hit(vec3 position,vec3 direction,out vec3 hitbary)
 {
+
+    for(int i = 0; i < u_trianglenums; i++) {
+        
+    }
     return true;
 }
 
@@ -156,17 +154,19 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
         uv.xy = Rand2(s);
         uv.y *= (1 - uv.x);
         uv.z = 1 - uv.x - uv.y;
-        vec3 LV1 = vec3(m_Lights[i * 3].Vertex[0],m_Lights[i * 3].Vertex[1],m_Lights[i * 3].Vertex[2]);
-        vec3 LV2 = vec3(m_Lights[i * 3 + 1].Vertex[0],m_Lights[i * 3 + 1].Vertex[1],m_Lights[i * 3 + 1].Vertex[2]);
-        vec3 LV3 = vec3(m_Lights[i * 3 + 2].Vertex[0],m_Lights[i * 3 + 2].Vertex[1],m_Lights[i * 3 + 2].Vertex[2]);
-
-        vec3 LE1 = vec3(m_Lights[i * 3].Le[0],m_Lights[i * 3].Le[1],m_Lights[i * 3].Le[2]);
-        vec3 LE2 = vec3(m_Lights[i * 3 + 1].Le[0],m_Lights[i * 3 + 1].Le[1],m_Lights[i * 3 + 1].Le[2]);
-        vec3 LE3 = vec3(m_Lights[i * 3 + 2].Le[0],m_Lights[i * 3 + 2].Le[1],m_Lights[i * 3 + 2].Le[2]);
-
+        int id1 = m_index[m_LightsID[i] * 3],id2 = m_index[m_LightsID[i] * 3 + 1],id3 = m_index[m_LightsID[i] * 3 + 2];
+        vec3 LV1 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
+        vec3 LV2 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
+        vec3 LV3 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
+        
+        vec3 LE1 = vec3(m_Materials[m_MId[id1]].Le[0],m_Materials[m_MId[id1]].Le[1],m_Materials[m_MId[id1]].Le[2]);
+        vec3 LE2 = vec3(m_Materials[m_MId[id2]].Le[0],m_Materials[m_MId[id2]].Le[1],m_Materials[m_MId[id2]].Le[2]);
+        vec3 LE3 = vec3(m_Materials[m_MId[id3]].Le[0],m_Materials[m_MId[id3]].Le[1],m_Materials[m_MId[id3]].Le[2]);
+        
         vec3 LV = LV1 * uv.x + LV2 * uv.y + LV3 * uv.z;
         vec3 LE = LE1 * uv.x + LE2 * uv.y + LE3 * uv.z;
 
+        
         float distance_s = length(LV - ray_point) * length(LV - ray_point);
         float area = TriangleArea(LV1,LV2,LV3);
         float pdf = distance_s / area; 
@@ -194,8 +194,19 @@ void main()
 {
     float s = InitRand(gl_FragCoord.xy);
     // vec4 color = vec4(BlinnPhong(),1.0);
-    vec4 color = vec4(light_color(u_CameraPos - v_position,v_position,v_normal,u_Ks,u_Kd,u_Ns,s),1.0);
+    vec4 color = vec4(0.0,0.0,0.0,1.0);
+    if(dot(v_normal,u_CameraPos - v_position) > 0.0)
+    {
+        vec3 Ks = vec3(m_Materials[v_MaterialId].Ks[0],m_Materials[v_MaterialId].Ks[1],m_Materials[v_MaterialId].Ks[2]);
+        vec3 Kd = vec3(m_Materials[v_MaterialId].Kd[0],m_Materials[v_MaterialId].Kd[1],m_Materials[v_MaterialId].Kd[2]);
+
+        vec3 Le = vec3(m_Materials[v_MaterialId].Le[0],m_Materials[v_MaterialId].Le[1],m_Materials[v_MaterialId].Le[2]);
+        if(length(Le) > 0.0)
+            color = vec4(Le,1.0);
+        else
+            color = vec4(light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s),1.0);
+    }
     o_color = color;
     o_Entity = u_Entity;
-    // o_Entity = int(m_Lights[0].Vertex[1]);
+    // o_Entity = m_LightsID[0];
 }
