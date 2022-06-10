@@ -156,6 +156,16 @@ float InitRand(vec2 uv)
     return fract((p3.x + p3.y) * p3.z);
 }
 
+vec3 ReflectBaseOnMaterial(vec3 normal,vec3 inLight,vec3 kd,vec3 ks,float ns,inout float s,inout float pdf)
+{
+    vec3 b1,b2,b3 = normalize(normal);
+    LocalBasis(b3,b1,b2);
+    float pdf;
+    vec3 dir = SampleHemisphereUniform(s,pdf);
+    dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+    return dir;
+}
+
 bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out vec3 oNormal,out vec3 hitpos)
 {
     int id1 = m_index[id * 3],id2 = m_index[id * 3 + 1],id3 = m_index[id * 3 + 2];
@@ -313,7 +323,7 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         {
             vec3 halfDir = normalize((dir - direction));
             float spec = pow(max(dot(halfDir, normal), 0.0), ns);
-            float cosine = max(dot(normalize(dir),normalize(normal)),0.0); 
+            float cosine = max(dot(normalize(dir),normalize(normal)),0.0);
             emit[i] = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
             albedo[i] = (kd + ks * spec) * cosine / pdf;
         }
