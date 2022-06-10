@@ -421,10 +421,17 @@ void EditorLayer::OnAttach()
     m_RenderObj->AddMethod("PBR",pbrMethod);
 
     // RealTime Ray Tracing
+    FrameBufferSpecification FbSpecGBufferRT;
+    FbSpecGBufferRT.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32_4_NEAREST,
+                                FramebufferTextureFormat::RGBF32,
+                                FramebufferTextureFormat::RF32,
+                                FramebufferTextureFormat::RGBF32,
+                                FramebufferTextureFormat::Depth};
     auto rtrtMethod = CreateRef<RTRTMethod>();
     auto rtrtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
-    rtrtMethod->AddResource(rtrtShader);
-    rtrtMethod->AddResource(m_framebuffer);
+    auto denoiseShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
+    rtrtMethod->AddResource(rtrtShader,denoiseShader);
+    rtrtMethod->AddResource(FbSpecGBufferRT,m_framebuffer);
     m_RenderObj->AddMethod("RTRT",rtrtMethod);
 
 

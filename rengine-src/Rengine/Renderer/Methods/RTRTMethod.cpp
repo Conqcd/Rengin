@@ -59,14 +59,14 @@ void RTRTMethod::AddResource(const Args&... resource) {
 }
 
 template <>
-void RTRTMethod::AddResource<Ref<Shader>>(const Ref<Shader>& base) {
+void RTRTMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& DNShader) {
     m_BaseShader = base;
-    // m_GBufferShader = GShader;
+    m_DeNoiseShader = DNShader;
 }
 
 template <>
-void RTRTMethod::AddResource<Ref<FrameBuffer>>(const Ref<FrameBuffer>& Main) {
-    // m_GBuffer = GBuffer;
+void RTRTMethod::AddResource<Ref<FrameBuffer>,Ref<FrameBuffer>>(const Ref<FrameBuffer>& GBuffer,const Ref<FrameBuffer>& Main) {
+    m_GBuffer = GBuffer;
     m_MainFrame = Main;
 }
 

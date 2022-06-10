@@ -11,8 +11,8 @@ class RE_API RTRTMethod : public RenderMethod
 private:
     Ref<FrameBuffer> m_GBuffer;
     Ref<FrameBuffer> m_MainFrame;
-    Ref<Shader> m_GBufferShader;
-    Ref<Shader> m_SSRShader;
+    Ref<Shader> m_DeNoiseShader;
+    Ref<Shader> m_Shader;
 public:
     RTRTMethod();
     virtual ~RTRTMethod();

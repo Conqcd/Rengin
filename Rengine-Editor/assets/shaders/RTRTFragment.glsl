@@ -127,13 +127,14 @@ void LocalBasis(vec3 n, out vec3 b1, out vec3 b2)
     b2 = vec3(b, sign_ + n.y * n.y * a, -n.y);
 }
 
-vec3 SampleHemisphereUniform(inout float s, out float pdf)
+vec3 SampleHemisphereUniform(inout float s, out float pdf,float ns)
 {
     vec2 uv = Rand2(s);
     float z = uv.x;
     float phi = uv.y * TWO_PI;
-    float sinTheta = sqrt(1.0 - z * z);
-    vec3 dir = vec3(sinTheta * cos(phi), sinTheta * sin(phi), z);
+    float roughness = 1 / ns;
+    float Theta = atan(roughness * roughness * sqrt(z) / sqrt(1.0 - z));
+    vec3 dir = vec3(sin(Theta) * cos(phi), sin(Theta) * sin(phi), cos(Theta));
     pdf = INV_TWO_PI;
     return dir;
 }
@@ -158,11 +159,37 @@ float InitRand(vec2 uv)
 
 vec3 ReflectBaseOnMaterial(vec3 normal,vec3 inLight,vec3 kd,vec3 ks,float ns,inout float s,inout float pdf)
 {
-    vec3 b1,b2,b3 = normalize(normal);
-    LocalBasis(b3,b1,b2);
-    vec3 dir = SampleHemisphereUniform(s,pdf);
-    dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
-    return dir;
+    if(length(kd) == 0)
+    {
+        return reflect(normal,inLight);
+    }else if(length(ks) == 0)
+    {
+        vec3 b1,b2,b3 = normalize(normal);
+        LocalBasis(b3,b1,b2);
+        vec3 dir = SampleHemisphereUniform(s,pdf,1);
+        dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+        return dir;
+    }else
+    {
+        float decide = Rand1(s);
+        float kdl = 0.3 * kd.r + 0.6 * kd.g + 0.1 * kd.b;
+        float ksl = 0.3 * ks.r + 0.6 * ks.g + 0.1 * ks.b;
+        if(decide < kdl * (kdl + ksl))
+        {
+            vec3 b1,b2,b3 = normalize(normal);
+            LocalBasis(b3,b1,b2);
+            vec3 dir = SampleHemisphereUniform(s,pdf,1);
+            dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+            return dir;
+        }else
+        {
+            vec3 b1,b2,b3 = normalize(reflect(normal,inLight));
+            LocalBasis(b3,b1,b2);
+            vec3 dir = SampleHemisphereUniform(s,pdf,ns);
+            dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
+            return dir;
+        }
+   }
 }
 
 bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out vec3 oNormal,out vec3 hitpos)
@@ -297,12 +324,8 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
     int actI = 0;
     for(int i = 0;i < u_Bounce ;i++)
     {
-        vec3 b1,b2,b3 = normalize(normal);
-        LocalBasis(b3,b1,b2);
         float pdf;
-        vec3 dir = SampleHemisphereUniform(s,pdf);
-        dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
-        // dir = b3;
+        vec3 dir = ReflectBaseOnMaterial(normal,direction,kd,ks,ns,s,pdf);
         vec3 hitpos;
         int hitMatId;
         vec3 oNormal;
