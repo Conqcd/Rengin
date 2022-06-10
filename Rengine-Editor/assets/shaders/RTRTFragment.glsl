@@ -160,7 +160,6 @@ vec3 ReflectBaseOnMaterial(vec3 normal,vec3 inLight,vec3 kd,vec3 ks,float ns,ino
 {
     vec3 b1,b2,b3 = normalize(normal);
     LocalBasis(b3,b1,b2);
-    float pdf;
     vec3 dir = SampleHemisphereUniform(s,pdf);
     dir = dir.x * b1 + dir.y * b2 + dir.z * b3;
     return dir;
