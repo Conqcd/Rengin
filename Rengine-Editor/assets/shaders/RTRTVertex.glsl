@@ -12,6 +12,7 @@ uniform mat4 u_Transform;
 out vec3 v_position;
 out vec3 v_normal;
 out vec2 v_texCoords;
+out float v_Depth;
 flat out int v_MaterialId;
 
 void main()
@@ -21,4 +22,5 @@ void main()
     v_texCoords = a_texCoords;
     v_MaterialId = a_MaterialId;
     gl_Position = u_Projection * u_View * u_Transform * vec4(a_position,1.0);
+    v_Depth = gl_Position.w;
 }

@@ -9,7 +9,26 @@ namespace Rengin
 
 RTRTMethod::RTRTMethod()
 {
-
+    float SquareVertices[5 * 4] = {
+        -1.0f,-1.0f,0.0f,0.0f,0.0f,
+        1.0f,-1.0f,0.0f,1.0f,0.0f,
+        1.0f,1.0f,0.0f,1.0f,1.0f,
+        -1.0f,1.0f,0.0f,0.0f,1.0f
+    };
+    unsigned int indices[6] = {
+        0,1,2,2,3,0
+    };
+    
+    m_ScreenVertex = VertexArray::Create();
+    auto VertexBuffer = VertexBuffer::Create(SquareVertices, sizeof(SquareVertices));
+    BufferLayout layout = {
+        {ShadeDataType::Float3 , "a_position"},
+        {ShadeDataType::Float2 , "a_texCoords"}
+    };
+    VertexBuffer->SetLayout(layout);
+    m_ScreenVertex->AddVertexBuffer(VertexBuffer);
+    auto IndexBuffer = IndexBuffer::Create(indices,6);
+    m_ScreenVertex->SetIndexBuffer(IndexBuffer);
 }
 
 RTRTMethod::~RTRTMethod()
@@ -24,7 +43,11 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
         TriNums += ObjLists[ids[i]]->GetTriangleNums();
 
     //          RTRT
-    m_MainFrame->Bind();
+    m_GBuffer->Bind();
+    RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
+    RenderCommand::Clear();
+    float value = 1000;
+    m_GBuffer->ClearAttachment(0,&value);
     static float timeseed = 0;
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
@@ -51,6 +74,16 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }
+    m_MainFrame->Bind();
+
+    m_DeNoiseShader->Bind();
+    m_GBuffer->BindTexture(0,0);
+    m_DeNoiseShader->SetUniformInt("u_Screen", 0);
+    m_DeNoiseShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
+    m_DeNoiseShader->SetUniformInt("u_FilterSize", 7);
+    m_DeNoiseShader->SetUniformFloat("u_sigmap", 10.0);
+    m_DeNoiseShader->SetUniformFloat("u_sigmac", 10.0);
+    RenderCommand::DrawIndex(m_ScreenVertex);
 }
 
 template <typename... Args>

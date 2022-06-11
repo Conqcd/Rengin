@@ -2,6 +2,7 @@
 #include "Rengine/Core/core.hpp"
 #include "BaseMethod.hpp"
 #include "../FrameBuffer.hpp"
+#include "Rengine/Renderer/VertexArray.hpp"
 
 namespace Rengin
 {
@@ -13,6 +14,7 @@ private:
     Ref<FrameBuffer> m_MainFrame;
     Ref<Shader> m_DeNoiseShader;
     Ref<Shader> m_Shader;
+    Ref<VertexArray> m_ScreenVertex;
 public:
     RTRTMethod();
     virtual ~RTRTMethod();

@@ -422,16 +422,21 @@ void EditorLayer::OnAttach()
 
     // RealTime Ray Tracing
     FrameBufferSpecification FbSpecGBufferRT;
-    FbSpecGBufferRT.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32_4_NEAREST,
-                                FramebufferTextureFormat::RGBF32,
-                                FramebufferTextureFormat::RF32,
-                                FramebufferTextureFormat::RGBF32,
-                                FramebufferTextureFormat::Depth};
+    FbSpecGBufferRT.Attachments = {FramebufferTextureFormat::RGBA8,
+                                FramebufferTextureFormat::RF32_4_NEAREST,
+                                FramebufferTextureFormat::RGBA8,
+                                FramebufferTextureFormat::RGBA8,
+                                // FramebufferTextureFormat::RED_INTEGER,
+                                FramebufferTextureFormat::Depth
+                                };
+    FbSpecGBufferRT.Width = 1280;
+    FbSpecGBufferRT.Height = 720;
     auto rtrtMethod = CreateRef<RTRTMethod>();
     auto rtrtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
-    auto denoiseShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
+    auto denoiseShader = Shader::Create("../../../Rengine-Editor/assets/shaders/DenoiseVertex.glsl","../../../Rengine-Editor/assets/shaders/DenoiseFragment.glsl");
+    auto gBufferRTFrame = FrameBuffer::Create(FbSpecGBufferRT);
     rtrtMethod->AddResource(rtrtShader,denoiseShader);
-    rtrtMethod->AddResource(FbSpecGBufferRT,m_framebuffer);
+    rtrtMethod->AddResource(gBufferRTFrame,m_framebuffer);
     m_RenderObj->AddMethod("RTRT",rtrtMethod);
 
 

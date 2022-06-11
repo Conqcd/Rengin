@@ -11,12 +11,14 @@
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texCoords;
+in float v_Depth;
 flat in int v_MaterialId;
 
 layout(location = 0) out vec4 o_color;
-layout(location = 1) out int o_Entity;
-layout(location = 2) out ivec4 o_T1;
-layout(location = 3) out ivec4 o_T2;
+layout(location = 1) out float o_Depth;
+layout(location = 2) out vec4 o_Normal;
+layout(location = 3) out vec4 o_Position;
+// layout(location = 1) out int o_Entity;
 
 uniform int u_Entity;
 uniform int u_Bounce;
@@ -316,7 +318,7 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
     return color;
 }
 
-vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s,inout vec3 debug)
+vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
 {
     vec3 albedo[MAXBOUNCE];
     vec3 emit[MAXBOUNCE];
@@ -331,7 +333,6 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         vec3 oNormal;
         if(!hit(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
             break;
-        debug = hitpos * 10;
         vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
         vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
 
@@ -378,16 +379,13 @@ void main()
             color = Le;
         else
         {
-            vec3 debug;
             color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s,debug);
-            o_T1.x = int(debug.x);
-            o_T1.y = int(debug.y);
-            o_T1.z = int(debug.z);
+            color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
         }
-        
     }
-    o_color = vec4(color,1.0);
-    o_Entity = u_Entity;
-    // o_Entity = m_LightsID[0];
+    o_color = vec4(color,gl_FragCoord.z);
+    o_Depth = v_Depth;
+    o_Normal.rgb = v_normal;
+    o_Position.rgb = v_position;
+    // o_Entity = u_Entity;
 }
