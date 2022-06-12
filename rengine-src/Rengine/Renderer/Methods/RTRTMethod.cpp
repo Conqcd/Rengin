@@ -44,11 +44,19 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
 
     //          RTRT
     m_GBuffer->Bind();
+    RenderCommand::DisableAlpha();
     RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
     RenderCommand::Clear();
-    float value = 1000;
-    m_GBuffer->ClearAttachment(0,&value);
+    // float value[4] = {1,1,1,1};
+    int value = -1;
+    m_GBuffer->ClearAttachment(4,&value);
     static float timeseed = 0;
+    static glm::mat4 u_LastView,u_LastProjection;
+    if(timeseed == 0)
+    {
+        u_LastView = glm::inverse(camera.GetViewMatrix());
+        u_LastProjection = glm::inverse(camera.getProjection());
+    }
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
@@ -58,9 +66,9 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_BaseShader->SetUniformFloat3("u_LightRadiance", lights.LightIntensity);
     m_BaseShader->SetUniformInt("u_LightNums", lights.LightTriNum);
     m_BaseShader->SetUniformInt("u_trianglenums", TriNums);
-    m_BaseShader->SetUniformInt("u_TimeSeed", timeseed);
+    m_BaseShader->SetUniformFloat("u_TimeSeed", timeseed);
     m_BaseShader->SetUniformInt("u_Bounce", 1);
-    timeseed += 0.5;
+    timeseed += 100.5;
     // lights.LightBuffer->Bind(2);
     for (int i = 0; i < ids.size(); i++)
     {
@@ -74,16 +82,49 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
             RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
         }
     }
-    m_MainFrame->Bind();
 
+    // Denoise
+    m_DenoiseBuffer->Bind();
+    RenderCommand::SetClearColor({0.0f,0.0f,0.0f,0.0f});
+    RenderCommand::Clear();
     m_DeNoiseShader->Bind();
+    // m_ScreenVertex->Bind();
     m_GBuffer->BindTexture(0,0);
     m_DeNoiseShader->SetUniformInt("u_Screen", 0);
+    m_GBuffer->BindTexture(1,1);
+    m_DeNoiseShader->SetUniformInt("u_NormalTex", 1);
+    m_GBuffer->BindTexture(2,2);
+    m_DeNoiseShader->SetUniformInt("u_PositionTex", 2);
+    m_GBuffer->BindTexture(3,3);
+    m_DeNoiseShader->SetUniformInt("u_DepthTex", 3);
+    m_GBuffer->BindTexture(4,4);
+    m_DeNoiseShader->SetUniformInt("u_EntityTex", 4);
+    m_MainFrame->BindTexture(0,5);
+    m_DeNoiseShader->SetUniformInt("u_LastScreen", 5);
     m_DeNoiseShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
     m_DeNoiseShader->SetUniformInt("u_FilterSize", 7);
     m_DeNoiseShader->SetUniformFloat("u_sigmap", 10.0);
     m_DeNoiseShader->SetUniformFloat("u_sigmac", 10.0);
+    m_DeNoiseShader->SetUniformFloat("u_sigman", 0.5);
+    m_DeNoiseShader->SetUniformFloat("u_sigmad", 1.0);
     RenderCommand::DrawIndex(m_ScreenVertex);
+
+    m_MainFrame->Bind();
+    RenderCommand::EnableAlpha();
+    m_AccShader->Bind();
+    // m_ScreenVertex->Bind();
+    m_DenoiseBuffer->BindTexture(0,0);
+    m_AccShader->SetUniformInt("u_Screen", 0);
+
+    m_AccShader->SetUniformFloat("u_alpha", 0.2);
+    m_AccShader->SetUniformFloat("u_k", 0.2);
+    m_AccShader->SetUniformMat4("u_LastView", u_LastView);
+    m_AccShader->SetUniformMat4("u_LastProjection", u_LastProjection);
+    m_GBuffer->BindTexture(4,2);
+    m_AccShader->SetUniformInt("u_EntityTex", 2);
+    RenderCommand::DrawIndex(m_ScreenVertex);
+    u_LastView = glm::inverse(camera.GetViewMatrix());
+    u_LastProjection = glm::inverse(camera.getProjection());
 }
 
 template <typename... Args>
@@ -92,14 +133,16 @@ void RTRTMethod::AddResource(const Args&... resource) {
 }
 
 template <>
-void RTRTMethod::AddResource<Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& DNShader) {
+void RTRTMethod::AddResource<Ref<Shader>,Ref<Shader>,Ref<Shader>>(const Ref<Shader>& base,const Ref<Shader>& DNShader,const Ref<Shader>& AccShader) {
     m_BaseShader = base;
     m_DeNoiseShader = DNShader;
+    m_AccShader = AccShader;
 }
 
 template <>
-void RTRTMethod::AddResource<Ref<FrameBuffer>,Ref<FrameBuffer>>(const Ref<FrameBuffer>& GBuffer,const Ref<FrameBuffer>& Main) {
+void RTRTMethod::AddResource<Ref<FrameBuffer>,Ref<FrameBuffer>,Ref<FrameBuffer>>(const Ref<FrameBuffer>& GBuffer,const Ref<FrameBuffer>& Denoise,const Ref<FrameBuffer>& Main) {
     m_GBuffer = GBuffer;
+    m_DenoiseBuffer = Denoise;
     m_MainFrame = Main;
 }
 

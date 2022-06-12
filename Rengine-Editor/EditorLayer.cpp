@@ -341,7 +341,7 @@ void EditorLayer::OnAttach()
 
     //FrameBuffer
     FrameBufferSpecification FbSpec;
-    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER,FramebufferTextureFormat::RGBAI32,FramebufferTextureFormat::RGBAI32, FramebufferTextureFormat::Depth};
+    FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER,FramebufferTextureFormat::RGBAF32,FramebufferTextureFormat::RGBAF32, FramebufferTextureFormat::Depth};
     // FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER ,FramebufferTextureFormat::RGBF32,FramebufferTextureFormat::RED_INTEGER , FramebufferTextureFormat::Depth};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
@@ -397,22 +397,23 @@ void EditorLayer::OnAttach()
     // m_RenderObj->ComputePrt();
 
     // SSR
-    FrameBufferSpecification FbSpecGBuffer;
-    FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32_4_NEAREST,
-                                FramebufferTextureFormat::RGBF32,
-                                FramebufferTextureFormat::RF32,
-                                FramebufferTextureFormat::RGBF32,
-                                FramebufferTextureFormat::Depth};
+    // FrameBufferSpecification FbSpecGBuffer;
+    // FbSpecGBuffer.Attachments = {FramebufferTextureFormat::RGB8, FramebufferTextureFormat::RF32_4_NEAREST,
+    //                             FramebufferTextureFormat::RGBF32,
+    //                             FramebufferTextureFormat::RF32,
+    //                             FramebufferTextureFormat::RGBF32,
+    //                             FramebufferTextureFormat::Depth
+    //                             };
 
-    FbSpecGBuffer.Width = 1280;
-    FbSpecGBuffer.Height = 720;
-    auto gBufferFrame = FrameBuffer::Create(FbSpecGBuffer);
-    auto ssrMethod = CreateRef<SSRMethod>();
-    auto ssrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ssrVertex.glsl","../../../Rengine-Editor/assets/shaders/ssrFragment.glsl");
-    auto GBuShader = Shader::Create("../../../Rengine-Editor/assets/shaders/gbufferVertex.glsl","../../../Rengine-Editor/assets/shaders/gbufferFragment.glsl");
-    ssrMethod->AddResource(ssrShader,shadowShader,GBuShader);
-    ssrMethod->AddResource(gBufferFrame,ShadowFrame,m_framebuffer);
-    m_RenderObj->AddMethod("SSR",ssrMethod);
+    // FbSpecGBuffer.Width = 1280;
+    // FbSpecGBuffer.Height = 720;
+    // auto gBufferFrame = FrameBuffer::Create(FbSpecGBuffer);
+    // auto ssrMethod = CreateRef<SSRMethod>();
+    // auto ssrShader = Shader::Create("../../../Rengine-Editor/assets/shaders/ssrVertex.glsl","../../../Rengine-Editor/assets/shaders/ssrFragment.glsl");
+    // auto GBuShader = Shader::Create("../../../Rengine-Editor/assets/shaders/gbufferVertex.glsl","../../../Rengine-Editor/assets/shaders/gbufferFragment.glsl");
+    // ssrMethod->AddResource(ssrShader,shadowShader,GBuShader);
+    // ssrMethod->AddResource(gBufferFrame,ShadowFrame,m_framebuffer);
+    // m_RenderObj->AddMethod("SSR",ssrMethod);
  
     //PBR
     auto pbrMethod = CreateRef<KullaCountyMethod>();
@@ -422,21 +423,31 @@ void EditorLayer::OnAttach()
 
     // RealTime Ray Tracing
     FrameBufferSpecification FbSpecGBufferRT;
-    FbSpecGBufferRT.Attachments = {FramebufferTextureFormat::RGBA8,
+    FbSpecGBufferRT.Attachments = 
+                                {FramebufferTextureFormat::RGBA8,
+                                FramebufferTextureFormat::RGBAF32,
+                                FramebufferTextureFormat::RGBAF32,
                                 FramebufferTextureFormat::RF32_4_NEAREST,
-                                FramebufferTextureFormat::RGBA8,
-                                FramebufferTextureFormat::RGBA8,
-                                // FramebufferTextureFormat::RED_INTEGER,
-                                FramebufferTextureFormat::Depth
+                                FramebufferTextureFormat::RED_INTEGER,
+                                FramebufferTextureFormat::Depth,
                                 };
     FbSpecGBufferRT.Width = 1280;
     FbSpecGBufferRT.Height = 720;
+    FrameBufferSpecification FbSpecDenoise;
+    FbSpecDenoise.Attachments = {FramebufferTextureFormat::RGBA8,
+                                FramebufferTextureFormat::RGBA8,
+                                FramebufferTextureFormat::Depth
+                                };
+    FbSpecDenoise.Width = 1280;
+    FbSpecDenoise.Height = 720;
     auto rtrtMethod = CreateRef<RTRTMethod>();
     auto rtrtShader = Shader::Create("../../../Rengine-Editor/assets/shaders/RTRTVertex.glsl","../../../Rengine-Editor/assets/shaders/RTRTFragment.glsl");
     auto denoiseShader = Shader::Create("../../../Rengine-Editor/assets/shaders/DenoiseVertex.glsl","../../../Rengine-Editor/assets/shaders/DenoiseFragment.glsl");
+    auto AccShader = Shader::Create("../../../Rengine-Editor/assets/shaders/AccumulateVertex.glsl","../../../Rengine-Editor/assets/shaders/AccumulateFragment.glsl");
     auto gBufferRTFrame = FrameBuffer::Create(FbSpecGBufferRT);
-    rtrtMethod->AddResource(rtrtShader,denoiseShader);
-    rtrtMethod->AddResource(gBufferRTFrame,m_framebuffer);
+    auto DenoiseFrame = FrameBuffer::Create(FbSpecDenoise);
+    rtrtMethod->AddResource(rtrtShader,denoiseShader,AccShader);
+    rtrtMethod->AddResource(gBufferRTFrame,DenoiseFrame,m_framebuffer);
     m_RenderObj->AddMethod("RTRT",rtrtMethod);
 
 

@@ -6,8 +6,6 @@
 #define INV_PI 0.31830988618
 #define INV_TWO_PI 0.15915494309
 
-
-
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texCoords;
@@ -15,10 +13,10 @@ in float v_Depth;
 flat in int v_MaterialId;
 
 layout(location = 0) out vec4 o_color;
-layout(location = 1) out float o_Depth;
-layout(location = 2) out vec4 o_Normal;
-layout(location = 3) out vec4 o_Position;
-// layout(location = 1) out int o_Entity;
+layout(location = 1) out vec4 o_Normal;
+layout(location = 2) out vec4 o_Position;
+layout(location = 3) out float o_Depth;
+layout(location = 4) out int o_Entity;
 
 uniform int u_Entity;
 uniform int u_Bounce;
@@ -367,7 +365,7 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
 
 void main()
 {
-    float s = InitRand(gl_FragCoord.xy) + u_TimeSeed;
+    float s = InitRand(gl_FragCoord.xy + vec2(u_TimeSeed));
     vec3 color = vec3(0.0);
     if(dot(v_normal,u_CameraPos - v_position) > 0.0)
     {
@@ -384,8 +382,8 @@ void main()
         }
     }
     o_color = vec4(color,gl_FragCoord.z);
+    o_Normal = vec4(normalize(v_normal),0.0);
+    o_Position = vec4(v_position,0.0);
+    o_Entity = u_Entity;
     o_Depth = v_Depth;
-    o_Normal.rgb = v_normal;
-    o_Position.rgb = v_position;
-    // o_Entity = u_Entity;
 }
