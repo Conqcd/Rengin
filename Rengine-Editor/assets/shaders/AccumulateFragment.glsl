@@ -30,7 +30,9 @@ void main()
     vec3 bcolor = texture(u_Screen,tex).rgb;
     vec4 bposition = vec4(texture(u_PositionTex,tex).rgb,1.0);
     vec4 ltex = u_LastProjection * u_LastView * bposition;
-    vec3 lcolor = texture(u_LastScreen,ltex.xy).rgb;
+    ltex = ltex / ltex.w;
+    // vec3 lcolor = texture(u_LastScreen,ltex.xy).rgb;
+    vec3 lcolor = texture(u_LastScreen,ltex.xy * 0.5 + vec2(0.5)).rgb;
     float weight = 0;
     vec3 var = vec3(0.0);
     for(int i = -u_FilterSize / 2;i <= u_FilterSize / 2;i++)
@@ -55,11 +57,11 @@ void main()
     var /= vec3(weight);
     var = sqrt(var);
     lcolor = clamp(lcolor,color - u_k * var,color + u_k * var);
-    // o_color = vec4(u_alpha * bcolor + (1 - u_alpha) * lcolor,1.0);
-    o_color = vec4(bcolor,1.0);
+    o_color = vec4(u_alpha * bcolor + (1 - u_alpha) * lcolor,1.0);
+    // o_color = vec4(bcolor,1.0);
     // o_color = vec4(1.0);
-    o_Test = vec4(lcolor,1);
-    o_Test2 = vec4(ltex.xy,0,1);
+    // o_Test = vec4(lcolor,1);
+    // o_Test2 = vec4(ltex.xyz,1);
     // o_Entity = 1;
     // o_Entity = texture(u_EntityTex,tex).r;
 }

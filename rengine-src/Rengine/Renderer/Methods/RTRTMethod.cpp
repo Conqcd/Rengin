@@ -63,9 +63,21 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     static glm::mat4 u_LastView,u_LastProjection;
     if(timeseed == 0)
     {
-        u_LastView = glm::inverse(camera.GetViewMatrix());
-        u_LastProjection = glm::inverse(camera.getProjection());
+        u_LastView = camera.GetViewMatrix();
+        u_LastProjection = camera.getProjection();
     }
+    m_PreShader->Bind();
+    m_PreShader->SetUniformMat4("u_View", camera.GetViewMatrix());
+    m_PreShader->SetUniformMat4("u_Projection", camera.getProjection());
+    for (int i = 0; i < ids.size(); i++)
+    {
+        m_PreShader->SetUniformMat4("u_Transform",ObjLists[ids[i]]->GetTransform());
+        for (int j = 0; j < ObjLists[ids[i]]->GetVertexArraySize(); j++)
+        {
+            RenderCommand::DrawIndex(ObjLists[ids[i]]->GetVertexArray(j));
+        }
+    }
+
     m_BaseShader->Bind();
     m_BaseShader->SetUniformMat4("u_View", camera.GetViewMatrix());
     m_BaseShader->SetUniformMat4("u_Projection", camera.getProjection());
@@ -122,13 +134,12 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_MainFrame->Bind();
     RenderCommand::EnableAlpha();
     m_AccShader->Bind();
-    // m_ScreenVertex->Bind();
     m_DenoiseBuffer->BindTexture(0,0);
     m_AccShader->SetUniformInt("u_Screen", 0);
     m_LastFrame->BindTexture(0,1);
     m_AccShader->SetUniformInt("u_LastScreen", 1);
     m_GBuffer->BindTexture(2,2);
-    m_DeNoiseShader->SetUniformInt("u_PositionTex", 2);
+    m_AccShader->SetUniformInt("u_PositionTex", 2);
 
     m_AccShader->SetUniformFloat("u_alpha", 0.2);
     m_AccShader->SetUniformFloat("u_k", 3);
@@ -136,8 +147,8 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_AccShader->SetUniformMat4("u_LastView", u_LastView);
     m_AccShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
     m_AccShader->SetUniformMat4("u_LastProjection", u_LastProjection);
-    m_GBuffer->BindTexture(4,2);
-    m_AccShader->SetUniformInt("u_EntityTex", 2);
+    m_GBuffer->BindTexture(4,3);
+    m_AccShader->SetUniformInt("u_EntityTex", 3);
     RenderCommand::DrawIndex(m_ScreenVertex);
 
     //Save Last Frame
@@ -150,8 +161,8 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_LastShader->SetUniformInt("u_Screen", 0);
     RenderCommand::DrawIndex(m_ScreenVertex);
     
-    u_LastView = glm::inverse(camera.GetViewMatrix());
-    u_LastProjection = glm::inverse(camera.getProjection());
+    u_LastView = camera.GetViewMatrix();
+    u_LastProjection = camera.getProjection();
 }
 
 template <typename... Args>
