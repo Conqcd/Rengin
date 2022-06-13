@@ -435,7 +435,6 @@ void EditorLayer::OnAttach()
     FbSpecGBufferRT.Height = 720;
     FrameBufferSpecification FbSpecDenoise;
     FbSpecDenoise.Attachments = {FramebufferTextureFormat::RGBA8,
-                                FramebufferTextureFormat::RGBA8,
                                 FramebufferTextureFormat::Depth
                                 };
     FbSpecDenoise.Width = 1280;
