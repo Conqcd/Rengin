@@ -131,7 +131,7 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_DeNoiseShader->SetUniformInt("u_PositionTex", 2);
 
     m_AccShader->SetUniformFloat("u_alpha", 0.2);
-    m_AccShader->SetUniformFloat("u_k", 0.2);
+    m_AccShader->SetUniformFloat("u_k", 3);
     m_AccShader->SetUniformInt("u_FilterSize", 5);
     m_AccShader->SetUniformMat4("u_LastView", u_LastView);
     m_AccShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
