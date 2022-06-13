@@ -4,7 +4,7 @@
 
 SSR
 
-![image-20220601140032473](https://github.com/Conqcd/Rengin/bolb/main/images/image-20220601140032473.png)
+![image-20220601140032473](https://github.com/Conqcd/Rengin/blob/main/images/image-20220601140032473.png)
 
 ![image-20220601141119019](images\image-20220601141119019.png)
 
