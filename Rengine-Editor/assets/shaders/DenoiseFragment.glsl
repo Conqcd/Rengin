@@ -13,6 +13,7 @@ uniform sampler2D u_EntityTex;
 
 uniform vec2 u_WindowSize;
 uniform int u_FilterSize;
+uniform int u_Level;
 uniform float u_sigmap;
 uniform float u_sigmac;
 uniform float u_sigman;
@@ -30,27 +31,31 @@ void main()
     vec3 bnormal = texture(u_NormalTex,tex).rgb;
     vec3 bposition = texture(u_PositionTex,tex).rgb;
     float weight = 0;
-    for(int i = -u_FilterSize / 2;i <= u_FilterSize / 2;i++)
+    // A-Trous Wavelet
+    for(int k = 1; k <= u_Level;k++)
     {
-        for(int j = -u_FilterSize / 2; j <= u_FilterSize / 2; j++) {
-            int ijsquare = i * i + j * j;
+        for(int i = -u_FilterSize / 2 * k;i <= u_FilterSize / 2 * k; i += k)
+        {
+            for(int j = -u_FilterSize / 2 * k; j <= u_FilterSize / 2 * k; j += k) {
+                int ijsquare = i * i + j * j;
 
-            vec2 texf = v_texCoords + vec2(i,j) / u_WindowSize;
-            vec3 ocolor = texture(u_Screen,texf).rgb;
-            vec3 onormal = texture(u_NormalTex,texf).rgb;
-            vec3 oposition = texture(u_PositionTex,texf).rgb;
-            float cijsquare = length(ocolor - bcolor) * length(ocolor - bcolor);
-            float nij = acos(clamp(dot(bnormal,onormal),-1,1));
-            float pij = 0;
-            if(i != 0 || j != 0)
-                pij = dot(bnormal,normalize(oposition - bposition));
-            
+                vec2 texf = v_texCoords + vec2(i,j) / u_WindowSize;
+                vec3 ocolor = texture(u_Screen,texf).rgb;
+                vec3 onormal = texture(u_NormalTex,texf).rgb;
+                vec3 oposition = texture(u_PositionTex,texf).rgb;
+                float cijsquare = length(ocolor - bcolor) * length(ocolor - bcolor);
+                float nij = acos(clamp(dot(bnormal,onormal),-1,1));
+                float pij = 0;
+                if(i != 0 || j != 0)
+                    pij = dot(bnormal,normalize(oposition - bposition));
+                
 
-            float eWeight = exp(-float(ijsquare) / 2 / u_sigmap / u_sigmap - cijsquare / 2 / u_sigmac / u_sigmac
-            - nij * nij / 2 / u_sigman / u_sigman
-            - pij * pij / 2 / u_sigmad / u_sigmad);
-            color += vec3(eWeight) * ocolor;
-            weight += eWeight;
+                float eWeight = exp(-float(ijsquare) / 2 / u_sigmap / u_sigmap - cijsquare / 2 / u_sigmac / u_sigmac
+                - nij * nij / 2 / u_sigman / u_sigman
+                - pij * pij / 2 / u_sigmad / u_sigmad);
+                color += vec3(eWeight) * ocolor;
+                weight += eWeight;
+            }
         }
     }
     color /= vec3(weight);

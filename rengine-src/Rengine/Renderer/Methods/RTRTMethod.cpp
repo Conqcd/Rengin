@@ -123,7 +123,8 @@ void RTRTMethod::Render(const std::vector<int>& ids,const std::vector<Ref<ObjMan
     m_GBuffer->BindTexture(4,4);
     m_DeNoiseShader->SetUniformInt("u_EntityTex", 4);
     m_DeNoiseShader->SetUniformFloat2("u_WindowSize", camera.GetViewportSize());
-    m_DeNoiseShader->SetUniformInt("u_FilterSize", 7);
+    m_DeNoiseShader->SetUniformInt("u_FilterSize", 5);
+    m_DeNoiseShader->SetUniformInt("u_Level", 3);
     m_DeNoiseShader->SetUniformFloat("u_sigmap", 10.0);
     m_DeNoiseShader->SetUniformFloat("u_sigmac", 10.0);
     m_DeNoiseShader->SetUniformFloat("u_sigman", 0.5);
