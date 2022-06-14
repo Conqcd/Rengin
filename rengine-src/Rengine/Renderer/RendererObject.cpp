@@ -3,6 +3,7 @@
 #include "Rengine/Renderer/RenderCommand.hpp"
 #include "Rengine/Renderer/Buffer.hpp"
 #include "Rengine/Renderer/Material.hpp"
+#include "Rengine/Utils/BVHMortonCompute.hpp"
 
 namespace Rengin
 
@@ -95,6 +96,9 @@ void RendererObject::GenerateTriangleBaseBuffer()
 {
     std::vector<float> Vertex;
     std::vector<int> Indices;
+    std::vector<int> keyIndices;
+    std::vector<float> leaf;
+    std::vector<Node> internal;
     int Ioffset = 0;
     for (auto &&obj : ObjLists)
     {
@@ -105,12 +109,22 @@ void RendererObject::GenerateTriangleBaseBuffer()
         }
         Ioffset += obj->GetIndex().size();
     }
+    ComputeBVHandMorton(Indices,keyIndices,Vertex,leaf,internal);
     int size = Vertex.size();
     VertexBuffer = StorageBuffer::Create(Vertex.data(),Vertex.size() * sizeof(float)); 
     VertexBuffer->Bind(0);
 
     IndexBuffer = StorageBuffer::Create(Indices.data(),Indices.size() * sizeof(int)); 
     IndexBuffer->Bind(2);
+
+    KeyIndexBuffer = StorageBuffer::Create(keyIndices.data(),keyIndices.size() * sizeof(int)); 
+    KeyIndexBuffer->Bind(5);
+
+    LeafBoxBuffer = StorageBuffer::Create(leaf.data(),leaf.size() * sizeof(int)); 
+    LeafBoxBuffer->Bind(6);
+
+    InternalBuffer = StorageBuffer::Create(internal.data(),internal.size() * sizeof(Node)); 
+    InternalBuffer->Bind(7);
 }
 
 void RendererObject::GenerateTriangleMaterialIdBuffer()

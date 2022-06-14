@@ -22,7 +22,7 @@ private:
     std::unordered_map<std::string,Ref<RenderMethod>> m_Methods;
     PRTType m_PrtType = PRTType::Interreflection;
     Lights lights;
-    Ref<StorageBuffer> MaterialID,VertexBuffer,IndexBuffer,MaterialBuffer,LightIndicesBuffer;
+    Ref<StorageBuffer> MaterialID,VertexBuffer,IndexBuffer,MaterialBuffer,LightIndicesBuffer,KeyIndexBuffer,LeafBoxBuffer,InternalBuffer;
 public:
     RendererObject();
     ~RendererObject() = default;

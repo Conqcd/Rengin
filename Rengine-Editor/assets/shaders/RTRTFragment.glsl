@@ -58,6 +58,17 @@ struct Material
     // bool is_specular;
 };
 
+struct Node
+{
+    float minbox[3];
+    float maxbox[3];
+    int lchild;
+    int rchild;
+    int lleaf;
+    int rleaf;
+    // bool is_specular;
+};
+
 // Triangle
 layout(std430,binding = 0) buffer Triangles
 {
@@ -85,6 +96,23 @@ layout(std430,binding = 3) buffer Materials
 layout(std430,binding = 4) buffer LightID
 {
     int m_LightsID[];
+};
+
+//  morton_sort index 
+layout(std430,binding = 5) buffer MortonId
+{
+    int m_MortonId[];
+};
+
+//  morton_sort index 
+layout(std430,binding = 6) buffer LeafBox
+{
+    float m_LeafBox[];
+};
+//  morton_sort index 
+layout(std430,binding = 7) buffer InternalNode
+{
+    Node m_Node[];
 };
 
 float Rand1(inout float p)
@@ -192,6 +220,27 @@ vec3 ReflectBaseOnMaterial(vec3 normal,vec3 inLight,vec3 kd,vec3 ks,float ns,ino
    }
 }
 
+bool RayInternalBoxIntersect(vec3 position,vec3 direction,float t_min,float t_max,int id)
+{
+    for (int a = 0; a < 3; a++)
+    {
+        float invD = 1.0f / direction[a];
+        float t0 = (m_Node[id].minbox[a] - position[a]) * invD;
+        float t1 = (m_Node[id].maxbox[a] - position[a]) * invD;
+        if (invD < 0.0f)
+        {
+            float t = t0;
+            t0 = t1;
+            t1 = t;
+        }
+        t_min = t0 > t_min ? t0 : t_min;
+        t_max = t1 < t_max ? t1 : t_max;
+
+        if (t_min > t_max)	return false;
+    }
+    return true;
+}
+
 bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out vec3 oNormal,out vec3 hitpos)
 {
     int id1 = m_index[id * 3],id2 = m_index[id * 3 + 1],id3 = m_index[id * 3 + 2];
@@ -278,6 +327,60 @@ bool hit_light(float t_min,float t_max,vec3 position,vec3 direction,float lightt
     return abs(lightt - min_t) < EPS;
 }
 
+bool hit_bvh(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNormal,out vec3 hitpos,out int hitMatId)
+{
+    float t = 0,min_t = t_max;
+    vec3 normal,hitposition;
+    int hitMaterialId;
+    bool ishit = false;
+    for(int i = 0; i < u_trianglenums; i++) {
+        if(RayTriangleIntersect(position,direction,t,i,normal,hitposition) && t < min_t && t >= t_min)
+        {
+            min_t = t;
+            oNormal = normal;
+            hitpos = hitposition;
+            hitMaterialId = m_MId[m_index[i * 3]];
+            ishit = true;
+        }
+    }
+    hitMatId = hitMaterialId;
+    return ishit && dot(oNormal,direction) < 0;
+}
+
+bool hit_light_BVH(float t_min,float t_max,vec3 position,vec3 direction,float lightt)
+{	
+	int stack[64];
+    int top = 0;
+    float t = 0,min_t = t_max;
+    if(!RayInternalBoxIntersect(position,direction,t_min,min_t,top))
+    {
+        return false;
+    }
+    // return true;
+    stack[top++] = 0;
+	do
+	{
+        int ttop = stack[--top];
+        if(m_Node[ttop].lleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,m_Node[ttop].lleaf) && t < min_t && t >= t_min)
+        {
+            min_t = t;
+        }
+        if(m_Node[ttop].rleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,m_Node[ttop].rleaf) && t < min_t && t >= t_min)
+        {
+            min_t = t;
+        }
+        if(m_Node[ttop].lchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].lchild))
+        {
+            stack[top++] = m_Node[ttop].lchild;
+        }
+        if(m_Node[ttop].rchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].rchild))
+        {
+            stack[top++] = m_Node[ttop].rchild;
+        }
+	}while (top != 0);
+    return abs(lightt - min_t) < EPS;
+}
+
 vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
 {
     vec3 color = vec3(0.0);
@@ -301,9 +404,8 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
 
     vec3 Rdir = LV - ray_point;
 
-    if(!hit_light(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
+    if(!hit_light_BVH(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
         return color;
-    
 
     float distance_s = length(Rdir)* length(Rdir);
     float area = TriangleArea(LV1,LV2,LV3);
