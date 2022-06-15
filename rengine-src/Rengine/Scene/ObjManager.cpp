@@ -39,10 +39,10 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         materiall.Kd.b = (*material)[i].diffuse[2];
         materiall.Ns = (*material)[i].shininess;
         materiall.Ni = (*material)[i].ior;
-        materiall.Le = glm::vec3(0,0,0);
+        materiall.Le = glm::vec4(0);
         if((*material)[i].unknown_parameter.find("Le") != (*material)[i].unknown_parameter.end())
         {
-            materiall.Le = glm::vec3(10,10,10);
+            materiall.Le = glm::vec4(10);
         }
         m_Materials.emplace_back(std::move(materiall));
     }

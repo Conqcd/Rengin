@@ -49,6 +49,10 @@ struct Triangle
 
 struct Material
 {
+    // vec4 Ks;
+    // vec4 Kd;
+    // vec4 Ka;
+    // vec4 Le;
     float Ks[3];
     float Kd[3];
     float Ka[3];
@@ -221,7 +225,6 @@ vec3 ReflectBaseOnMaterial(vec3 normal,vec3 inLight,vec3 kd,vec3 ks,float ns,ino
 
 bool RayInternalBoxIntersect(vec3 position,vec3 direction,float t_min,float t_max,int id)
 {
-    // return true;
     for (int a = 0; a < 3; a++)
     {
         if(abs(direction[a]) < 1e-6)
@@ -253,6 +256,13 @@ bool RayInternalBoxIntersect(vec3 position,vec3 direction,float t_min,float t_ma
 bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out vec3 oNormal,out vec3 hitpos)
 {
     int id1 = m_index[id * 3],id2 = m_index[id * 3 + 1],id3 = m_index[id * 3 + 2];
+    Triangle t1,t2,t3;
+    t1 = m_Vertex[id1];
+    t2 = m_Vertex[id2];
+    t3 = m_Vertex[id3];
+    // vec3 v0 = vec3(t1.Vertex[0],t1.Vertex[1],t1.Vertex[2]);
+    // vec3 v1 = vec3(t2.Vertex[0],t2.Vertex[1],t2.Vertex[2]);
+    // vec3 v2 = vec3(t3.Vertex[0],t3.Vertex[1],t3.Vertex[2]);
     vec3 v0 = vec3(m_Vertex[id1].Vertex[0],m_Vertex[id1].Vertex[1],m_Vertex[id1].Vertex[2]);
     vec3 v1 = vec3(m_Vertex[id2].Vertex[0],m_Vertex[id2].Vertex[1],m_Vertex[id2].Vertex[2]);
     vec3 v2 = vec3(m_Vertex[id3].Vertex[0],m_Vertex[id3].Vertex[1],m_Vertex[id3].Vertex[2]);
@@ -271,11 +281,18 @@ bool RayTriangleIntersect(vec3 position,vec3 direction,inout float t,int id,out 
 	if (b1 >= 0 && b2 >= 0 && b0 >= 0)
 	{
         hitpos = v0 * b0 + v1 * b1 + v2 * b2;
+        // vec3 n0 = vec3(t1.Normal[0],t1.Normal[1],t1.Normal[2]);
+        // vec3 n1 = vec3(t2.Normal[0],t2.Normal[1],t2.Normal[2]);
+        // vec3 n2 = vec3(t3.Normal[0],t3.Normal[1],t3.Normal[2]);
         vec3 n0 = vec3(m_Vertex[id1].Normal[0],m_Vertex[id1].Normal[1],m_Vertex[id1].Normal[2]);
         vec3 n1 = vec3(m_Vertex[id2].Normal[0],m_Vertex[id2].Normal[1],m_Vertex[id2].Normal[2]);
         vec3 n2 = vec3(m_Vertex[id3].Normal[0],m_Vertex[id3].Normal[1],m_Vertex[id3].Normal[2]);
 
         oNormal = n0 * b0 + n1 * b1 + n2 * b2;
+        // oNormal = vec3(1.0);
+        // hitpos = vec3(1.0);
+        // hitpos = v0;
+        // oNormal = n0;
         return true;
 	}
 	return false;
@@ -336,7 +353,7 @@ bool hit_light(float t_min,float t_max,vec3 position,vec3 direction,float lightt
     return abs(lightt - min_t) < EPS;
 }
 
-bool hit_BVH(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNormal,out vec3 hitpos,out int hitMatId,inout int numb)
+bool hit_BVH(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNormal,out vec3 hitpos,out int hitMatId)
 {
     int stack[64];
     int top = 0;
@@ -346,41 +363,45 @@ bool hit_BVH(float t_min,float t_max,vec3 position,vec3 direction,out vec3 oNorm
         return false;
     }
     vec3 normal,hitposition;
+    vec3 tnormal,thitposition;
     int hitMaterialId;
     bool ishit = false;
     stack[top++] = 0;
 	while (top > 0)
 	{
         int ttop = stack[--top];
-        // numb++;
-        if(m_Node[ttop].lleaf != -1 && RayTriangleIntersect(position,direction,t,m_Node[ttop].lleaf,normal,hitposition) && t < min_t && t >= t_min)
+        int leftleaf = m_Node[ttop].lleaf;
+        int rightleaf = m_Node[ttop].rleaf;
+        int leftchild = m_Node[ttop].lchild;
+        int rightchild = m_Node[ttop].rchild;
+        if(leftleaf != -1 && RayTriangleIntersect(position,direction,t,leftleaf,normal,hitposition) && t < min_t && t >= t_min)
         {
-            numb++;
             min_t = t;
-            oNormal = normal;
-            hitpos = hitposition;
-            hitMaterialId = m_MId[m_index[m_Node[ttop].lleaf * 3]];
+            tnormal = normal;
+            thitposition = hitposition;
+            hitMaterialId = leftleaf;
             ishit = true;
         }
-        if(m_Node[ttop].rleaf != -1 && RayTriangleIntersect(position,direction,t,m_Node[ttop].rleaf,normal,hitposition) && t < min_t && t >= t_min)
+        if(rightleaf != -1 && RayTriangleIntersect(position,direction,t,rightleaf,normal,hitposition) && t < min_t && t >= t_min)
         {
-            numb++;
             min_t = t;
-            oNormal = normal;
-            hitpos = hitposition;
-            hitMaterialId = m_MId[m_index[m_Node[ttop].rleaf * 3]];
+            tnormal = normal;
+            thitposition = hitposition;
+            hitMaterialId = rightleaf;
             ishit = true;
         }
-        if(m_Node[ttop].lchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].lchild))
+        if(leftchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,leftchild))
         {
-            stack[top++] = m_Node[ttop].lchild;
+            stack[top++] = leftchild;
         }
-        if(m_Node[ttop].rchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].rchild))
+        if(rightchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,rightchild))
         {
-            stack[top++] = m_Node[ttop].rchild;
+            stack[top++] = rightchild;
         }
 	}
-    hitMatId = hitMaterialId;
+    oNormal = tnormal;
+    hitpos = thitposition;
+    hitMatId = m_MId[m_index[hitMaterialId * 3]];
     return ishit && dot(oNormal,direction) < 0;
 }
 
@@ -397,21 +418,25 @@ bool hit_light_BVH(float t_min,float t_max,vec3 position,vec3 direction,float li
 	while (top > 0)
 	{
         int ttop = stack[--top];
-        if(m_Node[ttop].lleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,m_Node[ttop].lleaf) && t < min_t && t >= t_min)
+        int leftleaf = m_Node[ttop].lleaf;
+        int rightleaf = m_Node[ttop].rleaf;
+        int leftchild = m_Node[ttop].lchild;
+        int rightchild = m_Node[ttop].rchild;
+        if(leftleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,leftleaf) && t < min_t && t >= t_min)
         {
             min_t = t;
         }
-        if(m_Node[ttop].rleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,m_Node[ttop].rleaf) && t < min_t && t >= t_min)
+        if(rightleaf != -1 && RayTriangleIntersect_Easy(position,direction,t,rightleaf) && t < min_t && t >= t_min)
         {
             min_t = t;
         }
-        if(m_Node[ttop].lchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].lchild))
+        if(leftchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,leftchild))
         {
-            stack[top++] = m_Node[ttop].lchild;
+            stack[top++] = leftchild;
         }
-        if(m_Node[ttop].rchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,m_Node[ttop].rchild))
+        if(rightchild != -1 && RayInternalBoxIntersect(position,direction,t_min,min_t,rightchild))
         {
-            stack[top++] = m_Node[ttop].rchild;
+            stack[top++] = rightchild;
         }
 	}
     return abs(lightt - min_t) < EPS;
@@ -440,12 +465,8 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
 
     vec3 Rdir = LV - ray_point;
 
-        // vec3 hitpos;
-        // int hitMatId = 0;
-        // vec3 oNormal;
-        // int numb = 0;
-    if(!hit_light_BVH(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
-    // if(!hit_BVH(0.01,10000,ray_point,normalize(Rdir),oNormal,hitpos,hitMatId,numb))
+    if(!hit_light(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
+    // if(!hit_BVH(0.01,10000,ray_point,normalize(Rdir),oNormal,hitpos,hitMatId))
         return color;
 
     float distance_s = length(Rdir)* length(Rdir);
@@ -459,7 +480,58 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
     return color;
 }
 
-vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s,inout int numb)
+vec3 getColor(int hitMatId,vec3 albedo,vec3 dir,vec3 hitpos,vec3 normal,inout float s)
+{
+    vec3 color;
+    vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
+    if(length(Le) > 0.0)
+    {
+        color = Le;
+    }
+    else
+    {
+        vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
+        vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
+        color = light_color(dir,hitpos,normal,Ks,Kd,m_Materials[hitMatId].Ns,s) * albedo ;
+    }
+    return color;
+}
+
+vec3 ray_tracing_fast(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
+{
+    vec3 color = vec3(0.0);
+    float pdf;
+    vec3 dir = ReflectBaseOnMaterial(normal,direction,kd,ks,ns,s,pdf);
+    vec3 hitpos;
+    int hitMatId = 0;
+    vec3 oNormal;
+    if(!hit(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
+        return color;
+
+    // vec3 halfDir = normalize((dir - direction));
+    // float spec = pow(max(dot(halfDir, normal), 0.0), ns);
+    // float cosine = max(dot(normalize(dir),normalize(normal)),0.0);
+    // vec3 albedo = (kd + ks * spec) * cosine / pdf;
+    // color = getColor(hitMatId,albedo,dir,hitpos,normal,s);
+    vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
+    if(length(Le) > 0.0)
+    {
+        color = Le;
+    }
+    else
+    {
+        vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
+        vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
+        vec3 halfDir = normalize((dir - direction));
+        float spec = pow(max(dot(halfDir, normal), 0.0), ns);
+        float cosine = max(dot(normalize(dir),normalize(normal)),0.0);
+        vec3 albedo = (kd + ks * spec) * cosine / pdf;
+        color = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s) * albedo ;
+    }
+    return color;
+}
+
+vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
 {
     vec3 albedo[MAXBOUNCE];
     vec3 emit[MAXBOUNCE];
@@ -472,13 +544,12 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         vec3 hitpos;
         int hitMatId = 0;
         vec3 oNormal;
-        if(!hit_BVH(0.01,10000,position,dir,oNormal,hitpos,hitMatId,numb))
+        if(!hit_BVH(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
             break;
         vec3 Ks = vec3(m_Materials[hitMatId].Ks[0],m_Materials[hitMatId].Ks[1],m_Materials[hitMatId].Ks[2]);
         vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
 
         vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
-        // color = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
         if(length(Le) > 0.0)
         {
             emit[i] = Le;
@@ -489,9 +560,13 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
             vec3 halfDir = normalize((dir - direction));
             float spec = pow(max(dot(halfDir, normal), 0.0), ns);
             float cosine = max(dot(normalize(dir),normalize(normal)),0.0);
-            emit[i] = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
-            albedo[i] = (kd + ks * spec) * cosine / pdf;
-            // color = (color + emit[i]) * albedo[i];
+            // emit[i] = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
+            // albedo[i] = (kd + ks * spec) * cosine / pdf;
+            color += light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
+            color += hitpos;
+            color += (kd + ks * spec) * cosine / pdf;
+            color += oNormal;
+            color += Kd;
         }
         actI++;
         position = hitpos;
@@ -501,11 +576,10 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         kd = Kd;
         ns = m_Materials[hitMatId].Ns;
     }
-    for(int i = actI - 1;i >= 0 ;i--)
-    {
-        color = (color + emit[i]) * albedo[i];
-    }
-    // numb = actI;
+    // for(int i = actI - 1;i >= 0 ;i--)
+    // {
+    //     color = (color + emit[i]) * albedo[i];
+    // }
     return color;
 }
 
@@ -518,19 +592,15 @@ void main()
     {
         vec3 Ks = vec3(m_Materials[v_MaterialId].Ks[0],m_Materials[v_MaterialId].Ks[1],m_Materials[v_MaterialId].Ks[2]);
         vec3 Kd = vec3(m_Materials[v_MaterialId].Kd[0],m_Materials[v_MaterialId].Kd[1],m_Materials[v_MaterialId].Kd[2]);
-
         vec3 Le = vec3(m_Materials[v_MaterialId].Le[0],m_Materials[v_MaterialId].Le[1],m_Materials[v_MaterialId].Le[2]);
         if(length(Le) > 0.0)
             color = Le;
         else
         {
             color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += light_color(u_CameraPos - v_position + vec3(0.01),v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += light_color(u_CameraPos - v_position + vec3(-0.01),v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s,nn);
+            color += ray_tracing_fast(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
         }
     }
-    // color /= vec3(3);
     o_color = vec4(color,gl_FragCoord.z);
     o_Normal = vec4(normalize(v_normal),0.0);
     o_Position = vec4(v_position,0.0);
