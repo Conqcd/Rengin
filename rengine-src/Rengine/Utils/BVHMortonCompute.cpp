@@ -20,16 +20,25 @@ unsigned int __clz_32(unsigned int v)
 
 unsigned int __clz_64(unsigned long long v)
 {
-	unsigned v1, v2;
-	v1 = v;
-	v2 = v >> 32;
-	if(v2 != 0)
-	{
-		return __clz_32(v2);
-	}else
-	{
-		return 32 + __clz_32(v1);
-	}
+	// unsigned v1, v2;
+	// v1 = v;
+	// v2 = v >> 32;
+	// if(v2 != 0)
+	// {
+	// 	return __clz_32(v2);
+	// }else
+	// {
+	// 	return 32 + __clz_32(v1);
+	// }
+    int i = 0;
+    for (i = 0; i < 64; i++)
+    {
+        if(v)
+            v >>= 1;
+        else
+            break;
+    }
+    return 64 - i;
 }
 
 unsigned long long expandBits_long(unsigned long long v)
@@ -129,7 +138,7 @@ void ComputeBVHandMorton(std::vector<int> &indices,std::vector<int> &newindices,
     internalNodes.resize(size - 1);
     for (int i = 0; i < size; i++)
     {
-        int id1 = indices[i * 3],id2 = indices[i * 3 + 1],id3 = indices[i * 3 + 2];
+        int id1 = indices[i * 3] * 8,id2 = indices[i * 3 + 1] * 8,id3 = indices[i * 3 + 2] * 8;
         glm::vec3 aabbmin(vertices[id1],vertices[id1 + 1],vertices[id1 + 2]),aabbmax(vertices[id1],vertices[id1 + 1],vertices[id1 + 2]);
 
         aabbmin[0] = std::min(aabbmin[0],vertices[id2]);
@@ -162,7 +171,8 @@ void ComputeBVHandMorton(std::vector<int> &indices,std::vector<int> &newindices,
     }
     for (int i = 0; i < size; i++)
     {
-        int id1 = indices[i * 3],id2 = indices[i * 3 + 1],id3 = indices[i * 3 + 2];
+        // int id1 = indices[i * 3],id2 = indices[i * 3 + 1],id3 = indices[i * 3 + 2];
+        int id1 = indices[i * 3] * 8,id2 = indices[i * 3 + 1] * 8,id3 = indices[i * 3 + 2] * 8;
         double xx = 0,yy = 0,zz = 0;
 
         xx += vertices[id1];
@@ -212,6 +222,7 @@ void ComputeBVHandMorton(std::vector<int> &indices,std::vector<int> &newindices,
         else
             internalNodes[i].rleaf = -1,
             internalNodes[i].rchild = split + 1;
+
         for (long long j = first; j <= last; j++)
         {
             int leafid = newindices[j];
