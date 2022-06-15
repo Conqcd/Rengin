@@ -440,12 +440,12 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
 
     vec3 Rdir = LV - ray_point;
 
-        vec3 hitpos;
-        int hitMatId = 0;
-        vec3 oNormal;
-        int numb = 0;
-    // if(!hit_light_BVH(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
-    if(!hit_BVH(0.01,10000,ray_point,normalize(Rdir),oNormal,hitpos,hitMatId,numb))
+        // vec3 hitpos;
+        // int hitMatId = 0;
+        // vec3 oNormal;
+        // int numb = 0;
+    if(!hit_light_BVH(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
+    // if(!hit_BVH(0.01,10000,ray_point,normalize(Rdir),oNormal,hitpos,hitMatId,numb))
         return color;
 
     float distance_s = length(Rdir)* length(Rdir);
@@ -478,6 +478,7 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
         vec3 Kd = vec3(m_Materials[hitMatId].Kd[0],m_Materials[hitMatId].Kd[1],m_Materials[hitMatId].Kd[2]);
 
         vec3 Le = vec3(m_Materials[hitMatId].Le[0],m_Materials[hitMatId].Le[1],m_Materials[hitMatId].Le[2]);
+        // color = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
         if(length(Le) > 0.0)
         {
             emit[i] = Le;
@@ -490,6 +491,7 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
             float cosine = max(dot(normalize(dir),normalize(normal)),0.0);
             emit[i] = light_color(dir,hitpos,oNormal,Ks,Kd,m_Materials[hitMatId].Ns,s);
             albedo[i] = (kd + ks * spec) * cosine / pdf;
+            // color = (color + emit[i]) * albedo[i];
         }
         actI++;
         position = hitpos;
@@ -503,6 +505,7 @@ vec3 ray_tracing(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,float 
     {
         color = (color + emit[i]) * albedo[i];
     }
+    // numb = actI;
     return color;
 }
 
@@ -522,9 +525,9 @@ void main()
         else
         {
             color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            // color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s,nn);
+            // color += light_color(u_CameraPos - v_position + vec3(0.01),v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+            // color += light_color(u_CameraPos - v_position + vec3(-0.01),v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+            color += ray_tracing(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s,nn);
         }
     }
     // color /= vec3(3);
