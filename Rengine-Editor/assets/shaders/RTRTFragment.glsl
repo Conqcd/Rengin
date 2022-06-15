@@ -465,7 +465,7 @@ vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float n
 
     vec3 Rdir = LV - ray_point;
 
-    if(!hit_light(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
+    if(!hit_light_BVH(0.01,10000,ray_point,normalize(Rdir),length(Rdir)))
     // if(!hit_BVH(0.01,10000,ray_point,normalize(Rdir),oNormal,hitpos,hitMatId))
         return color;
 
@@ -505,7 +505,7 @@ vec3 ray_tracing_fast(vec3 position,vec3 direction,vec3 normal,vec3 ks,vec3 kd,f
     vec3 hitpos;
     int hitMatId = 0;
     vec3 oNormal;
-    if(!hit(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
+    if(!hit_BVH(0.01,10000,position,dir,oNormal,hitpos,hitMatId))
         return color;
 
     // vec3 halfDir = normalize((dir - direction));

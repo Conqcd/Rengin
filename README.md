@@ -46,7 +46,7 @@ PBR
 
 每帧渲染只一做一次直接光照+间接光照，但效果很差，噪声多，可以看到第一幅图的模样。第二幅图是做了降噪，用A-Trous Wavelet来进行采样。第三幅图是基于上一帧的结果来累计结果，可以看到跟离线的光线追踪很接近了。
 
-最后还做了个小优化，基于morton code 的bvh 优化，从1fps到16fps
+最后还做了个小优化，基于morton code 的bvh 优化，从1fps到16fps,以上是在1070显卡上的结果，2060结果是4fps和30fps
 
 ![image-20220615201747174](https://github.com/Conqcd/Rengin/blob/main/images/image-20220615201747174.png)
 
