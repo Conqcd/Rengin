@@ -20,7 +20,8 @@ layout(location = 4) out int o_Entity;
 
 uniform int u_Entity;
 uniform int u_Bounce;
-uniform sampler2D u_texture[32];
+uniform sampler2D u_texture[31];
+uniform samplerCube u_skybox;
 uniform int u_TexId;
 uniform int u_trianglenums;
 uniform float u_TimeSeed;
@@ -445,6 +446,8 @@ bool hit_light_BVH(float t_min,float t_max,vec3 position,vec3 direction,float li
 vec3 light_color(vec3 ray_dir,vec3 ray_point,vec3 normal,vec3 ks,vec3 kd,float ns,inout float s)
 {
     vec3 color = vec3(0.0);
+    if(u_LightNums == 0)
+        return color;
     int i = int(Rand1(s) * u_LightNums);
 
     vec3 uv;
@@ -598,10 +601,11 @@ void main()
         else
         {
             color = light_color(u_CameraPos - v_position,v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
-            color += ray_tracing_fast(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
+            // color += ray_tracing_fast(v_position,u_CameraPos - v_position,v_normal,Ks,Kd,m_Materials[v_MaterialId].Ns,s);
         }
     }
     o_color = vec4(color,gl_FragCoord.z);
+    // o_color = vec4(1.0);
     o_Normal = vec4(normalize(v_normal),0.0);
     o_Position = vec4(v_position,0.0);
     // o_Entity = u_Entity;

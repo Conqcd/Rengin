@@ -4,6 +4,27 @@
 
 namespace Rengin
 {
+inline auto convert_uint8_to_float(const uint8_t *source, size_t size)
+    -> std::vector<float> {
+    std::vector<float> data;
+    data.reserve(size);
+
+    for (size_t i = 0; i < size; i++) {
+        data.push_back(source[i]);
+    }
+    return data;
+}
+
+inline auto convert_int16_to_float(const int16_t *source, size_t size)
+    -> std::vector<float> {
+    std::vector<float> data;
+    data.reserve(size);
+
+    for (size_t i = 0; i < size; i++) {
+        data.push_back(source[i]);
+    }
+    return data;
+}
 
 inline auto convert_int16_to_uint8(const int16_t *source, size_t size,float max, float min)
     -> std::vector<uint8_t> {
@@ -33,6 +54,47 @@ inline auto convert_int16_to_uint8(const int16_t *source, size_t size)
         }
     }
     return convert_int16_to_uint8(source, size, max, min);
+}
+
+inline auto convert_uint16_to_float(const uint16_t *source, size_t size)
+    -> std::vector<float> {
+    std::vector<float> data;
+    data.reserve(size);
+
+    for (size_t i = 0; i < size; i++) {
+        data.push_back(source[i]);
+    }
+    return data;
+}
+
+inline auto convert_uint16_to_uint8(const uint16_t *source, size_t size,float max, float min)
+    -> std::vector<uint8_t> {
+    std::vector<uint8_t> data;
+    data.reserve(size);
+
+    double max_range = static_cast<double>(max) - static_cast<double>(min);
+    uint8_t max_value = 255;
+    for (size_t i = 0; i < size; i++) {
+        double range = static_cast<double>(source[i]) - static_cast<double>(min);
+        auto value = round(range / max_range * max_value);
+        data.push_back(value);
+    }
+    return data;
+}
+
+inline auto convert_uint16_to_uint8(const uint16_t *source, size_t size)
+    -> std::vector<uint8_t> {
+    auto min = source[0];
+    auto max = source[0];
+    for (size_t i = 0; i < size; i++) {
+        auto value = source[i];
+        if (value > max) {
+            max = value;
+        } else if (value < min) {
+            min = value;
+        }
+    }
+    return convert_uint16_to_uint8(source, size, max, min);
 }
 
 inline auto convert_float_to_uint8(const float *source, size_t size, float max,float min) -> std::vector<uint8_t> {
@@ -129,21 +191,25 @@ RawReader::RawReader(const std::string &filepath) {
     }
 }
 
-auto RawReader::load() -> std::vector<uint8_t>& {
+auto RawReader::load() -> std::vector<float>& {
     if (value_type == RawValueType::UINT8) {
+        std::vector<uint8_t> buffer;
         m_buffer.reserve(Count());
-        m_buffer.insert(m_buffer.begin(),std::istream_iterator<uint8_t>(fs),std::istream_iterator<uint8_t>());
-    } else if (value_type == RawValueType::INT16) {
+        fs.read(reinterpret_cast<char *>(buffer.data()), Count() * sizeof(uint8_t));
+        m_buffer = convert_uint8_to_float(buffer.data(), Count());
+    }else if (value_type == RawValueType::UINT16) {
+        std::vector<uint16_t> buffer;
+        buffer.resize(Count());
+        fs.read(reinterpret_cast<char *>(buffer.data()), Count() * sizeof(uint16_t));
+        m_buffer = convert_uint16_to_float(buffer.data(), Count());
+    }else if (value_type == RawValueType::INT16) {
         std::vector<int16_t> buffer;
         buffer.resize(Count());
         fs.read(reinterpret_cast<char *>(buffer.data()), Count() * sizeof(int16_t));
-        m_buffer = convert_int16_to_uint8(buffer.data(), Count());
-    } else if (value_type == RawValueType::FLOAT) {
-        uint64_t total = dimensions[0] * dimensions[1] * dimensions[2];
-        std::vector<float> buffer;
-        buffer.resize(Count());
-        fs.read(reinterpret_cast<char *>(buffer.data()), Count() * sizeof(float));
-        m_buffer = convert_float_to_uint8(buffer.data(), Count());
+        m_buffer = convert_int16_to_float(buffer.data(), Count());
+    }else if (value_type == RawValueType::FLOAT) {
+        m_buffer.resize(Count());
+        m_buffer.insert(m_buffer.begin(),std::istream_iterator<float>(fs),std::istream_iterator<float>());
     } else {
         throw std::runtime_error(std::string("unsupported value type"));
     }

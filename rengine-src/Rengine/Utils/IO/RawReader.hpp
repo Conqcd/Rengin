@@ -22,10 +22,10 @@ struct RawReader{
     std::ifstream fs;
     std::array<uint32_t, 3> dimensions;
     RawValueType value_type;
-    std::vector<uint8_t> m_buffer;
+    std::vector<float> m_buffer;
 
     explicit RawReader(const std::string &filepath);
-    auto load() -> std::vector<uint8_t>&;
+    auto load() -> std::vector<float>&;
     inline uint64_t Count() const
     {
         return dimensions[0] * dimensions[1] *dimensions[2];

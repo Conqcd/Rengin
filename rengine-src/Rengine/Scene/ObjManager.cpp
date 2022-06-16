@@ -23,7 +23,7 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
     auto material = new std::vector<tinyobj::material_t>();
 
     tinyobj::LoadObj(attrib, shapes, material, warn, err, path.c_str(), material_path.c_str());
-    
+ 
     for (int i = 0; i < material->size(); i++)
     {
         MatNameId[(*material)[i].name] = i;

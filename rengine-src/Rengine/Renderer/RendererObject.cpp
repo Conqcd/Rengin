@@ -117,11 +117,11 @@ void RendererObject::GenerateTriangleBaseBuffer()
     IndexBuffer = StorageBuffer::Create(Indices.data(),Indices.size() * sizeof(int)); 
     IndexBuffer->Bind(2);
 
-    KeyIndexBuffer = StorageBuffer::Create(keyIndices.data(),keyIndices.size() * sizeof(int)); 
-    KeyIndexBuffer->Bind(5);
+    // KeyIndexBuffer = StorageBuffer::Create(keyIndices.data(),keyIndices.size() * sizeof(int)); 
+    // KeyIndexBuffer->Bind(5);
 
-    LeafBoxBuffer = StorageBuffer::Create(leaf.data(),leaf.size() * sizeof(int)); 
-    LeafBoxBuffer->Bind(6);
+    // LeafBoxBuffer = StorageBuffer::Create(leaf.data(),leaf.size() * sizeof(int)); 
+    // LeafBoxBuffer->Bind(6);
 
     InternalBuffer = StorageBuffer::Create(internal.data(),internal.size() * sizeof(Node)); 
     InternalBuffer->Bind(7);

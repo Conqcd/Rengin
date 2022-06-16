@@ -321,6 +321,8 @@ void EditorLayer::OnAttach()
     glm::mat4 transform1(1.0f);
     transform1 = glm::scale(transform1,glm::vec3(10.f,10.f,10.f));
     m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/car/car.obj","./assets/objects/car",transform1));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/diningroom/diningroom.obj","./assets/objects/diningroom",transform1));
 
     m_RenderObj->GenerateLightBuffer();
     m_RenderObj->GenerateMaterialBuffer();
