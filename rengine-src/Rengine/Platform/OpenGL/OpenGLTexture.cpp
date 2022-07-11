@@ -26,7 +26,6 @@ OpenGLTexture2D::OpenGLTexture2D(uint32_t width,uint32_t height)
 
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_S,GL_REPEAT);
     glTextureParameteri(m_render_id,GL_TEXTURE_WRAP_T,GL_REPEAT);
-
 }
 
 OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
@@ -38,9 +37,8 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
     stbi_uc *data = nullptr;
     {
         RE_PROFILE_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
-        data = stbi_load(path.c_str(),&width,&height,&channels,0);
+        RE_CORE_ASSERT(data,"fail to load image!");
     }
-    RE_CORE_ASSERT(data,"fail to load image!");
     m_width = static_cast<uint32_t>(width);
     m_height = static_cast<uint32_t>(height);
 
@@ -60,7 +58,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
     m_dataFormat = dataFormat;
 
     RE_CORE_ASSERT(interFormat & dataFormat,"Format not Support!");
-    
+ 
     glCreateTextures(GL_TEXTURE_2D,1,&m_render_id);
 
     glTextureStorage2D(m_render_id,1,interFormat,m_width,m_height);

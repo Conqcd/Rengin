@@ -200,7 +200,7 @@ void main()
         color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-        o_displacement = result * 1000000000.0;
+        o_displacement = result * 10000000000.0;
     }else
     {
         while (ray_length > 0 && color.a < 1.0) {
