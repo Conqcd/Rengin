@@ -206,7 +206,6 @@ void ComputeBVHandMorton(std::vector<int> &indices,std::vector<int> &newindices,
         long long first = range.first;
         long long last = range.second;
 
-
         long long split = findSplit_long(mortonCode, first, last);
 
         if (split == first)

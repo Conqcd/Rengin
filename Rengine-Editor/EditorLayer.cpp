@@ -63,7 +63,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("RTRT",{0},m_EditorCamera);
+        m_RenderObj->DrawObject("ShadowMap",{0,1,2,3,4},m_EditorCamera);
         break;
     case SceneState::Play:
         m_ActiveScene->OnUpdateRuntime(timestep);
@@ -286,20 +286,20 @@ void EditorLayer::OnAttach()
     m_RenderObj = CreateRef<RendererObject>();
 
     // ****************************************** Scene 1 ***************************************************************
-    // glm::mat4 transform1(1.0f);
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cave/cave.obj","./assets/objects/cave",transform1));
-    // transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
-    // m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
-    // glm::mat4 transform2(1.0f);
-    // transform2 = glm::translate(transform2,glm::vec3(40.f,0.f,-40.f));
-    // transform2 = glm::scale(transform2,glm::vec3(10.f,10.f,10.f));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
-    // glm::mat4 transform3(1.0f);
-    // transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
-    // transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
-    // m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
-    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    glm::mat4 transform1(1.0f);
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cave/cave.obj","./assets/objects/cave",transform1));
+    transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
+    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
+    glm::mat4 transform2(1.0f);
+    transform2 = glm::translate(transform2,glm::vec3(40.f,0.f,-40.f));
+    transform2 = glm::scale(transform2,glm::vec3(10.f,10.f,10.f));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform2));
+    glm::mat4 transform3(1.0f);
+    transform3 = glm::translate(transform3,glm::vec3(0.f,0.f,-30.f));
+    transform3 = glm::scale(transform3,glm::vec3(4.f,4.f,4.f));
+    m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
+    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/floor/floor.obj","./assets/objects/floor",transform3));
 
     // ****************************************** Scene 2 ***************************************************************
     // glm::mat4 transform3(1.0f);
@@ -318,16 +318,16 @@ void EditorLayer::OnAttach()
 
     // ****************************************** Scene 3 ***************************************************************
 
-    glm::mat4 transform1(1.0f);
-    transform1 = glm::scale(transform1,glm::vec3(10.f,10.f,10.f));
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
+    // glm::mat4 transform1(1.0f);
+    // transform1 = glm::scale(transform1,glm::vec3(10.f,10.f,10.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cornellbox/cornellbox.obj","./assets/objects/cornellbox",transform1));
     // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/car/car.obj","./assets/objects/car",transform1));
     // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/diningroom/diningroom.obj","./assets/objects/diningroom",transform1));
 
-    m_RenderObj->GenerateLightBuffer();
-    m_RenderObj->GenerateMaterialBuffer();
-    m_RenderObj->GenerateTriangleBaseBuffer();
-    m_RenderObj->GenerateTriangleMaterialIdBuffer();
+    // m_RenderObj->GenerateLightBuffer();
+    // m_RenderObj->GenerateMaterialBuffer();
+    // m_RenderObj->GenerateTriangleBaseBuffer();
+    // m_RenderObj->GenerateTriangleMaterialIdBuffer();
 
 
     // ****************************************** END  ******************************************************************

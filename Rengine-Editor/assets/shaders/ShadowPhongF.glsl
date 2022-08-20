@@ -103,7 +103,7 @@ float findBlocker(sampler2D shadowMap,vec2 uv,float zReceiver)
     for(int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++) 
     {
         float depth = unpack(texture2D(shadowMap, uv + poissonDisk[i] * 0.005));
-        if(depth < zReceiver - EPS)
+        if(depth < zReceiver)
             avgdep += depth,addnum += 1.0;
     }
     avgdep = avgdep / addnum;
