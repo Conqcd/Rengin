@@ -34,7 +34,7 @@ PBR
 
 ![image-20220602193538586](https://github.com/Conqcd/Rengin/blob/main/images/image-20220602193538586.png)
 
-Physical based Material,which implemented by Microface Theory.The Artifact is the light blocked by inner blockage which influence on energy loss.Thereby,I precompute the energy loss and compensate while rendering.The diffuse Object is beneficial most.
+Physical based Material,which implemented by Microface Theory.The Artifact is the light blocked by inner blockage which influence on energy loss.Thereby,I precompute the energy loss and compensate while rendering.The roughest Object benefits most.
 
 Realtime RayTracing(3D Space)
 
