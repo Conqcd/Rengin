@@ -194,7 +194,7 @@ RawReader::RawReader(const std::string &filepath) {
 auto RawReader::load() -> std::vector<float>& {
     if (value_type == RawValueType::UINT8) {
         std::vector<uint8_t> buffer;
-        m_buffer.reserve(Count());
+        buffer.resize(Count());
         fs.read(reinterpret_cast<char *>(buffer.data()), Count() * sizeof(uint8_t));
         m_buffer = convert_uint8_to_float(buffer.data(), Count());
     }else if (value_type == RawValueType::UINT16) {

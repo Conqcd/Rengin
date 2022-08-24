@@ -243,7 +243,7 @@ std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const gl
             shB(idx++) = PreComSHB[i][j];
         }
     }
-    
+ 
 
     // 3 × 3
     auto M33 = ComputeSquareMatrix_3by3(rota);
@@ -258,6 +258,7 @@ std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const gl
             rotMatrix(i,j) = M33(i - 1,j - 1);
         }
     }
+
     for (int i = 4; i < 9; i++)
     {
         for (int j = 4; j < 9; j++)
@@ -274,9 +275,9 @@ std::vector<glm::mat3> GetRotationPrecomputeL(const glm::mat4& rotation,const gl
     {
         for (int j = 0; j < 3; j++)
         {
-            PreCom[0][i][j] = shR(idx); 
-            PreCom[1][i][j] = shG(idx); 
-            PreCom[2][i][j] = shB(idx++); 
+            PreCom[0][i][j] = shR(idx);
+            PreCom[1][i][j] = shG(idx);
+            PreCom[2][i][j] = shB(idx++);
         }
     }
     return PreCom;

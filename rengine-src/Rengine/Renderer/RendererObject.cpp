@@ -75,9 +75,9 @@ void RendererObject::GenerateLightBuffer()
         Ioffset += obj->GetIndex().size();
     }
     lights.LightTriNum = LightIndices.size();
-    // lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size()); 
+    // lights.LightBuffer = StorageBuffer::Create(lightsVer.data(),lightsVer.size());
     // lights.LightBuffer->Bind(3);
-    LightIndicesBuffer = StorageBuffer::Create(LightIndices.data(),LightIndices.size() * sizeof(int)); 
+    LightIndicesBuffer = StorageBuffer::Create(LightIndices.data(),LightIndices.size() * sizeof(int));
     LightIndicesBuffer->Bind(4);
 }
 

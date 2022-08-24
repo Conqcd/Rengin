@@ -28,7 +28,7 @@ struct RawReader{
     auto load() -> std::vector<float>&;
     inline uint64_t Count() const
     {
-        return dimensions[0] * dimensions[1] *dimensions[2];
+        return dimensions[0] * dimensions[1] * dimensions[2];
     }
 };
 
