@@ -406,9 +406,9 @@ std::pair<Ref<Texture3D>,float> LoadResult(int width,int height,int depth,int sc
                 int id2 = k + maxX * j + maxX * maxY * i;
                 id2 *= 3;
                 id2 /= scale;
-                origin[id++] = field[id2++];  
-                origin[id++] = field[id2++];  
-                origin[id++] = field[id2++];  
+                origin[id++] = field[id2++];
+                origin[id++] = field[id2++];
+                origin[id++] = field[id2++];
             }
         }
     }

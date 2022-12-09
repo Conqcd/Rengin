@@ -95,7 +95,7 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         //     if(strcmp((*material)[maId].name.c_str(),(*shapes)[i].name.c_str()) == 0)
         //         break;
         // }
-            
+
         if(maId < material->size() && (*material)[maId].diffuse_texname != "")
             m_Textures.push_back(Texture2D::Create(material_path + "/" + (*material)[maId].diffuse_texname));
         else
@@ -121,7 +121,7 @@ ObjManager::ObjManager(const std::string& path,const std::string& material_path,
         m_Vertices[i * 8 + 6] = attrib->texcoords[i * 2];
         m_Vertices[i * 8 + 7] = attrib->texcoords[i * 2 + 1];
     }
-    
+ 
     auto VertexBuffer = VertexBuffer::Create(m_Vertices.data(),attrib->vertices.size() / 3 * 8 * sizeof(tinyobj::real_t));
     VertexBuffer->SetLayout(layout_v);
     BufferLayout layout_m = {

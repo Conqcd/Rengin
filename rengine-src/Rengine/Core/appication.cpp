@@ -14,7 +14,6 @@
 #include "Rengine/Renderer/OrthoGraphicsCamera.hpp"
 #include "Input.hpp"
 
-
 namespace Rengin
 {
 
@@ -27,7 +26,7 @@ Application::Application()
     m_instance = this;
 
     m_window = Window::WindowCreate();
-    
+ 
     m_window->setEventCallBack(RE_BIND_FUNC_EVENT_1(Application::OnEvent));
 
     Renderer::Init();
@@ -51,13 +50,13 @@ void Application::Close()
 bool Application::OnWindowClose(WindowCloseEvent& ev)
 {
     m_running = false;
-    return true;    
+    return true;
 }
 
 bool Application::OnWindowResize(WindowResizeEvent& ev)
 {
     RE_PROFILE_FUNCTION();
-    
+
     if(ev.getHeight() == 0 || ev.getWidth() == 0)
     {
         m_minimized = true;
@@ -71,15 +70,15 @@ bool Application::OnWindowResize(WindowResizeEvent& ev)
 void Application::OnEvent(Event& e)
 {
     RE_PROFILE_FUNCTION();
-    
+ 
     EventDispatcher dispatcher(e);
 
     dispatcher.Dispatch<WindowCloseEvent>(RE_BIND_FUNC_EVENT_1(Application::OnWindowClose));
     dispatcher.Dispatch<WindowResizeEvent>(RE_BIND_FUNC_EVENT_1(Application::OnWindowResize));
-    
+ 
     // RE_CORE_TRACE("{0}",e);
 
-    for(auto it = m_layer_stack.end() ; it != m_layer_stack.begin();)
+    for(auto it = m_layer_stack.end(); it != m_layer_stack.begin();)
     {
         (*(--it))->OnEvent(e);
         if(e.getHandle())
@@ -95,7 +94,6 @@ void Application::Run()
     // RE_CORE_TRACE(e);
 
     RE_PROFILE_FUNCTION();
-    
 
     while(m_running)
     {
@@ -106,15 +104,13 @@ void Application::Run()
         m_last_frame_time = time;
         if(!m_minimized)
         {
-            
             RE_PROFILE_SCOPE("LayerStack OnUpdate");
-    
+
             for(auto* layer : m_layer_stack)
             {
                 layer->OnUpdate(timestep);
             }
         }
-        
 
         m_imgui_layer->Begin();
         {
@@ -136,7 +132,7 @@ void Application::Run()
 void Application::PushLayer(Layer* layer)
 {
     RE_PROFILE_FUNCTION();
-    
+ 
     m_layer_stack.PushLayer(layer);
     layer->OnAttach();
 }
@@ -148,4 +144,5 @@ void Application::PushOverLayer(Layer* layer)
     m_layer_stack.PushOverLayer(layer);
     layer->OnAttach();
 }
+
 }

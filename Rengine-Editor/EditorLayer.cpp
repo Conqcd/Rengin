@@ -63,7 +63,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_EditorCamera.OnUpdate(timestep);
         // m_ActiveScene->OnUpdateEditor(timestep, m_EditorCamera);
         m_SkyBox.RenderCube(4,m_EditorCamera);
-        m_RenderObj->DrawObject("ShadowMap",{0,1,2,3,4},m_EditorCamera);
+        m_RenderObj->DrawObject("ShadowMap",{0,1,2},m_EditorCamera);
         break;
     case SceneState::Play:
         m_ActiveScene->OnUpdateRuntime(timestep);
@@ -287,8 +287,8 @@ void EditorLayer::OnAttach()
 
     // ****************************************** Scene 1 ***************************************************************
     glm::mat4 transform1(1.0f);
-    m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cave/cave.obj","./assets/objects/cave",transform1));
-    transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
+    // m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/cave/cave.obj","./assets/objects/cave",transform1));
+    // transform1 = glm::scale(transform1,glm::vec3(20.f,20.f,20.f));
     m_RenderObj->AddObj(CreateRef<PRTObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
     m_RenderObj->AddObj(CreateRef<ObjManager>("./assets/objects/mary/mary.obj","./assets/objects/mary",transform1));
     glm::mat4 transform2(1.0f);

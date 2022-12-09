@@ -165,7 +165,7 @@ void main()
     {
         vec4 result = vec4(0.0);
         while (ray_length > 0 && color.a < 1.0) {
-            if(((1 << (int(texture(u_volume, position).r) - 1)) & u_Choose) == 0) 
+            if(((1 << (int(texture(u_volume, position).r) - 1)) & u_Choose) == 0)
             {
                 ray_length -= u_stepLength;
                 position += step_vector;
@@ -200,7 +200,7 @@ void main()
         color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
         color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-        o_displacement = result * 10000000000.0;
+        o_displacement = result * 1000000000.0;
     }else
     {
         while (ray_length > 0 && color.a < 1.0) {
@@ -215,7 +215,6 @@ void main()
             // if(intensity > u_threshold * u_maxvalue)
             if(intensity >= 1.0)
             {
-                
                 vec3 L = normalize(u_lightPosition - position);
                 vec3 V = -normalize(ray);
                 vec3 N = normal(position, intensity);

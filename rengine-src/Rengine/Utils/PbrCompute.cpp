@@ -47,7 +47,7 @@ glm::vec3 ImportanceSampleGGX(glm::vec2 Xi, glm::vec3 N, float roughness) {
     glm::vec3 b1(1.0 + sign_ * b3.x * b3.x * aa, sign_ * b, -sign_ * b3.x);
     glm::vec3 b2(b, sign_ + b3.y * b3.y * aa, -b3.y);
 
-    // auto sq = sqrtf(N.x*N.x+N.z*N.z);
+    // auto sq = sqrtf(N.x * N.x + N.z * N.z);
     // glm::vec3 T(N.x * N.y / sq, sq, N.y * N.z / sq);
     // glm::vec3 B = glm::cross(N,T);
     // return glm::vec3(dot(T, H), dot(B, H), dot(N, H));
@@ -123,7 +123,7 @@ glm::vec3 IntegrateEmu(glm::vec3 V, float roughness, float NdotV, glm::vec3 Ei) 
     const int sample_count = 1024;
     glm::vec3 N(0.0, 0.0, 1.0);
 
-    for (int i = 0; i < sample_count; i++) 
+    for (int i = 0; i < sample_count; i++)
     {
         glm::vec2 Xi = Hammersley(i, sample_count);
         glm::vec3 H = ImportanceSampleGGX(Xi, N, roughness);
@@ -167,11 +167,11 @@ void PreComputeEavg_IS(const std::string& path,const std::string& EuPath)
     RE_CORE_ASSERT(Edata,"ERROE_FILE_NOT_LOAD");
     unsigned char* data = new unsigned char[resolution * resolution * 3];
     float step = 1.0 / resolution;
-    for (int i = 0; i < resolution; i++) 
+    for (int i = 0; i < resolution; i++)
     {
         glm::vec3 Eavg(0.0);
         float roughness = step * (static_cast<float>(i) + 0.5f);
-        for (int j = 0; j < resolution; j++) 
+        for (int j = 0; j < resolution; j++)
         {
             float NdotV = step * (static_cast<float>(j) + 0.5f);
             glm::vec3 V(std::sqrt(1.f - NdotV * NdotV), 0.f, NdotV);
