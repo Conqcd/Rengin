@@ -224,18 +224,66 @@ void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>&
     v.clear();
 }
 
+void GenerateMo(Ref<Texture3D> model)
+{
+    std::string greyscale = "D:/1u/27178_20230307175424grey_584_584_427_uint16.raw";
+    RawReader greyreader(greyscale);
+    auto width = greyreader.dimensions[0];
+    auto height = greyreader.dimensions[1];
+    auto depth = greyreader.dimensions[2];
+    
+    int hw = height * width;
+    float maxval = 0.0f;
+
+    auto grey = greyreader.load();
+    
+    std::string label = "D:/1u/27178_20230307175424_584_584_427_uint8.raw";
+    RawReader labelreader(label);
+
+    auto lwidth = labelreader.dimensions[0];
+    auto lheight = labelreader.dimensions[1];
+    auto ldepth = labelreader.dimensions[2];
+    
+    int lhw = lheight * lwidth;
+    float lmaxval = 0.0f;
+
+    auto labeldata = labelreader.load();
+
+	int idx = 0;
+    int pick = 2;
+    for (int k = 0; k < ldepth; k++)
+	{
+		for (int j = 0; j < lheight; j++)
+		{
+			for (int i = 0; i < lwidth; i++)
+			{
+                if(labeldata[idx] == pick)
+                {
+
+                }
+                idx++;
+			}
+		}
+    }
+    
+    decltype(labeldata) showdata(labeldata.size());
+    RawWriter showWriter(showdata,lwidth,lheight,ldepth);
+    showWriter.write("D:/1u/show");
+}
+
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force,
                 Ref<Texture3D> constraint, int width, int height,int depth)
-{
+{ 
+    GenerateMo(model);
     std::string path = "./temp/";
 
     // material
     auto pp = path + "material.txt";
     FILE *f = fopen((path + "material.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
-    fprintf(f,"0 25480000000 0.3 1\n");
+    fprintf(f,"0 13720000000 0.3 1\n");
     fprintf(f,"1 25480000000 0.3 1\n");
-    fprintf(f,"2 25480000000 0.48 1\n");
+    fprintf(f,"2 48000000 0.49 1\n");
     fclose(f);
 
     // model
@@ -671,7 +719,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 // t.detach();
-                m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
+                // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();
             }
             ImGui::SameLine();

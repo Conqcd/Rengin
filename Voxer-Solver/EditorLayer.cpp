@@ -265,7 +265,7 @@ void EditorLayer::OnAttach()
 
     // Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_tooth_245_335_451_uint8.raw");
-    Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/27178_20230307175424_584_584_427_uint8.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/27178_20230307175424_584_584_427_uint16.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_sample_512_512_507_uint16.raw");
 
     // Entity
@@ -299,10 +299,10 @@ void EditorLayer::OnAttach()
     auto& transform = m_CubeEntity.GetComponent<TransformComponent>();
     float maxsc = 1.0 / std::max(std::max(texCom.width,texCom.height),texCom.depth);
     transform.Scale = glm::vec3(texCom.width * maxsc,texCom.height * maxsc,texCom.depth * maxsc);
-    texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComF.Texture->setData(texComF.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
-    texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
-    texComC.Texture->setData(texComC.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
+    // texComF.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
+    // texComF.Texture->setData(texComF.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
+    // texComC.Texture = Texture3D::Create(texCom.width, texCom.height, texCom.depth,3);
+    // texComC.Texture->setData(texComC.Texture->getTexture().data(),texCom.width * texCom.height * texCom.depth * 3);
 
     m_panel.m_VolomeEntity = m_CubeEntity;
     

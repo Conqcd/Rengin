@@ -39,3 +39,6 @@
 #include "Rengine/Scene/ScriptableEntity.hpp"
 #include "Rengine/Scene/SceneSerializer.hpp"
 #include "Rengine/Scene/SkyBox.hpp"
+
+#include "Rengine/Utils/IO/RawReader.hpp"
+#include "Rengine/Utils/IO/RawWriter.hpp"
