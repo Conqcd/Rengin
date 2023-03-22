@@ -224,6 +224,21 @@ void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>&
     v.clear();
 }
 
+const int pick = 3;
+const int dx[26] = {-1,0,1,-1,0,1,-1,0,1,-1,0,1,-1,1,-1,0,1,-1,0,1,-1,0,1,-1,0,1};
+const int dy[26] = {-1,-1,-1,0,0,0,1,1,1,-1,-1,-1,0,0,1,1,1,-1,-1,-1,0,0,0,1,1,1};
+const int dz[26] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1};
+bool checkifistooth(const std::vector<float>& label,int x,int y,int z,int w,int h,int d)
+{
+    for (int i = 0; i < 26; i++)
+    {
+        int id = (x + dx[i]) + w * (y + dy[i]) + w * h * (z + dz[i]);
+        if(label[id] == pick)
+            return true;
+    }
+    return false;
+}
+
 void GenerateMo(Ref<Texture3D> model)
 {
     std::string greyscale = "D:/1u/27178_20230307175424grey_584_584_427_uint16.raw";
@@ -250,7 +265,7 @@ void GenerateMo(Ref<Texture3D> model)
     auto labeldata = labelreader.load();
 
 	int idx = 0;
-    int pick = 2;
+    decltype(labeldata) showdata(labeldata.size());
     for (int k = 0; k < ldepth; k++)
 	{
 		for (int j = 0; j < lheight; j++)
@@ -259,14 +274,17 @@ void GenerateMo(Ref<Texture3D> model)
 			{
                 if(labeldata[idx] == pick)
                 {
-
+                    showdata[idx] = 1;
+                }
+                else if(labeldata[idx] == 1 && checkifistooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                {
+                    showdata[idx] = 2;
                 }
                 idx++;
 			}
 		}
     }
     
-    decltype(labeldata) showdata(labeldata.size());
     RawWriter showWriter(showdata,lwidth,lheight,ldepth);
     showWriter.write("D:/1u/show");
 }

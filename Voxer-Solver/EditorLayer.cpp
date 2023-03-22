@@ -265,6 +265,7 @@ void EditorLayer::OnAttach()
 
     // Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_tooth_245_335_451_uint8.raw");
+    // Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/show_584_584_427_float.raw");
     Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/27178_20230307175424_584_584_427_uint16.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_sample_512_512_507_uint16.raw");
 
