@@ -233,7 +233,7 @@ bool checkifistooth(const std::vector<float>& label,int x,int y,int z,int w,int 
     for (int i = 0; i < 26; i++)
     {
         int id = (x + dx[i]) + w * (y + dy[i]) + w * h * (z + dz[i]);
-        if(label[id] == pick)
+        if(label[id] > 1)
             return true;
     }
     return false;
@@ -241,7 +241,7 @@ bool checkifistooth(const std::vector<float>& label,int x,int y,int z,int w,int 
 
 void GenerateMo(Ref<Texture3D> model)
 {
-    std::string greyscale = "D:/1u/27178_20230307175424grey_584_584_427_uint16.raw";
+    std::string greyscale = "D:/1u/27178_20230307175424gray_584_584_427_int16.raw";
     RawReader greyreader(greyscale);
     auto width = greyreader.dimensions[0];
     auto height = greyreader.dimensions[1];
@@ -249,6 +249,7 @@ void GenerateMo(Ref<Texture3D> model)
     
     int hw = height * width;
     float maxval = 0.0f;
+    float minval = 10000.0f;
 
     auto grey = greyreader.load();
     
@@ -272,13 +273,30 @@ void GenerateMo(Ref<Texture3D> model)
 		{
 			for (int i = 0; i < lwidth; i++)
 			{
-                if(labeldata[idx] == pick)
-                {
-                    showdata[idx] = 1;
-                }
-                else if(labeldata[idx] == 1 && checkifistooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                if(labeldata[idx] > 1)
                 {
                     showdata[idx] = 2;
+                    maxval = std::max(maxval,grey[idx]);
+                    minval = std::min(minval,grey[idx]);
+                    double pho = -13.4 + 1017 * grey[idx];
+                    double ym = -388.8 + 5925 * pho;
+                    showdata[idx] = ym;
+                }
+                else if(labeldata[idx] == 1)
+                {
+                    if(checkifistooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                    {
+                        showdata[idx] = 3;
+                        double ym = 48000000;
+                        showdata[idx] = ym;
+                    }else
+                    {
+                        showdata[idx] = 1;
+                        double pho = -13.4 + 1017 * grey[idx];
+                        double ym = -388.8 + 5925 * pho;
+                        showdata[idx] = ym;
+                    }
+                    // maxval = std::max(maxval,grey[idx]);
                 }
                 idx++;
 			}
