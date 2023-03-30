@@ -59,6 +59,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     m_ActiveScene->OnUpdateEditor(timestep,m_EditorCamera);
 
     auto [mx,my] = ImGui::GetMousePos();
+    auto [mx2,my2] = ImGui::GetMousePos();
     mx -= m_ViewPortBounds[0].x;
     my -= m_ViewPortBounds[0].y;
     auto viewportSize = m_ViewPortBounds[1] - m_ViewPortBounds[0];
@@ -70,6 +71,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
     {
         // m_framebuffer->ReadPixel(0,mouseX,mouseY,m_pixelDisplacement);
         m_framebuffer->ReadPixel(2,mouseX,mouseY,m_pixelDisplacement);
+        // m_framebuffer->ReadPixel(1,0,0,m_pixelPosition);
         m_framebuffer->ReadPixel(1,mouseX,mouseY,m_pixelPosition);
         // RE_CORE_WARN("pixel data {0}",pixelData);
     }

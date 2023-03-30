@@ -846,7 +846,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
                 SaveIntFile(texCom.Texture,texComF,texComC,texCom.width,texCom.height,texCom.depth);
                 // t.detach();
-                // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
+                // m_ExternalProcess->CreateProcess("./femsolver.exe","  temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();
             }
             ImGui::SameLine();
