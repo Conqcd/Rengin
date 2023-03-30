@@ -161,6 +161,8 @@ void main()
     // discard;
     vec4 color = vec4(0.0);
     // float cnt = 0;
+    o_position = ivec3(-1,-1,-1);
+    o_color = vec4(1,1,1,1);
     if(u_RenderMode == 4)
     {
         vec4 result = vec4(0.0);
@@ -188,9 +190,9 @@ void main()
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
             color.a = c.a + (1 - c.a) * color.a;
 
-            o_position.r = int(position.r * float(u_TWidth - 1));
-            o_position.g = int(position.g * float(u_THeight - 1));
-            o_position.b = int(position.b * float(u_TDepth - 1));
+            // o_position.r = int(position.r * float(u_TWidth - 1));
+            // o_position.g = int(position.g * float(u_THeight - 1));
+            // o_position.b = int(position.b * float(u_TDepth - 1));
             if(intensity > 0.0)
                 break;
             ray_length -= u_stepLength;
@@ -213,7 +215,7 @@ void main()
             }
             vec4 c = color_transfer(intensity / u_maxvalue);
             // if(intensity > u_threshold * u_maxvalue)
-            if(intensity >= 1.0)
+            if(intensity > 0.0)
             {
                 vec3 L = normalize(u_lightPosition - position);
                 vec3 V = -normalize(ray);
@@ -227,12 +229,16 @@ void main()
                 color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
                 color.rgb = vec3(1.0);
                 color.a = c.a + (1 - c.a) * color.a;
+                // color.a = 1.0;
 
                 o_position.r = int(position.r * float(u_TWidth - 1));
+                // o_position.r = 1;
+                // o_position.r = int(position.b * float(u_TWidth - 1));
                 // if(ray.r <= 0.0)  o_position.r -= 1;
                 o_position.g = int(position.g * float(u_THeight - 1));
                 // if(ray.g <= 0.0)  o_position.g -= 1;
                 o_position.b = int(position.b * float(u_TDepth - 1));
+                // o_position.b = int(position.r * float(u_TDepth - 1));
                 // if(ray.b <= 0.0)  o_position.b -= 1;
                 break;
             }
@@ -241,13 +247,13 @@ void main()
             position += step_vector;
         }
 
-        color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
-        color.a = 1.0;
-        color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
-        if(u_RenderMode == 2 && length(texture(u_Force, position).rgb) != 0.0)
-            color = vec4(0.0,1.0,0.0,1.0);
-        else if(u_RenderMode == 3 && length(texture(u_Constraint, position).rgb) != 0.0)
-            color = vec4(0.0,0.0,1.0,1.0);
+        // color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
+        // color.a = 1.0;
+        // color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
+        // if(u_RenderMode == 2 && length(texture(u_Force, position).rgb) != 0.0)
+        //     color = vec4(0.0,1.0,0.0,1.0);
+        // else if(u_RenderMode == 3 && length(texture(u_Constraint, position).rgb) != 0.0)
+        //     color = vec4(0.0,0.0,1.0,1.0);
     }
     o_color = color;
 }

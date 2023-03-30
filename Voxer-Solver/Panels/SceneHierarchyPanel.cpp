@@ -199,56 +199,58 @@ static void DrawComponent(const std::string& name,Entity entity,UIFunction funct
 void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x, float y, float z)
 {
     // int size1 = v.size(),size2 = target.size();
+    std::map<Vec3<int>,Vec3<float>> mp;
     for (int i = 0; i < v.size(); i += 3)
     {
         if(v[i] == -1)  continue;
         Vec3<int> loc;
+        Vec3<float> val;
         loc[0] = v[i];
         loc[1] = v[i + 1];
         loc[2] = v[i + 2];
-        if(target.count(loc) == 0)
-        {
-            Vec3<float> val;
-            val[0] = x;
-            val[1] = y;
-            val[2] = z;
-            target[loc] = val;
-        }else
-        {
-            auto& oriv = target[loc];
-            oriv[0] += x;
-            oriv[1] += y;
-            oriv[2] += z;
-        }
+        val[0] = x;
+        val[1] = y;
+        val[2] = z;
+        mp[loc] = val;
+
     }
     v.clear();
+    for(auto& m : mp)
+    {
+        if(target.count(m.first) == 0)
+        {
+            target[m.first] = m.second;
+        }else
+        {
+            auto& oriv = target[m.first];
+            oriv[0] += m.second[0];
+            oriv[1] += m.second[1];
+            oriv[2] += m.second[2];
+        }
+    }
 }
 
 void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x, float y, float z)
 {
+    std::map<Vec3<int>,Vec3<float>> mp;
     for (int i = 0; i < v.size(); i += 3)
     {
         if(v[i] == -1)  continue;
         Vec3<int> loc;
+        Vec3<float> val;
         loc[0] = v[i];
         loc[1] = v[i + 1];
         loc[2] = v[i + 2];
-        if(target.count(loc) == 0)
-        {
-            Vec3<float> val;
-            val[0] = x;
-            val[1] = y;
-            val[2] = z;
-            target[loc] = val;
-        }else
-        {
-            auto& oriv = target[loc];
-            oriv[0] += x;
-            oriv[1] += y;
-            oriv[2] += z;
-        }
+        val[0] = x;
+        val[1] = y;
+        val[2] = z;
+        mp[loc] = val;
     }
     v.clear();
+    for(auto& m : mp)
+    {
+        target[m.first] = m.second;
+    }
 }
 
 const int pick = 3;
@@ -264,6 +266,31 @@ bool check_if_is_tooth(const std::vector<float>& label,int x,int y,int z,int w,i
             return true;
     }
     return false;
+}
+
+void constraintVis(Ref<Texture3D> model, ForceComponent& force,
+                ConstraintComponent& constraint, int width, int height,int depth)
+{
+    
+    auto tex = model->getTexture();
+    int hw = height * width;
+    float maxval = 0.0f;
+    float minval = 10000.0f;
+
+	int idx = 0;
+    auto showdata = tex;
+    for(auto& itc:constraint.constraint)
+	{
+        showdata[itc.first[2] * hw + width * itc.first[1] + itc.first[0]] = 100;
+    }	
+    for(auto& itf:force.force)
+	{
+        showdata[itf.first[2] * hw + width * itf.first[1] + itf.first[0]] = 200;
+    }
+
+    
+    RawWriter showWriter(showdata,width,height,depth);
+    showWriter.write("D:/1u/constraint");
 }
 
 void GenerateMo(Ref<Texture3D> model)
@@ -334,12 +361,55 @@ void GenerateMo(Ref<Texture3D> model)
     showWriter.write("D:/1u/show");
 }
 
+void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
+{
+
+    auto lwidth = model->getWidth();
+    auto lheight = model->getHeight();
+    auto ldepth = model->getDepth();
+    
+    int lhw = lheight * lwidth;
+    float lmaxval = 0.0f;
+
+    auto labeldata = model->getTexture();
+
+	int idx = 0;
+    for (int k = 0; k < ldepth; k++)
+	{
+		for (int j = 0; j < lheight; j++)
+		{
+			for (int i = 0; i < lwidth; i++)
+			{
+                if(labeldata[idx] > 1)
+                {
+                    outdata[idx] = 2;
+                }
+                else if(labeldata[idx] == 1)
+                {
+                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                    {
+                        outdata[idx] = 3;
+                    }else
+                    {
+                        outdata[idx] = 1;
+                    }
+                }
+                idx++;
+			}
+		}
+    }
+    
+    RawWriter showWriter(outdata,lwidth,lheight,ldepth);
+    showWriter.write("D:/1u/newmodel");
+}
+
+
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& force,
                 ConstraintComponent& constraint, int width, int height,int depth)
 { 
     // GenerateMo(model);
     std::string path = "./temp/";
-
+    // constraintVis(model,force, constraint, width,  height, depth);
     // material
     auto pp = path + "material.txt";
     FILE *f = fopen((path + "material.txt").c_str(), "w");
@@ -354,6 +424,8 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
     RE_CORE_ASSERT(f, "Cant Open the file");
 
     auto tex = model->getTexture();
+    std::decay_t<decltype(tex)> showdata(tex.size());
+    TransferMo(model,showdata);
 	int idx = 0;
     int nums = 0;
     for (int k = 0; k < depth; k++)
@@ -362,8 +434,8 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
 		{
 			for (int i = 0; i < width; i++)
 			{
-                if(tex[idx] > 0)
-                    fprintf(f,"%d %d %d %d %d\n",idx,tex[idx] - 1,i,j,k),nums++;
+                if(showdata[idx] > 0)
+                    fprintf(f,"%d %d %d %d %d\n",idx,(int)showdata[idx] - 1,i,j,k),nums++;
                 idx++;
 			}
 		}
@@ -380,7 +452,7 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
     int cnt = 0;
 	for (auto itc = cons.begin(); itc != cons.end(); itc++)
 	{
-        fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", itc->first[0], itc->first[1], itc->first[2],0,0,0, itc->second[0], itc->second[1], itc->second[2]);
+        fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", itc->first[0], itc->first[1], itc->first[2],0,0,0, (int)itc->second[0], (int)itc->second[1], (int)itc->second[2]);
     }	
     for (auto itf = forc.begin(); itf != forc.end(); itf++)
 	{
@@ -392,7 +464,7 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
     // Command
     f = fopen((path + "vo.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
-    fprintf(f,"SET_SCRIPT_VERSION 2\nSET_VOXEL_SIZE %f %f %f %f\nLOAD_MATERIALS temp/material.txt\nLOAD_MODEL %d %d %d %d temp/model.txt\nSET_TOLERANCE 1e-9\nSET_MAX_ITER 2000\nSET_ALGORITHM_FEA 1 1\nSELECTION_OF_NODES\nLOAD_CONSTRAINTS temp/constraint.txt\nSELECT_NODE_3D\nPRESERVE_NODE_3D\nCOMPUTE_SED\nSOLVE\nPRINT_DISPLACEMENTS temp/displacements.txt\nFINISH",0.3,0.3,0.3,1.0,width,height,depth,nums);
+    fprintf(f,"SET_SCRIPT_VERSION 2\nSET_VOXEL_SIZE %f %f %f %f\nLOAD_MATERIALS temp/material.txt\nLOAD_MODEL %d %d %d %d temp/model.txt\nSET_TOLERANCE 1e-9\nSET_MAX_ITER 10000\nSET_ALGORITHM_FEA 1 1\nSELECTION_OF_NODES\nLOAD_CONSTRAINTS temp/constraint.txt\nSELECT_NODE_3D\nPRESERVE_NODE_3D\nCOMPUTE_SED\nSOLVE\nPRINT_DISPLACEMENTS temp/displacements.txt\nFINISH",0.3,0.3,0.3,1.0,width,height,depth,nums);
     fclose(f);
     // auto wpro = ExternalExe::Create();
     // wpro->CreateProcess("");

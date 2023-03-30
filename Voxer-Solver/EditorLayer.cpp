@@ -68,6 +68,7 @@ void EditorLayer::OnUpdate(TimeStep timestep)
  
     if(mouseX >= 0 && mouseX < (int)viewportSize.x && mouseY >= 0 && mouseY < (int)viewportSize.y)
     {
+        // m_framebuffer->ReadPixel(0,mouseX,mouseY,m_pixelDisplacement);
         m_framebuffer->ReadPixel(2,mouseX,mouseY,m_pixelDisplacement);
         m_framebuffer->ReadPixel(1,mouseX,mouseY,m_pixelPosition);
         // RE_CORE_WARN("pixel data {0}",pixelData);
@@ -77,6 +78,8 @@ void EditorLayer::OnUpdate(TimeStep timestep)
         m_panel.m_PickedPixels.resize(m_MouseSize[0] * m_MouseSize[1] * 3);
 
         m_framebuffer->ReadRangePixel(1, m_LastMousePress[0], m_LastMousePress[1], m_MouseSize[0], m_MouseSize[1], m_panel.m_PickedPixels.data());
+        // m_framebuffer2->Bind();
+        // m_framebuffer2->ClearAttachment(1,pixels);
         m_MouseSize[0] = m_MouseSize[1] = 0;
     }
     m_framebuffer->Unbind();
@@ -251,10 +254,13 @@ void EditorLayer::OnAttach()
     RE_PROFILE_FUNCTION();
 
     FrameBufferSpecification FbSpec;
+    FrameBufferSpecification FbSpec2;
     FbSpec.Attachments = {FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RGBI32,FramebufferTextureFormat::RGBAF32};
+    // FbSpec2.Attachments = {FramebufferTextureFormat::RGBI32};
     m_ViewPortSize.x = FbSpec.Width = 1280;
     m_ViewPortSize.y = FbSpec.Height = 720;
     m_framebuffer = FrameBuffer::Create(FbSpec);
+    // m_framebuffer2 = FrameBuffer::Create(FbSpec2);
     m_panel.m_PickedPixels.reserve(m_ViewPortSize.x * m_ViewPortSize.y * 3);
 
     m_ActiveScene = CreateRef<Scene>();
@@ -266,7 +272,7 @@ void EditorLayer::OnAttach()
     // Ref<Texture3D> texture_v = Texture3D::Create("assets/textures/cbct_sample_z=507_y=512_x=512.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_tooth_245_335_451_uint8.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/show_584_584_427_float.raw");
-    Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/27178_20230307175424_584_584_427_uint16.raw");
+    Ref<Texture3D> texture_v = Texture3D::Create("D:/1u/27178_20230307175424_584_584_427_uint8.raw");
     // Ref<Texture3D> texture_v = Texture3D::Create("E:/Dental_Engineering/voxVS/build/out/Release/assets/textures/cbct_sample_512_512_507_uint16.raw");
 
     // Entity
