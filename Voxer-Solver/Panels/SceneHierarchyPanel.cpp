@@ -196,30 +196,57 @@ static void DrawComponent(const std::string& name,Entity entity,UIFunction funct
     }
 }
 
-void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::vector<float>& target,float x, float y, float z,int width,int height,int depth)
+void SceneHierarchyPanel::AddAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x, float y, float z)
 {
-    int size1 = v.size(),size2 = target.size();
+    // int size1 = v.size(),size2 = target.size();
     for (int i = 0; i < v.size(); i += 3)
     {
         if(v[i] == -1)  continue;
-        int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
-        // printf("%d\t",id);
-        target[id * 3] = x;
-        target[id * 3 + 1] = y;
-        target[id * 3 + 2] = z;
+        Vec3<int> loc;
+        loc[0] = v[i];
+        loc[1] = v[i + 1];
+        loc[2] = v[i + 2];
+        if(target.count(loc) == 0)
+        {
+            Vec3<float> val;
+            val[0] = x;
+            val[1] = y;
+            val[2] = z;
+            target[loc] = val;
+        }else
+        {
+            auto& oriv = target[loc];
+            oriv[0] += x;
+            oriv[1] += y;
+            oriv[2] += z;
+        }
     }
     v.clear();
 }
 
-void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::vector<float>& target,float x, float y, float z,int width,int height,int depth)
+void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x, float y, float z)
 {
     for (int i = 0; i < v.size(); i += 3)
     {
         if(v[i] == -1)  continue;
-        int id = v[i] + v[i + 1] * width + v[i + 2] * width * height;
-        target[id * 3] = x;
-        target[id * 3 + 1] = y;
-        target[id * 3 + 2] = z;
+        Vec3<int> loc;
+        loc[0] = v[i];
+        loc[1] = v[i + 1];
+        loc[2] = v[i + 2];
+        if(target.count(loc) == 0)
+        {
+            Vec3<float> val;
+            val[0] = x;
+            val[1] = y;
+            val[2] = z;
+            target[loc] = val;
+        }else
+        {
+            auto& oriv = target[loc];
+            oriv[0] += x;
+            oriv[1] += y;
+            oriv[2] += z;
+        }
     }
     v.clear();
 }
@@ -228,7 +255,7 @@ const int pick = 3;
 const int dx[26] = {-1,0,1,-1,0,1,-1,0,1,-1,0,1,-1,1,-1,0,1,-1,0,1,-1,0,1,-1,0,1};
 const int dy[26] = {-1,-1,-1,0,0,0,1,1,1,-1,-1,-1,0,0,1,1,1,-1,-1,-1,0,0,0,1,1,1};
 const int dz[26] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1};
-bool checkifistooth(const std::vector<float>& label,int x,int y,int z,int w,int h,int d)
+bool check_if_is_tooth(const std::vector<float>& label,int x,int y,int z,int w,int h,int d)
 {
     for (int i = 0; i < 26; i++)
     {
@@ -284,7 +311,7 @@ void GenerateMo(Ref<Texture3D> model)
                 }
                 else if(labeldata[idx] == 1)
                 {
-                    if(checkifistooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth))
                     {
                         showdata[idx] = 3;
                         double ym = 48000000;
@@ -307,10 +334,10 @@ void GenerateMo(Ref<Texture3D> model)
     showWriter.write("D:/1u/show");
 }
 
-void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force,
-                Ref<Texture3D> constraint, int width, int height,int depth)
+void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& force,
+                ConstraintComponent& constraint, int width, int height,int depth)
 { 
-    GenerateMo(model);
+    // GenerateMo(model);
     std::string path = "./temp/";
 
     // material
@@ -345,31 +372,21 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force
     fclose(f);
 
     // Bound Condition
-    auto forc = force->getTexture();
-    auto cons = constraint->getTexture();
+    auto forc = force.force;
+    auto cons = constraint.constraint;
     f = fopen((path + "constraint.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
 	idx = 0;
     int cnt = 0;
-	for (int k = 0; k < depth; k++)
+	for (auto itc = cons.begin(); itc != cons.end(); itc++)
 	{
-		for (int j = 0; j < height; j++)
-		{
-			for (int i = 0; i < width; i++)
-			{
-                int id1 = k * height * width + j * width  + i,id2,id3;
-                if(tex[id1] == 0)
-                    continue;
-                id1 *= 3;
-                id2 = id1 + 1;
-                id3 = id2 + 1;
-                if(forc[id1] || forc[id2] || forc[id3] || cons[id1] || cons[id2] || cons[id3])
-                {
-                    fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", i, j, k,forc[id1],forc[id2],forc[id3],cons[id1] > 0,cons[id2] > 0,cons[id3] > 0);
-                }
-			}
-	    }
+        fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", itc->first[0], itc->first[1], itc->first[2],0,0,0, itc->second[0], itc->second[1], itc->second[2]);
+    }	
+    for (auto itf = forc.begin(); itf != forc.end(); itf++)
+	{
+        fprintf(f, "SELECT_NODE_3D %d %d %d %f %f %f %d %d %d\n", itf->first[0], itf->first[1], itf->first[2], itf->second[0], itf->second[1], itf->second[2],0,0,0);
     }
+
     fclose(f);
 
     // Command
@@ -640,16 +657,18 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             component.depth /= 2;
 
             auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
-            std::decay_t<decltype(texComF.Texture->getTexture())> newForce(component.width * component.height * component.depth * texComF.Texture->getBPP());
-            auto newTexF = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
-            newTexF->setData(newForce);
-            texComF.Texture = newTexF;
+            texComF.force.clear();
+            // std::decay_t<decltype(texComF.Texture->getTexture())> newForce(component.width * component.height * component.depth * texComF.Texture->getBPP());
+            // auto newTexF = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
+            // newTexF->setData(newForce);
+            // texComF.Texture = newTexF;
             
             auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            std::decay_t<decltype(texComC.Texture->getTexture())> newConstraint(component.width * component.height * component.depth * texComC.Texture->getBPP());
-            auto newTexC = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
-            newTexC->setData(newConstraint);
-            texComC.Texture = newTexC;
+            texComC.constraint.clear();
+            // std::decay_t<decltype(texComC.Texture->getTexture())> newConstraint(component.width * component.height * component.depth * texComC.Texture->getBPP());
+            // auto newTexC = Texture3D::Create(component.width,component.height,component.depth,texComF.Texture->getBPP());
+            // newTexC->setData(newConstraint);
+            // texComC.Texture = newTexC;
         }
         ImGui::SameLine();
         if(ImGui::Button("Save New Texture"))
@@ -687,16 +706,16 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         if(ImGui::Button("Add Force"))
         {
             auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
-            AddAttribute(m_PickedPixels,texComF.Texture->getTexture(),fx,fy,fz,texComF.Texture->getWidth(),texComF.Texture->getHeight(),texComF.Texture->getDepth());
-            texComF.Texture->setData(texComF.Texture->getTexture().data(),texComF.Texture->getTexture().size());
+            AddAttribute(m_PickedPixels,texComF.force,fx,fy,fz);
+            // texComF.Texture->setData(texComF.Texture->getTexture().data(),texComF.Texture->getTexture().size());
             fx = fy = fz = 0;
         }
         if(ImGui::Button("Clear Force"))
         {
             auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
             fx = fy = fz = 0;
-            ClearAttribute(m_PickedPixels,texComF.Texture->getTexture(),fx,fy,fz,texComF.Texture->getWidth(),texComF.Texture->getHeight(),texComF.Texture->getDepth());
-            texComF.Texture->setData(texComF.Texture->getTexture().data(),texComF.Texture->getTexture().size());
+            ClearAttribute(m_PickedPixels,texComF.force,fx,fy,fz);
+            // texComF.Texture->setData(texComF.Texture->getTexture().data(),texComF.Texture->getTexture().size());
         }
         if(ImGui::Button("Show Force"))
         {
@@ -711,35 +730,35 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
         if(ImGui::Button("Add x"))
         {
             auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            AddAttribute(m_PickedPixels,texComC.Texture->getTexture(),1,0,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
-            texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
+            AddAttribute(m_PickedPixels,texComC.constraint,1,0,0);
+            // texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
         ImGui::SameLine();
         if(ImGui::Button("Add y"))
         {
             auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            AddAttribute(m_PickedPixels,texComC.Texture->getTexture(),0,1,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
-            texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
+            AddAttribute(m_PickedPixels,texComC.constraint,0,1,0);
+            // texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
         ImGui::SameLine();
         if(ImGui::Button("Add z"))
         {
             auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            AddAttribute(m_PickedPixels,texComC.Texture->getTexture(),0,0,1,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
-            texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
+            AddAttribute(m_PickedPixels,texComC.constraint,0,0,1);
+            // texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
         ImGui::SameLine();
         if(ImGui::Button("Add Constraint"))
         {
             auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            AddAttribute(m_PickedPixels,texComC.Texture->getTexture(),1,1,1,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
-            texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
+            AddAttribute(m_PickedPixels,texComC.constraint,1,1,1);
+            // texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
         if(ImGui::Button("Clear Constraint"))
         {
             auto &texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
-            ClearAttribute(m_PickedPixels,texComC.Texture->getTexture(),0,0,0,texComC.Texture->getWidth(),texComC.Texture->getHeight(),texComC.Texture->getDepth());
-            texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
+            ClearAttribute(m_PickedPixels,texComC.constraint,0,0,0);
+            // texComC.Texture->setData(texComC.Texture->getTexture().data(),texComC.Texture->getTexture().size());
         }
         if(ImGui::Button("Show Constraint"))
         {
@@ -753,7 +772,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
                 auto& texComC = m_VolomeEntity.GetComponent<ConstraintComponent>();
                 auto& texComF = m_VolomeEntity.GetComponent<ForceComponent>();
                 // std::thread t(&SceneHierarchyPanel::SaveIntFile,this,texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
-                SaveIntFile(texCom.Texture,texComF.Texture,texComC.Texture,texCom.width,texCom.height,texCom.depth);
+                SaveIntFile(texCom.Texture,texComF,texComC,texCom.width,texCom.height,texCom.depth);
                 // t.detach();
                 // m_ExternalProcess->CreateProcess("./mpiexec.exe"," -n 4 ./femsolver.exe temp/vo.txt");
                 // m_ExternalProcess->WaitProcess();

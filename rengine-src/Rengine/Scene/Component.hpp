@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include "Rengine/Renderer/Camera.hpp"
 #include "SceneCamera.hpp"
 #include "Rengine/Core/TimeStep.hpp"
@@ -143,9 +144,17 @@ struct CameraComponent
     //     :Camera(projection)   {}
 };
 
+// #include<set>
+#include<array>
+
+template <typename T>
+using Vec3 = std::array<T,3>;
+
 struct ForceComponent
 {
-    Ref<Texture3D> Texture;
+    // Ref<Texture3D> Texture;
+    std::map<Vec3<int>,Vec3<float>> force;
+    // std::set<Vec3<float>> force;
     ForceComponent() = default;
     ForceComponent(const ForceComponent&) = default;
     // CameraComponent(const glm::mat4& projection)
@@ -154,7 +163,10 @@ struct ForceComponent
 
 struct ConstraintComponent
 {
-    Ref<Texture3D> Texture;
+    // Ref<Texture3D> Texture;
+    std::map<Vec3<int>,Vec3<float>> constraint;
+
+    // std::set<Vec3<float>> constraint;
     ConstraintComponent() = default;
     ConstraintComponent(const ConstraintComponent&) = default;
 };

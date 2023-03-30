@@ -24,9 +24,9 @@ public:
 private:
     void DrawEntityNode(Entity entity);
     void DrawComponents(Entity entity);
-    void AddAttribute(std::vector<int>& v,std::vector<float>& target,float x,float y,float z,int width,int height,int depth);
-    void ClearAttribute(std::vector<int>& v,std::vector<float>& target,float x,float y,float z,int width,int height,int depth);
-    void SaveIntFile(Ref<Texture3D> model, Ref<Texture3D> force,Ref<Texture3D> constraint,int width,int height,int depth);
+    void AddAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x,float y,float z);
+    void ClearAttribute(std::vector<int>& v,std::map<Vec3<int>,Vec3<float>>& target,float x,float y,float z);
+    void SaveIntFile(Ref<Texture3D> model,  ForceComponent& force,ConstraintComponent&,int width,int height,int depth);
     
     friend class EditorLayer;
 };

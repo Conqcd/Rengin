@@ -261,8 +261,8 @@ void Scene::OnUpdateRuntime(TimeStep ts) {
                         ColorTransferFunctionComponent>(_entity);
             float stepLength = 0.01, focalLength = 1.0 / tan(MainFOV / 2.0);
             texture.Texture->Bind(1);
-            force.Texture->Bind(2);
-            constraint.Texture->Bind(3);
+            // force.Texture->Bind(2);
+            // constraint.Texture->Bind(3);
             if(result.Texture)
               result.Texture->Bind(4);
             float mvalue = result.showId == 4 ? result.maxvalue[3]: 3.0f;
