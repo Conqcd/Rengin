@@ -247,7 +247,7 @@ void main()
                 {
                     color.rgb = vec3(1.0);
                     color.a = c.a + (1 - c.a) * color.a;
-                    o_position.r = int(position.r * float(u_TWidth - 1));
+                    o_position.r = int(position.r * float(u_TWidth) + 0.5);
                     o_position.g = int(position.g * float(u_THeight - 1));
                     o_position.b = int(position.b * float(u_TDepth - 1));
                     break;
