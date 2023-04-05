@@ -46,7 +46,7 @@ public:
     void Insert(const T1& d){
         if(d != last && d != first)
         {
-            T2 v;
+            T2 v = T2();
 	    	list[d] = v;
 	    	list[d] = ((++list.find(d))->second + (--list.find(d))->second) * 0.5f;
 	    	// list[d] = (--list.find(d))->second + ((++list.find(d))->second - (--list.find(d))->second) * (d - (--list.find(d))->first) / ((++list.find(d))->first - (--list.find(d))->first);

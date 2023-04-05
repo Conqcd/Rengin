@@ -210,12 +210,12 @@ void main()
         float ray_length2 = ray_length;
         while (ray_length > 0 && color.a < 1.0) {
             float intensity = texture(u_volume, position).r;
-            // if(((1 << (int(intensity) - 1)) & u_Choose) == 0) 
-            // {
-            //     ray_length -= u_stepLength;
-            //     position += step_vector;
-            //     continue;
-            // }
+            if(((1 << (int(intensity) - 1)) & u_Choose) == 0) 
+            {
+                ray_length -= u_stepLength;
+                position += step_vector;
+                continue;
+            }
             vec4 c = color_transfer(intensity / u_maxvalue);
             // if(intensity > u_threshold * u_maxvalue)
             if(intensity > 0.0)
