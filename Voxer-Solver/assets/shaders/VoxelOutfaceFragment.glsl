@@ -175,8 +175,9 @@ void main()
             }
             result.rgb = texture(u_ResultVolume, position).rgb;
             result.a = length(result.rgb);
-            float intensity = result.w / u_maxvalue;
+            float intensity = result.a / u_maxvalue;
             vec4 c = color_transfer(intensity);
+            c.a = 1.0;
 
             vec3 L = normalize(u_lightPosition - position);
             vec3 V = -normalize(ray);
@@ -189,6 +190,8 @@ void main()
 
             color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
             color.a = c.a + (1 - c.a) * color.a;
+            // color.a = 1.0;
+            
 
             // o_position.r = int(position.r * float(u_TWidth - 1));
             // o_position.g = int(position.g * float(u_THeight - 1));
@@ -199,8 +202,8 @@ void main()
             position += step_vector;
         }
 
-        color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
-        color.a = 1.0;
+        // color.rgb = color.a * color.rgb + (1 - color.a) * pow(u_backgroundColor, vec3(u_gamma)).rgb;
+        // color.a = 1.0;
         color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
         o_displacement = result * 1000000000.0;
     }else
