@@ -308,7 +308,7 @@ void GeneratePick(Ref<Texture3D> model)
 
     // auto grey = greyreader.load();
     
-    std::string show = "D:/1u/mo_584_584_427_float.raw";
+    std::string show = "D:/2u3l/l/27724_20230308174058gray_474_584_584_int16.raw";
     RawReader reader(show);
     
     auto lwidth = reader.dimensions[0];
@@ -321,8 +321,8 @@ void GeneratePick(Ref<Texture3D> model)
 
     auto data = reader.load();
     std::unordered_map<int,int> mp;
-    mp[13] = 1;
-    mp[12] = 1;
+    mp[2] = 1;
+    mp[27] = 1;
 	int idx = 0;
     decltype(labeldata) showdata(labeldata.size());
     for (int k = 0; k < ldepth; k++)
@@ -357,8 +357,8 @@ void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
     auto ldepth2 = result->getDepth();
     int lhw = lheight * lwidth;
     std::unordered_map<int,int> mp;
+    mp[1] = 2;
     mp[13] = 1;
-    mp[12] = 1;
 
 	int idx = 0;
     decltype(labeldata) showdata(labeldata.size());
@@ -388,7 +388,8 @@ void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
 
 void GenerateMo(Ref<Texture3D> model)
 {
-    std::string greyscale = "D:/1u/27178_20230307175424gray_584_584_427_int16.raw";
+    std::string greyscale = "D:/2u3l/u/27724_20230308174058gray_474_584_584_int16.raw";
+    // std::string greyscale = "D:/1u/27178_20230307175424gray_584_584_427_int16.raw";
     RawReader greyreader(greyscale);
     auto width = greyreader.dimensions[0];
     auto height = greyreader.dimensions[1];
@@ -412,8 +413,8 @@ void GenerateMo(Ref<Texture3D> model)
     auto lheight = model->getHeight();
     auto ldepth = model->getDepth();
     std::unordered_map<int,int> mp;
-    mp[13] = 2;
-    mp[6] = 1;
+    mp[13] = 1;
+    mp[1] = 2;
     int lhw = lheight * lwidth;
     float lmaxval = 0.0f;
 
@@ -430,7 +431,7 @@ void GenerateMo(Ref<Texture3D> model)
 			{
                 if(mp[labeldata[idx]] == 1)
                 {
-                    showdata[idx] = 2;
+                    // showdata[idx] = 2;
                     maxval = std::max(maxval,grey[idx]);
                     minval = std::min(minval,grey[idx]);
                     double pho = -13.4 + 1017 * grey[idx];
@@ -446,10 +447,11 @@ void GenerateMo(Ref<Texture3D> model)
                         showdata[idx] = 3;
                         // double ym = 48000000;
                         double ym = 5000;
+                        // showdata[idx] = grey[idx];
                         showdata[idx] = ym;
                     }else
                     {
-                        showdata[idx] = 1;
+                        // showdata[idx] = 1;
                         double pho = -13.4 + 1017 * grey[idx];
                         double ym = -388.8 + 5925 * pho;
                         showdata[idx] = grey[idx];
@@ -522,8 +524,8 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
                 ConstraintComponent& constraint, int width, int height,int depth)
 { 
     auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
-    // GeneratePickResult(model,texComR.Texture);
-    // GenerateMo(model);
+    GeneratePickResult(model,texComR.Texture);
+    GenerateMo(model);
     // GeneratePick(model);
     std::string path = "./temp/";
     // constraintVis(model,force, constraint, width,  height, depth);
