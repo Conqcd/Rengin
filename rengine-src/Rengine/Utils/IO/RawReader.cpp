@@ -209,7 +209,8 @@ auto RawReader::load() -> std::vector<float>& {
         m_buffer = convert_int16_to_float(buffer.data(), Count());
     }else if (value_type == RawValueType::FLOAT) {
         m_buffer.resize(Count());
-        m_buffer.insert(m_buffer.begin(),std::istream_iterator<float>(fs),std::istream_iterator<float>());
+        fs.read(reinterpret_cast<char *>(m_buffer.data()), Count() * sizeof(float));
+        // m_buffer.insert(m_buffer.begin(),std::istream_iterator<float>(fs),std::istream_iterator<float>());
     } else {
         throw std::runtime_error(std::string("unsupported value type"));
     }

@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 uniform float maxvalue;
 uniform float u_threshold;
@@ -21,10 +21,12 @@ uniform float u_stepLength;
 
 uniform sampler3D u_volume;
 // uniform sampler3D u_volume;
+uniform sampler3D u_ResultVolume;
 
 uniform float u_gamma;
 layout(location = 0) out vec4 o_color;
-layout(location = 1) out vec3 o_position;
+layout(location = 1) out ivec3 o_position;
+layout(location = 2) out vec4 o_displacement;
 
 struct Ray
 {
@@ -192,6 +194,7 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
+    // o_color = vec4(1.0);
 
     // gl_FragColor = color;
 }

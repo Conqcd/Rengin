@@ -92,6 +92,8 @@
         "codecvt": "cpp",
         "filesystem": "cpp",
         "*.rh": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "alignedvector3": "cpp",
+        "complex": "cpp"
     }
 }

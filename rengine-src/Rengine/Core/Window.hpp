@@ -9,7 +9,7 @@ struct WindowProps
     std::string title;
     uint32_t width;
     uint32_t height;
-    WindowProps(const std::string &name = "Hohen Engine",uint32_t w = 1280,uint32_t h = 720):title(name),width(w),height(h){}
+    WindowProps(const std::string &name = "Engine",uint32_t w = 1280,uint32_t h = 720):title(name),width(w),height(h){}
 };
 
 class RE_API Window

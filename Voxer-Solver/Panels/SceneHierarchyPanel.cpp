@@ -46,7 +46,7 @@ void SceneHierarchyPanel::OnImGuiRender()
 
     ImGui::End();
 
-    ImGui::Begin("Proterties");
+    ImGui::Begin("Component");
 
     if (m_SelectionContext)
     {
@@ -253,16 +253,17 @@ void SceneHierarchyPanel::ClearAttribute(std::vector<int>& v,std::map<Vec3<int>,
     }
 }
 
-const int pick = 3;
+const int pick = 12;
 const int dx[26] = {-1,0,1,-1,0,1,-1,0,1,-1,0,1,-1,1,-1,0,1,-1,0,1,-1,0,1,-1,0,1};
 const int dy[26] = {-1,-1,-1,0,0,0,1,1,1,-1,-1,-1,0,0,1,1,1,-1,-1,-1,0,0,0,1,1,1};
 const int dz[26] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1};
-bool check_if_is_tooth(const std::vector<float>& label,int x,int y,int z,int w,int h,int d)
+bool check_if_is_tooth(const std::vector<float>& label,int x,int y,int z,int w,int h,int d,std::unordered_map<int,int>& mp)
 {
     for (int i = 0; i < 26; i++)
     {
         int id = (x + dx[i]) + w * (y + dy[i]) + w * h * (z + dz[i]);
-        if(label[id] > 1)
+        if(mp[label[id]] == 1)
+        // if(label[id] == pick)
             return true;
     }
     return false;
@@ -293,6 +294,98 @@ void constraintVis(Ref<Texture3D> model, ForceComponent& force,
     showWriter.write("D:/1u/constraint");
 }
 
+void GeneratePick(Ref<Texture3D> model)
+{
+    // std::string greyscale = "D:/1u/27178_20230307175424gray_584_584_427_int16.raw";
+    // RawReader greyreader(greyscale);
+    // auto width = greyreader.dimensions[0];
+    // auto height = greyreader.dimensions[1];
+    // auto depth = greyreader.dimensions[2];
+    
+    // int hw = height * width;
+    // float maxval = 0.0f;
+    // float minval = 10000.0f;
+
+    // auto grey = greyreader.load();
+    
+    std::string show = "D:/1u/mo_584_584_427_float.raw";
+    RawReader reader(show);
+    
+    auto lwidth = reader.dimensions[0];
+    auto lheight = reader.dimensions[1];
+    auto ldepth = reader.dimensions[2];
+    
+    int lhw = lheight * lwidth;
+    float lmaxval = 0.0f;
+    auto labeldata = model->getTexture();
+
+    auto data = reader.load();
+    std::unordered_map<int,int> mp;
+    mp[13] = 1;
+    mp[12] = 1;
+	int idx = 0;
+    decltype(labeldata) showdata(labeldata.size());
+    for (int k = 0; k < ldepth; k++)
+	{
+		for (int j = 0; j < lheight; j++)
+		{
+			for (int i = 0; i < lwidth; i++)
+			{
+                if(mp[labeldata[idx]])
+                {
+                    showdata[idx] = data[idx];
+                }
+                idx++;
+			}
+		}
+    }
+
+    RawWriter showWriter(showdata,lwidth,lheight,ldepth);
+    showWriter.write("D:/1u/pick");
+}
+
+
+void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
+{
+    auto labeldata = model->getTexture();
+    auto data = result->getTexture();
+    auto lwidth = model->getWidth();
+    auto lheight = model->getHeight();
+    auto ldepth = model->getDepth();
+    auto lwidth2 = result->getWidth();
+    auto lheight2 = result->getHeight();
+    auto ldepth2 = result->getDepth();
+    int lhw = lheight * lwidth;
+    std::unordered_map<int,int> mp;
+    mp[13] = 1;
+    mp[12] = 1;
+
+	int idx = 0;
+    decltype(labeldata) showdata(labeldata.size());
+    for (int k = 0; k < ldepth; k++)
+	{
+		for (int j = 0; j < lheight; j++)
+		{
+			for (int i = 0; i < lwidth; i++)
+			{
+                
+                // showdata[idx] = data[idx];
+                // showdata[idx] = std::abs(data[idx * 3]);
+                // showdata[idx] = std::sqrt(data[idx * 3] * data[idx * 3] + data[idx * 3 + 1] * data[idx * 3 + 1] + data[idx * 3 + 2] * data[idx * 3 + 2]);
+                if(mp[labeldata[idx]])
+                {
+                    // showdata[idx] = std::abs(data[idx * 3]);
+                    showdata[idx] = std::sqrt(data[idx * 3] * data[idx * 3] + data[idx * 3 + 1] * data[idx * 3 + 1] + data[idx * 3 + 2] * data[idx * 3 + 2]);
+                }
+                idx++;
+			}
+		}
+    }
+
+    RawWriter showWriter(showdata,lwidth,lheight,ldepth);
+    showWriter.write("D:/1u/resultpick");
+}
+
 void GenerateMo(Ref<Texture3D> model)
 {
     std::string greyscale = "D:/1u/27178_20230307175424gray_584_584_427_int16.raw";
@@ -307,48 +400,60 @@ void GenerateMo(Ref<Texture3D> model)
 
     auto grey = greyreader.load();
     
-    std::string label = "D:/1u/27178_20230307175424_584_584_427_uint8.raw";
-    RawReader labelreader(label);
-
-    auto lwidth = labelreader.dimensions[0];
-    auto lheight = labelreader.dimensions[1];
-    auto ldepth = labelreader.dimensions[2];
-    
+    // std::unordered_set<double> sset;
+    // std::string pp = "temp/material2.txt";
+    // FILE *f = fopen(pp.c_str(), "w");
+    // RE_CORE_ASSERT(f, "Cant Open the file");
+    // fprintf(f,"0 13720000000 0.3 1\n");
+    // fprintf(f,"1 25480000000 0.3 1\n");
+    // fprintf(f,"2 48000000 0.49 1\n");
+    // fclose(f);
+    auto lwidth = model->getWidth();
+    auto lheight = model->getHeight();
+    auto ldepth = model->getDepth();
+    std::unordered_map<int,int> mp;
+    mp[13] = 2;
+    mp[6] = 1;
     int lhw = lheight * lwidth;
     float lmaxval = 0.0f;
 
-    auto labeldata = labelreader.load();
+    auto labeldata = model->getTexture();
 
 	int idx = 0;
     decltype(labeldata) showdata(labeldata.size());
+
     for (int k = 0; k < ldepth; k++)
 	{
 		for (int j = 0; j < lheight; j++)
 		{
 			for (int i = 0; i < lwidth; i++)
 			{
-                if(labeldata[idx] > 1)
+                if(mp[labeldata[idx]] == 1)
                 {
                     showdata[idx] = 2;
                     maxval = std::max(maxval,grey[idx]);
                     minval = std::min(minval,grey[idx]);
                     double pho = -13.4 + 1017 * grey[idx];
                     double ym = -388.8 + 5925 * pho;
-                    showdata[idx] = ym;
+                    // showdata[idx] = ym;
+                    showdata[idx] = grey[idx];
+                    // sset.insert(ym);
                 }
-                else if(labeldata[idx] == 1)
+                else if(mp[labeldata[idx]] == 2)
                 {
-                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth,mp))
                     {
                         showdata[idx] = 3;
-                        double ym = 48000000;
+                        // double ym = 48000000;
+                        double ym = 5000;
                         showdata[idx] = ym;
                     }else
                     {
                         showdata[idx] = 1;
                         double pho = -13.4 + 1017 * grey[idx];
                         double ym = -388.8 + 5925 * pho;
-                        showdata[idx] = ym;
+                        showdata[idx] = grey[idx];
+                        // sset.insert(ym);
                     }
                     // maxval = std::max(maxval,grey[idx]);
                 }
@@ -356,9 +461,16 @@ void GenerateMo(Ref<Texture3D> model)
 			}
 		}
     }
-    
+    // int ii = 0;
+    // for(auto& ss:sset)
+    // {
+    //     if(ss > 0)
+    //     fprintf(f,"%d %lf 0.3 1\n",ii++,ss);
+    // }
+    // fclose(f);
+
     RawWriter showWriter(showdata,lwidth,lheight,ldepth);
-    showWriter.write("D:/1u/show");
+    showWriter.write("D:/1u/mo");
 }
 
 void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
@@ -372,7 +484,9 @@ void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
     float lmaxval = 0.0f;
 
     auto labeldata = model->getTexture();
-
+    std::unordered_map<int,int> mp;
+    mp[13] = 2;
+    mp[12] = 1;
 	int idx = 0;
     for (int k = 0; k < ldepth; k++)
 	{
@@ -380,13 +494,13 @@ void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
 		{
 			for (int i = 0; i < lwidth; i++)
 			{
-                if(labeldata[idx] > 1)
+                if(mp[labeldata[idx]] == 1)
                 {
                     outdata[idx] = 2;
                 }
-                else if(labeldata[idx] == 1)
+                else if(mp[labeldata[idx]] == 2)
                 {
-                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth))
+                    if(check_if_is_tooth(labeldata,i,j,k,lwidth,lheight,ldepth,mp))
                     {
                         outdata[idx] = 3;
                     }else
@@ -407,7 +521,10 @@ void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& force,
                 ConstraintComponent& constraint, int width, int height,int depth)
 { 
+    auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+    // GeneratePickResult(model,texComR.Texture);
     // GenerateMo(model);
+    // GeneratePick(model);
     std::string path = "./temp/";
     // constraintVis(model,force, constraint, width,  height, depth);
     // material
@@ -530,6 +647,47 @@ Ref<Texture3D> Coarsen(Ref<Texture3D> texture,int divided)
 
 #define MAX_LINE 1024
 
+std::pair<Ref<Texture3D>,float> LoadStress(int width,int height,int depth,int scale,Ref<Texture3D> tex)
+{
+    FILE* f = fopen("temp/stress.txt", "r");
+	if (!f)
+	{
+		printf("文件打开失败\n");
+		return {0,0};
+	}
+	char buf[512];
+	fgets(buf, MAX_LINE, f);
+	fgets(buf, MAX_LINE, f);
+	int maxX, maxY, maxZ;
+	sscanf(buf, "Nodes: %d  %d  %d", &maxX, &maxY, &maxZ);
+	fgets(buf, MAX_LINE, f);
+    maxZ--;
+    maxY--;
+    maxX--;
+	std::vector<float> field(maxX * maxY * maxZ);
+    int id = 0;
+	int num, x, y, z;
+	double v, sx,sy,sz,sxy,syz,szx;
+    double maxx,maxy,maxz,maxd = 0;
+	while (fgets(buf, MAX_LINE, f) != NULL)
+	{
+		sscanf(buf, "%d   %d   %d   %d   %lf   %lf   %lf   %lf   %lf   %lf  ", &num, &x, &y, &z, &v, &sx, &sy,&sz, &sxy, &syz,&szx);
+        id = x + maxX * y + maxX * maxY * z;
+        id *= 3;
+        if(x >= maxX || y >= maxY || z >= maxZ)
+            continue;
+		field[id++] = v;
+        maxd = std::max(maxd,v);
+		//field[x + maxX * y + maxX * maxY * z] = 1000;
+	}
+
+	fclose(f);
+    auto texture = Texture3D::Create(maxX,maxY,maxZ,3,0x2601);
+    texture->setData(field);
+
+    return {texture,maxd};
+}
+
 std::pair<Ref<Texture3D>,float> LoadResult(int width,int height,int depth,int scale,Ref<Texture3D> tex)
 {
     FILE* f = fopen("temp/displacements.txt", "r");
@@ -544,7 +702,9 @@ std::pair<Ref<Texture3D>,float> LoadResult(int width,int height,int depth,int sc
 	int maxX, maxY, maxZ;
 	sscanf(buf, "Nodes: %d  %d  %d", &maxX, &maxY, &maxZ);
 	fgets(buf, MAX_LINE, f);
-
+    maxZ--;
+    maxY--;
+    maxX--;
 	std::vector<float> field(maxX * maxY * maxZ * 3);
 	std::vector<float> origin(width * height * depth * 3);
     int id = 0;
@@ -556,6 +716,8 @@ std::pair<Ref<Texture3D>,float> LoadResult(int width,int height,int depth,int sc
 		sscanf(buf, "%d   %d   %d   %d   %lf   %lf   %lf  ", &num, &x, &y, &z, &dx, &dy, &dz);
         id = x + maxX * y + maxX * maxY * z;
         id *= 3;
+        if(x >= maxX || y >= maxY || z >= maxZ)
+            continue;
 		field[id++] = dx;
 		field[id++] = dy;
 		field[id++] = dz;

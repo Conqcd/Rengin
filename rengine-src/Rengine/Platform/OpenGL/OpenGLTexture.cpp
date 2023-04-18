@@ -243,9 +243,11 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path,int InorNe)
     
     int hw = m_height * m_width;
     m_tex.resize(hw * m_depth);
-    float maxval = 0.0f;
+    float maxval = -999999999999.0f;
+    float minval = 999999999999.0f;
 
     auto data = reader.load();
+    int label = 0;
  
     for (int k = 0; k < m_depth; k++)
     {
@@ -254,12 +256,19 @@ OpenGLTexture3D::OpenGLTexture3D(const std::string& path,int InorNe)
             for (int i = 0; i < m_width; i++)
             {
                 int id = k * hw + j * m_width + i;
-                m_tex[id] = data[id];
+                // if(data[id] > 0)
+                    m_tex[id] = data[id];
                 maxval = std::max(maxval,m_tex[id]);
+                minval = std::min(minval,m_tex[id]);
             }
         }
     }
-
+    // for(auto& v : m_tex)
+    // {
+    //     v = (v - minval);// / (maxval - minval);
+    // }
+    // maxval -= minval;
+    // maxval = 1;
 
     GLenum interFormat = GL_R32F , dataFormat = GL_RED;
 
