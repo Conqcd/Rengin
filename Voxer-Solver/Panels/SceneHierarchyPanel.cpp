@@ -523,7 +523,7 @@ void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& force,
                 ConstraintComponent& constraint, int width, int height,int depth)
 { 
-    auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+    // auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
     // GeneratePickResult(model,texComR.Texture);
     // GenerateMo(model);
     // GeneratePick(model);
