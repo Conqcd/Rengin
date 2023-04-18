@@ -524,8 +524,8 @@ void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& forc
                 ConstraintComponent& constraint, int width, int height,int depth)
 { 
     auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
-    GeneratePickResult(model,texComR.Texture);
-    GenerateMo(model);
+    // GeneratePickResult(model,texComR.Texture);
+    // GenerateMo(model);
     // GeneratePick(model);
     std::string path = "./temp/";
     // constraintVis(model,force, constraint, width,  height, depth);
