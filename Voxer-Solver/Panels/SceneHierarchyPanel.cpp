@@ -344,7 +344,6 @@ void GeneratePick(Ref<Texture3D> model)
     showWriter.write("D:/1u/pick");
 }
 
-
 void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
 {
     auto labeldata = model->getTexture();
@@ -357,8 +356,10 @@ void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
     auto ldepth2 = result->getDepth();
     int lhw = lheight * lwidth;
     std::unordered_map<int,int> mp;
+    for(int i = 2;i <= 15;i++)
+        mp[i] = 1;
+
     mp[1] = 2;
-    mp[13] = 1;
 
 	int idx = 0;
     decltype(labeldata) showdata(labeldata.size());
@@ -372,10 +373,16 @@ void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
                 // showdata[idx] = data[idx];
                 // showdata[idx] = std::abs(data[idx * 3]);
                 // showdata[idx] = std::sqrt(data[idx * 3] * data[idx * 3] + data[idx * 3 + 1] * data[idx * 3 + 1] + data[idx * 3 + 2] * data[idx * 3 + 2]);
+                showdata[idx] = 1;
+                
                 if(mp[labeldata[idx]])
                 {
                     // showdata[idx] = std::abs(data[idx * 3]);
                     showdata[idx] = std::sqrt(data[idx * 3] * data[idx * 3] + data[idx * 3 + 1] * data[idx * 3 + 1] + data[idx * 3 + 2] * data[idx * 3 + 2]);
+                    // if(showdata[idx] == 0)
+                    //     showdata[idx] = 1;
+                    // else
+                        showdata[idx] = std::log(showdata[idx]);
                 }
                 idx++;
 			}
@@ -385,6 +392,48 @@ void GeneratePickResult(Ref<Texture3D> model,Ref<Texture3D> result)
     RawWriter showWriter(showdata,lwidth,lheight,ldepth);
     showWriter.write("D:/1u/resultpick");
 }
+
+std::pair<Ref<Texture3D>,float> LoadStress(int width,int height,int depth,int scale,Ref<Texture3D> tex);
+void GeneratePickStress(Ref<Texture3D> model)
+{
+    auto labeldata = model->getTexture();
+    auto lwidth = model->getWidth();
+    auto lheight = model->getHeight();
+    auto ldepth = model->getDepth();
+    auto [tex,value] = LoadStress(lwidth,lheight,ldepth,1,model);
+    int lhw = lheight * lwidth;
+    std::unordered_map<int,int> mp;
+    for(int i = 2;i <= 15;i++)
+        mp[i] = 1;
+
+    mp[1] = 2;
+    auto data = tex->getTexture();
+	int idx = 0;
+    float maxv = 0;
+    decltype(labeldata) showdata(labeldata.size());
+    for (int k = 0; k < ldepth; k++)
+	{
+		for (int j = 0; j < lheight; j++)
+		{
+			for (int i = 0; i < lwidth; i++)
+			{
+                if(data[idx] != 0)
+                    showdata[idx] = std::log(data[idx]),maxv = std::max(maxv,data[idx]);
+                else
+                    showdata[idx] = 0;
+                // if(mp[labeldata[idx]])
+                // {
+                //     showdata[idx] = data[idx];
+                // }
+                idx++;
+			}
+		}
+    }
+
+    RawWriter showWriter(showdata,lwidth,lheight,ldepth);
+    showWriter.write("D:/1u/resultstress");
+}
+
 
 void GenerateMo(Ref<Texture3D> model)
 {
@@ -413,7 +462,9 @@ void GenerateMo(Ref<Texture3D> model)
     auto lheight = model->getHeight();
     auto ldepth = model->getDepth();
     std::unordered_map<int,int> mp;
-    mp[13] = 1;
+    for(int i = 2;i < 16;i++)
+        mp[i] = 1;
+    mp[1] = 2;
     mp[1] = 2;
     int lhw = lheight * lwidth;
     float lmaxval = 0.0f;
@@ -522,14 +573,16 @@ void TransferMo(Ref<Texture3D> model,std::vector<float>& outdata)
 
 void SceneHierarchyPanel::SaveIntFile(Ref<Texture3D> model, ForceComponent& force,
                 ConstraintComponent& constraint, int width, int height,int depth)
-{ 
-    // auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
-    // GeneratePickResult(model,texComR.Texture);
+{
+    auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+    GeneratePickResult(model,texComR.Texture);
+    GeneratePickStress(model);
     // GenerateMo(model);
     // GeneratePick(model);
     std::string path = "./temp/";
     // constraintVis(model,force, constraint, width,  height, depth);
     // material
+    // const int num = 0x123'a;
     auto pp = path + "material.txt";
     FILE *f = fopen((path + "material.txt").c_str(), "w");
     RE_CORE_ASSERT(f, "Cant Open the file");
@@ -675,7 +728,6 @@ std::pair<Ref<Texture3D>,float> LoadStress(int width,int height,int depth,int sc
 	{
 		sscanf(buf, "%d   %d   %d   %d   %lf   %lf   %lf   %lf   %lf   %lf  ", &num, &x, &y, &z, &v, &sx, &sy,&sz, &sxy, &syz,&szx);
         id = x + maxX * y + maxX * maxY * z;
-        id *= 3;
         if(x >= maxX || y >= maxY || z >= maxZ)
             continue;
 		field[id++] = v;
@@ -684,7 +736,7 @@ std::pair<Ref<Texture3D>,float> LoadStress(int width,int height,int depth,int sc
 	}
 
 	fclose(f);
-    auto texture = Texture3D::Create(maxX,maxY,maxZ,3,0x2601);
+    auto texture = Texture3D::Create(maxX,maxY,maxZ,1,0x2601);
     texture->setData(field);
 
     return {texture,maxd};
@@ -1028,6 +1080,19 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
             }
             ImGui::SameLine();
             if (ImGui::Button("Show Result")) {
+                auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+                texComR.showId = 4;
+            }
+            if (ImGui::Button("Load Stress")) {
+                auto& texCom = m_VolomeEntity.GetComponent<Texture3DComponent>();
+                auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
+                auto [tex,value] = LoadStress(texCom.width,texCom.height,texCom.depth,4,texCom.Texture); 
+                texComR.Texture = tex;
+                texComR.maxvalue[3] = value;
+                texComR.showId = 4;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Show Stress")) {
                 auto &texComR = m_VolomeEntity.GetComponent<ResultComponent>();
                 texComR.showId = 4;
             }

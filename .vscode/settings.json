@@ -94,6 +94,9 @@
         "*.rh": "cpp",
         "string_view": "cpp",
         "alignedvector3": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "bitset": "cpp",
+        "hash_map": "cpp",
+        "valarray": "cpp"
     }
 }

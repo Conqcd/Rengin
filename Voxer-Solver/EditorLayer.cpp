@@ -241,7 +241,7 @@ void EditorLayer::OnImGuiRender()
     ImGui::End();
     ImGui::End();
 
-    ImGui::Begin("Settings");
+    ImGui::Begin("Stats");
 
     auto stats = Rengin::Renderer2D::getStats();
     ImGui::Text("Voxel Stats:");
