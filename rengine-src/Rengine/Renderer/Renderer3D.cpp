@@ -60,7 +60,7 @@ static Renderer3DData s_data_v;
 void Renderer3D::Init()
 {
     RE_PROFILE_FUNCTION();
-    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../../Voxer-Solver/assets/shaders/VoxelOutfaceFragment.glsl");
+    s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../../Voxer-Solver/assets/shaders/VoxelVertex.glsl","../../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
     // s_data_v.m_VolumeShader = Shader::Create("VoxelRender","../../Voxer-Solver/assets/shaders/VoxelOutfaceVertex.glsl","../../Voxer-Solver/assets/shaders/VoxelFragment.glsl");
     s_data_v.m_VolumeShader->Bind();
     s_data_v.VolumeVertexArray = VertexArray::Create();
@@ -536,7 +536,8 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformFloat3("u_backgroundColor", {72.f / 255.f, 90.f / 255.f, 120.f / 255.f});
     s_data_v.m_VolumeShader->SetUniformFloat3("u_lightPosition", lightPosition);
     s_data_v.m_VolumeShader->SetUniformFloat3("u_materialColor", {1.0f,1.0f,1.0f});
-    s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", stepLength);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", 0.01);
+    // s_data_v.m_VolumeShader->SetUniformFloat("u_stepLength", stepLength);
     s_data_v.m_VolumeShader->SetUniformFloat("u_gamma", gamma);
     s_data_v.m_VolumeShader->SetUniformFloat("u_threshold", threshold);
     s_data_v.m_VolumeShader->SetUniformInt("u_TWidth", TWidth);
@@ -548,8 +549,8 @@ void Renderer3D::DrawVolume(const glm::mat4 &ProjectionMatrix,const glm::mat4 &v
     s_data_v.m_VolumeShader->SetUniformInt("u_Constraint", 3);
     s_data_v.m_VolumeShader->SetUniformUint("u_ResultVolume", 0);
     s_data_v.m_VolumeShader->SetUniformInt("u_Choose", choose);
-    // s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", 13.f);
-    s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", maxvalue);
+    s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", 15.f);
+    // s_data_v.m_VolumeShader->SetUniformFloat("u_maxvalue", maxvalue);
     s_data_v.m_VolumeShader->SetUniformInt("u_nodeaNum", transfera.Size());
 
     auto it = transfera.begin();

@@ -1,7 +1,10 @@
 #version 450 core
 
-uniform float maxvalue;
+uniform float u_maxvalue;
 uniform float u_threshold;
+uniform int u_TWidth;
+uniform int u_THeight;
+uniform int u_TDepth;
 
 uniform mat4 u_ViewMatrix;
 uniform mat3 u_NormalMatrix;
@@ -20,7 +23,8 @@ uniform vec3 u_lightPosition;
 uniform float u_stepLength;
 
 uniform sampler3D u_volume;
-// uniform sampler3D u_volume;
+uniform sampler3D u_Force;
+uniform sampler3D u_Constraint;
 uniform sampler3D u_ResultVolume;
 
 uniform float u_gamma;
@@ -150,10 +154,13 @@ void main()
 
     // gl_FragColor = vec4(-step_vector * 1000,1.0);
     vec4 color = vec4(0.0);
+    bool positionOK = false;
     // float cnt = 0;
+    o_position = ivec3(-1,-1,-1);
     while (ray_length > 0 && color.a < 1.0) {
         float intensity = texture(u_volume, position).r;
-        vec4 c = color_transfer(intensity / maxvalue);
+        vec4 c = color_transfer(intensity / u_maxvalue);
+        // c.a = 1.0;
         // color = c;
         // break;
         // cnt += 1.0f;
@@ -185,6 +192,14 @@ void main()
 
         color.rgb = c.a * c.rgb + (1 - c.a) * color.a * (color.rgb + (Ia + Id) * u_materialColor * 0.1 + Is * vec3(0.1));
         color.a = c.a + (1 - c.a) * color.a;
+        if(intensity > 0 && positionOK == false)
+        {
+            o_position.r = int(position.r * float(u_TWidth - 1));
+            o_position.g = int(position.g * float(u_THeight - 1));
+            o_position.b = int(position.b * float(u_TDepth - 1));
+            positionOK = true;
+            // break;
+        }
 
         ray_length -= u_stepLength;
         position += step_vector;
@@ -194,7 +209,6 @@ void main()
     color.a = 1.0;
     o_color.rgb = pow(color.rgb, vec3(1.0 / u_gamma));
     o_color.a = color.a;
-    // o_color = vec4(1.0);
 
-    // gl_FragColor = color;
+    // o_color = vec4(1.0);
 }

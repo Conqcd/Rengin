@@ -12,7 +12,8 @@ public:
     {
         None = 0,
         OpenGL = 1,
-        Direct3D = 2
+        Direct3D = 2,
+        Vulkan = 3
     };
 private:
     static API s_api;
